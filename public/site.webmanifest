@@ -1,0 +1,17 @@
+{
+  "name": "RapidLink Microfinance Limited",
+  "short_name": "RapidLink",
+  "description": "Savings, loans, investments and digital banking from RapidLink Microfinance Limited.",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "theme_color": "#102b46",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/home"
+}

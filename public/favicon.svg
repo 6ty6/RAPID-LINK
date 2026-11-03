@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">RapidLink Microfinance</title>
+  <rect width="64" height="64" rx="12" fill="#ffffff"/>
+  <path d="M8 24C15 8 40 5 54 18" fill="none" stroke="#ff7400" stroke-width="5" stroke-linecap="round"/>
+  <path d="m54 14 1.8 4 4.4.5-3.3 3 1 4.3-3.9-2.2-3.8 2.2 1-4.3-3.3-3 4.4-.5Z" fill="#ff7400"/>
+  <text x="13" y="51" fill="#0831ff" font-family="Georgia, 'Times New Roman', serif" font-size="37" font-weight="700">R</text>
+  <path d="M12 55h41" stroke="#0831ff" stroke-width="3" stroke-linecap="round"/>
+</svg>
