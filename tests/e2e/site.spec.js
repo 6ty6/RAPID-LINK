@@ -87,13 +87,34 @@ test('homepage tools and connected news lead to the intended pages', async ({ pa
   await expect(page.getByRole('link', { name: 'View Loan Rates Guide' })).toHaveAttribute('href', '/rate-chart')
 })
 
-test('contact page presents a responsive head-office map and directions', async ({ page }) => {
+test('key information pages use compact banking image headers', async ({ page }, testInfo) => {
+  const pages = [
+    ['/stories', '/assets/news-hero-v3.png'],
+    ['/faqs', '/assets/faq-hero-v3.png'],
+    ['/contact', '/assets/contact-hero-v2.png'],
+    ['/fixed-deposit', '/assets/fixed-deposit-hero-v2.png'],
+    ['/rates', '/assets/rates-hero-v2.png'],
+    ['/loan-calculator', '/assets/loan-calculator-hero-v2.png'],
+  ]
+
+  for (const [route, image] of pages) {
+    await page.goto(route)
+    const hero = page.locator('.page-hero.has-image')
+    await expect(hero.locator(`img[src="${image}"]`)).toBeVisible()
+    const box = await hero.boundingBox()
+    expect(box.height).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 321 : 401)
+  }
+})
+
+test('contact page presents both branches with separate directions', async ({ page }) => {
   await page.goto('/contact')
-  const map = page.getByTitle('Map showing RapidLink head office at 17 Farrar Avenue, Asylum Down, Accra')
+  const map = page.getByTitle('Map showing RapidLink Head Office and Madina Branch')
   await expect(map).toBeVisible()
   await expect(map).toHaveAttribute('loading', 'lazy')
   await expect(map).toHaveAttribute('src', /Rapidlink%20Microfinance%20Head%20Office%2C%2017%20Farrar%20Avenue/)
-  await expect(page.getByRole('link', { name: /Get Directions/ })).toHaveAttribute('href', /google\.com\/maps\/search/)
+  await expect(map).toHaveAttribute('src', /Rapidlink%20Microfinance%20Madina%20Branch%2C%20Madina%20Taxi%20Rank/)
+  await expect(page.getByRole('link', { name: /Directions to Head Office/ })).toHaveAttribute('href', /google\.com\/maps\/dir/)
+  await expect(page.getByRole('link', { name: /Directions to Madina Branch/ })).toHaveAttribute('href', /Rapidlink%20Microfinance%20Madina%20Branch/)
 })
 
 test('loan calculator and controller rate guide retain their functionality', async ({ page }) => {

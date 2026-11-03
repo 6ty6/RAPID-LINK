@@ -92,6 +92,8 @@ test('official board portraits render responsively', async ({ page }, testInfo) 
   ]) {
     await page.setViewportSize(viewport)
     await page.goto('/board-of-directors')
+    await expect(page.getByRole('heading', { level: 1, name: 'Board of Directors' })).toBeVisible()
+    await expect(page.locator('.about-hero img')).toHaveAttribute('src', '/assets/about-board-directors-v2.png')
     await expect(page.locator('.person-image img')).toHaveCount(3)
     await expect(page.locator('.person-info-button')).toHaveCount(3)
     await expect(page.getByRole('heading', { name: 'Dr. Emmanuel Debrah' })).toBeVisible()
@@ -109,7 +111,7 @@ test('official About Us headers stay aligned across viewports', async ({ page },
 
   const pages = [
     { slug: 'institutional-profile', image: '/assets/about-institutional-profile.jpg' },
-    { slug: 'board-of-directors', image: '/assets/about-board-directors.jpg' },
+    { slug: 'board-of-directors', image: '/assets/about-board-directors-v2.png' },
     { slug: 'rapidlink-careers', image: '/assets/about-careers.jpeg' },
   ]
 

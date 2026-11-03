@@ -36,8 +36,23 @@ describe('RapidLink site', () => {
     expect(savings.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/rapid-susu.jpg')
 
     const investment = renderAt('/fixed-deposit').container
-    expect(investment.querySelector('.page-hero-media img')).toHaveAttribute('src', '/assets/fixed-deposit-hero.png')
+    expect(investment.querySelector('.page-hero-media img')).toHaveAttribute('src', '/assets/fixed-deposit-hero-v2.png')
     expect(investment.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/fixed-deposit.webp')
+  })
+
+  it('uses banking-themed image headers for key information pages', () => {
+    const routes = [
+      ['/stories', '/assets/news-hero-v3.png'],
+      ['/faqs', '/assets/faq-hero-v3.png'],
+      ['/contact', '/assets/contact-hero-v2.png'],
+      ['/rates', '/assets/rates-hero-v2.png'],
+      ['/loan-calculator', '/assets/loan-calculator-hero-v2.png'],
+    ]
+
+    routes.forEach(([route, image]) => {
+      const { container } = renderAt(route)
+      expect(container.querySelector('.page-hero.has-image .page-hero-media img')).toHaveAttribute('src', image)
+    })
   })
 
   it('uses the official imagery for every digital channel', () => {
@@ -79,7 +94,8 @@ describe('RapidLink site', () => {
   it('shows the official board portraits and opens an accessible biography', async () => {
     const user = userEvent.setup()
     const { container } = renderAt('/board-of-directors')
-    expect(container.querySelector('.about-hero img')).toHaveAttribute('src', '/assets/about-board-directors.jpg')
+    expect(container.querySelector('.about-hero img')).toHaveAttribute('src', '/assets/about-board-directors-v2.png')
+    expect(screen.getByRole('heading', { level: 1, name: 'Board of Directors' })).toBeVisible()
     expect(container.querySelector('img[alt="Dr. Emmanuel Debrah, Board Chairman"]')).toHaveAttribute('src', '/assets/board-emmanuel-debrah.png')
     expect(container.querySelector('img[alt="Edward Opare-Donkor, Managing Director"]')).toHaveAttribute('src', '/assets/board-edward-opare-donkor.png')
     expect(container.querySelector('img[alt="Henrici Daniel Aboa, Board Member"]')).toHaveAttribute('src', '/assets/board-henrici-daniel-aboa.png')
@@ -214,15 +230,17 @@ describe('RapidLink site', () => {
     expect(within(container).getByRole('link', { name: 'View Loan Rates Guide' })).toHaveAttribute('href', '/rate-chart')
   })
 
-  it('shows the head-office map and directions on the contact page', () => {
+  it('shows both branches on the contact map with separate directions', () => {
     const { container } = renderAt('/contact')
     const page = within(container)
-    const map = page.getByTitle('Map showing RapidLink head office at 17 Farrar Avenue, Asylum Down, Accra')
+    const map = page.getByTitle('Map showing RapidLink Head Office and Madina Branch')
     expect(map).toHaveAttribute('loading', 'lazy')
     expect(map.getAttribute('src')).toContain('Rapidlink%20Microfinance%20Head%20Office%2C%2017%20Farrar%20Avenue')
-    expect(page.getByRole('link', { name: /Get Directions/ })).toHaveAttribute('href', expect.stringContaining('google.com/maps/search'))
-    expect(page.getByRole('link', { name: /Get Directions/ }).getAttribute('href')).toContain('Rapidlink%20Microfinance%20Head%20Office')
-    expect(page.getByText('GA-049-5378')).toBeInTheDocument()
+    expect(map.getAttribute('src')).toContain('Rapidlink%20Microfinance%20Madina%20Branch%2C%20Madina%20Taxi%20Rank')
+    expect(page.getByRole('link', { name: /Directions to Head Office/ })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'))
+    expect(page.getByRole('link', { name: /Directions to Madina Branch/ })).toHaveAttribute('href', expect.stringContaining('Rapidlink%20Microfinance%20Madina%20Branch'))
+    expect(page.getAllByText(/GA-049-5378/)).toHaveLength(2)
+    expect(page.getAllByText(/GM-000-3774/)).toHaveLength(2)
   })
 
   it('previews the supplied controller rate guide before downloading', async () => {

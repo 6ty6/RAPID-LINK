@@ -52,7 +52,7 @@ export function LoanCalculator() {
   const money = value => `GHC ${value.toFixed(2)}`
 
   return <>
-    <PageHero eyebrow="Planning tool" title="Loan calculator" intro="Calculate the total interest and repayment for a RapidLink loan." />
+    <PageHero eyebrow="Planning tool" title="Loan calculator" intro="Calculate the total interest and repayment for a RapidLink loan." image="/assets/loan-calculator-hero-v2.png" />
     <section className="section"><div className="shell calculator-layout">
       <form className="panel calculator-form" onSubmit={handleSubmit}>
         <h2>Loan calculator</h2>

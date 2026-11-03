@@ -195,12 +195,12 @@ p { margin:.2em 0 1.15em; }
 .page-hero { position:relative; padding:clamp(80px,10vw,135px) 0 75px; overflow:hidden; background:linear-gradient(135deg,#ecf1f2,#f7f4ef); border-bottom:1px solid var(--border); }
 .page-hero h1 { font-size:clamp(2.6rem,6vw,5.1rem); }
 .page-hero p:not(.eyebrow) { max-width:720px; color:var(--muted); font-size:1.2rem; }
-.page-hero.has-image { min-height:500px; display:grid; align-items:center; color:white; background:var(--navy); }
+.page-hero.has-image { min-height:clamp(320px,29vw,400px); padding:36px 0; display:grid; align-items:center; color:white; background:var(--navy); }
 .page-hero.has-image:after { content:''; position:absolute; inset:0; z-index:1; background:linear-gradient(90deg,#142d43 0%,#142d43 42%,rgba(20,45,67,.88) 55%,rgba(20,45,67,.08) 100%); }
 .page-hero-media { position:absolute; top:0; right:0; bottom:0; width:58%; }
 .page-hero-media img { width:100%; height:100%; object-fit:cover; object-position:center; }
 .page-hero.has-image .shell { position:relative; z-index:2; max-width:1180px; }
-.page-hero.has-image h1 { max-width:760px; color:white; }
+.page-hero.has-image h1 { max-width:760px; color:white; font-size:clamp(2.2rem,4.2vw,3.8rem); }
 .page-hero.has-image p:not(.eyebrow) { max-width:680px; color:#e5edf1; }
 .page-hero.has-image .eyebrow { color:#ffad69; }
 .about-hero { position:relative; height:clamp(280px,29vw,400px); display:grid; align-items:center; overflow:hidden; color:white; background:var(--navy); }
@@ -335,24 +335,26 @@ p { margin:.2em 0 1.15em; }
 .digital-card-details>a { display:inline-flex; align-items:center; gap:7px; font-weight:700; }
 
 /* ========================================================================== 
-   10. CONTACT CARDS AND HEAD-OFFICE MAP
+   10. CONTACT CARDS AND TWO-BRANCH MAP
    ========================================================================== */
 .two-cards { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
 .two-cards>article { padding:38px; }
 .contact-link { display:block; margin:7px 0; font-weight:700; }
 .contact-map-section { padding-top:0; }
-.contact-map-panel { display:grid; grid-template-columns:minmax(320px,.78fr) minmax(0,1.22fr); min-height:480px; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:white; box-shadow:var(--shadow); }
-.contact-map-copy { padding:clamp(34px,5vw,64px); align-self:center; }
+.contact-map-panel { display:grid; grid-template-columns:minmax(360px,.92fr) minmax(0,1.08fr); min-height:570px; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:white; box-shadow:var(--shadow); }
+.contact-map-copy { padding:clamp(32px,4vw,52px); align-self:center; }
 .contact-map-icon { width:58px; height:58px; margin-bottom:24px; display:grid; place-items:center; color:white; border-radius:16px; background:var(--blue); box-shadow:0 12px 26px rgba(8,49,255,.18); }
 .contact-map-copy h2 { margin-bottom:16px; }
 .contact-map-copy>p:not(.eyebrow) { color:var(--muted); font-size:1.05rem; }
-.contact-location-details { margin:28px 0; display:grid; gap:16px; }
-.contact-location-details div { padding-left:16px; border-left:3px solid var(--orange); }
-.contact-location-details dt { margin-bottom:3px; color:var(--muted); font-size:.76rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-.contact-location-details dd { margin:0; color:var(--navy); font-weight:700; }
+.contact-map-locations { margin-top:26px; display:grid; gap:14px; }
+.contact-map-location { padding:18px; border:1px solid var(--border); border-left:4px solid var(--orange); border-radius:12px; background:var(--soft); }
+.contact-map-location h3 { margin-bottom:4px; }
+.contact-map-location p { margin:0; color:var(--navy); font-weight:700; line-height:1.45; }
+.contact-map-location>span { display:block; margin-top:3px; color:var(--muted); font-size:.84rem; }
 .contact-directions { width:max-content; }
-.contact-map-frame { min-height:480px; background:var(--soft); }
-.contact-map-frame iframe { width:100%; height:100%; min-height:480px; display:block; border:0; }
+.contact-map-location .contact-directions { margin-top:13px; padding:10px 14px; font-size:.82rem; }
+.contact-map-frame { min-height:570px; background:var(--soft); }
+.contact-map-frame iframe { width:100%; height:100%; min-height:570px; display:block; border:0; }
 
 /* ========================================================================== 
    11. LOAN AND SAVINGS RATE TABLES
@@ -622,7 +624,9 @@ footer a { margin:7px 0; display:block; color:#e3ebef; }
   .hero-media { position:absolute; top:0; right:0; bottom:auto; left:0; aspect-ratio:2.77 / 1; background:#e9edef; }
   .hero-media img { height:auto; object-fit:contain; }
   .hero-content { padding-top:calc((100vw / 2.77) + 36px); padding-bottom:105px; }
-  .page-hero.has-image { min-height:460px; }
+  .page-hero.has-image { min-height:300px; padding:32px 0; }
+  .page-hero.has-image h1 { font-size:2rem; }
+  .page-hero.has-image p:not(.eyebrow) { font-size:1rem; }
   .page-hero-media { width:100%; }
   .page-hero.has-image:after { background:linear-gradient(90deg,rgba(14,34,51,.95),rgba(14,34,51,.72)); }
   .about-hero { height:240px; }

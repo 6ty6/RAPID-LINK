@@ -129,7 +129,7 @@ export function Rates() {
   ]
 
   return <>
-    <PageHero eyebrow="Savings & investments" title="Fixed deposit rates" intro="Published rates as of 19 October 2026." />
+    <PageHero eyebrow="Savings & investments" title="Fixed deposit rates" intro="Published rates as of 19 October 2026." image="/assets/rates-hero-v2.png" />
     <section className="section"><div className="shell narrow">
       <div className="table-wrap"><table>
         <caption>Fixed deposit rates by amount and term</caption>
@@ -153,7 +153,7 @@ export function RateChart() {
   }, [isOpen])
 
   return <>
-    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink’s controller (government) loan rates guide." />
+    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink’s controller (government) loan rates guide." image="/assets/rates-hero-v2.png" />
     <section className="section"><div className="shell narrow panel centered rate-guide">
       <h2>Controller Loan Rates Guide</h2>
       <p>Click below to view the controller (government) loan rates guide.</p>

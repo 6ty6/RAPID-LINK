@@ -159,7 +159,7 @@ export function PeoplePage() {
   }
 
   return <>
-    <AboutHero title="Board of directors" image="/assets/about-board-directors.jpg" embeddedTitle />
+    <AboutHero title="Board of Directors" intro="Meet the experienced leaders guiding RapidLink’s governance, growth and commitment to financial inclusion." image="/assets/about-board-directors-v2.png" />
     <section className="section"><div className="shell people-grid">{people.map(person => <article className="person-card" key={person.name}>
       <div className="person-image"><img src={person.image} alt={`${person.name}, ${person.role}`} /><button className="person-info-button" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}><Info size={24} /><span>View profile</span></button></div>
       <h2>{person.name}</h2><p>{person.role}</p>
@@ -200,7 +200,7 @@ export function DigitalChannels() {
 
 export function FAQs() {
   return <>
-    <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." />
+    <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." image="/assets/faq-hero-v3.png" />
     <section className="section"><div className="shell narrow accordion">{faqs.map(([question, answer]) => <details key={question}>
       <summary>{question}<ChevronDown aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div></section>
@@ -239,7 +239,7 @@ export function Stories() {
   }
 
   return <>
-    <PageHero eyebrow="Newsroom" title="News, notices and useful updates" intro="Stay informed about RapidLink services, customer notices and financial information." />
+    <PageHero eyebrow="Newsroom" title="News, notices and useful updates" intro="Stay informed about RapidLink services, customer notices and financial information." image="/assets/news-hero-v3.png" />
     <section className="news-section"><div className="shell">
       {!isFiltering && featured && <article className="news-featured">
         <div className="news-featured-image"><img src={featured.image} alt={featured.imageAlt} /></div>
@@ -349,32 +349,40 @@ function Branch({ title, address, digital, phones }) {
 
 export function Contact() {
   const headOfficeAddress = '17 Farrar Avenue, Asylum Down, Accra, Ghana'
+  const madinaAddress = 'Madina Taxi Rank, Madina, Accra, Ghana'
   const headOfficeMapQuery = `Rapidlink Microfinance Head Office, ${headOfficeAddress}`
-  const directionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(headOfficeMapQuery)}`
-  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(headOfficeMapQuery)}&output=embed`
+  const madinaMapQuery = `Rapidlink Microfinance Madina Branch, ${madinaAddress}`
+  const branches = [
+    { title: 'Head Office', address: '17 Farrar Avenue, Asylum Down, Accra', digital: 'GA-049-5378', query: headOfficeMapQuery },
+    { title: 'Madina Branch', address: 'Madina Taxi Rank, Madina, Accra', digital: 'GM-000-3774', query: madinaMapQuery },
+  ]
+  const mapUrl = `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(headOfficeMapQuery)}&daddr=${encodeURIComponent(madinaMapQuery)}`
 
   return <>
-    <PageHero eyebrow="Contact" title="We’re here to help" intro="Call, email or visit one of RapidLink’s Accra branches." />
+    <PageHero eyebrow="Contact" title="We’re here to help" intro="Call, email or visit one of RapidLink’s Accra branches." image="/assets/contact-hero-v2.png" />
     <section className="section"><div className="shell two-cards">
       <Branch title="Head office" address="17 Farrar Avenue, Asylum Down, Accra" digital="GA-049-5378" phones={['+233 30 224 7951', '+233 30 224 6657', '+233 53 373 0336']} />
       <Branch title="Madina branch" address="Madina Taxi Rank, Madina, Accra" digital="GM-000-3774" phones={['+233 30 395 5183', '+233 55 102 3151']} />
     </div></section>
-    <section className="section contact-map-section" aria-labelledby="head-office-map-title">
+    <section className="section contact-map-section" aria-labelledby="branch-map-title">
       <div className="shell contact-map-panel">
         <div className="contact-map-copy">
           <span className="contact-map-icon" aria-hidden="true"><MapPin size={28} /></span>
-          <p className="eyebrow">Find our head office</p>
-          <h2 id="head-office-map-title">RapidLink Microfinance Head Office</h2>
-          <p>Our team is ready to assist you at RapidLink Microfinance, 17 Farrar Avenue, Asylum Down, Accra.</p>
-          <dl className="contact-location-details">
-            <div><dt>Street address</dt><dd>17 Farrar Avenue, Asylum Down, Accra</dd></div>
-            <div><dt>Digital address</dt><dd>GA-049-5378</dd></div>
-          </dl>
-          <a className="button contact-directions" href={directionsUrl} target="_blank" rel="noreferrer">Get Directions <ArrowRight size={18} /></a>
+          <p className="eyebrow">Find a branch</p>
+          <h2 id="branch-map-title">Visit either Accra location</h2>
+          <p>View both RapidLink branches on the map and choose directions to the location most convenient for you.</p>
+          <div className="contact-map-locations">
+            {branches.map(branch => <article className="contact-map-location" key={branch.title}>
+              <h3>{branch.title}</h3>
+              <p>{branch.address}</p>
+              <span>Digital address: {branch.digital}</span>
+              <a className="button button-secondary contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(branch.query)}`} target="_blank" rel="noreferrer">Directions to {branch.title} <ArrowRight size={17} /></a>
+            </article>)}
+          </div>
         </div>
         <div className="contact-map-frame">
           <iframe
-            title="Map showing RapidLink head office at 17 Farrar Avenue, Asylum Down, Accra"
+            title="Map showing RapidLink Head Office and Madina Branch"
             src={mapUrl}
             loading="lazy"
             allowFullScreen
