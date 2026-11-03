@@ -27,6 +27,18 @@ export default function Header() {
     return () => document.removeEventListener('keydown', close)
   }, [])
 
+  useEffect(() => {
+    const closeDropdown = event => {
+      if (!(event.target instanceof Element) || !event.target.closest('.nav-group')) setOpenGroup('')
+    }
+    document.addEventListener('pointerdown', closeDropdown)
+    return () => document.removeEventListener('pointerdown', closeDropdown)
+  }, [])
+
+  const closeGroupAfterFocus = event => {
+    if (!event.currentTarget.contains(event.relatedTarget)) setOpenGroup('')
+  }
+
   return <>
     <a className="skip-link" href="#main-content">Skip to main content</a>
     <AnnouncementBar />
@@ -56,8 +68,18 @@ export default function Header() {
       <div className="nav-bar"><div className="shell nav-inner">
           <nav id="main-nav" className={cx('main-nav', mobileOpen && 'is-open')} aria-label="Main navigation">
             <NavLink to="/home">Home</NavLink>
-            {navGroups.map(group => <div className="nav-group" key={group.label}>
-              <button aria-expanded={openGroup === group.label} onClick={() => setOpenGroup(openGroup === group.label ? '' : group.label)}>{group.label}<ChevronDown size={16} /></button>
+            {navGroups.map(group => <div
+              className="nav-group"
+              key={group.label}
+              onPointerEnter={event => event.pointerType === 'mouse' && setOpenGroup(group.label)}
+              onPointerLeave={event => event.pointerType === 'mouse' && setOpenGroup('')}
+              onFocusCapture={event => {
+                if (!event.target.closest('.nav-group-toggle')) setOpenGroup(group.label)
+              }}
+              onBlurCapture={closeGroupAfterFocus}
+            >
+              <NavLink className={({ isActive }) => cx('nav-group-link', (isActive || group.items.some(([, href]) => location.pathname === href)) && 'active')} to={group.href}>{group.label}</NavLink>
+              <button className="nav-group-toggle" type="button" aria-label={`Toggle ${group.label} menu`} aria-expanded={openGroup === group.label} onClick={() => setOpenGroup(openGroup === group.label ? '' : group.label)}><ChevronDown size={16} /></button>
               <div className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
             </div>)}
             <NavLink to="/digital-channels">Digital Channels</NavLink>

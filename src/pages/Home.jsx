@@ -93,9 +93,9 @@ export default function Home() {
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
     <HeroSlider />
     <section className="home-quick-access" aria-labelledby="quick-access-title"><div className="shell quick-access-layout">
-      <div className="quick-access-heading"><p className="eyebrow">Plan with confidence</p><h2 id="quick-access-title">Loan tools at your fingertips</h2></div>
+      <div className="quick-access-heading"><p className="eyebrow">Plan with confidence</p><h2 id="quick-access-title">Tools at your fingertips</h2></div>
       <div className="quick-access-links">
-        <Link className="quick-access-card" to="/rates"><span><WalletCards /></span><div><strong>Current Loan Rates</strong><small>Review the current rates table</small></div><ArrowRight /></Link>
+        <Link className="quick-access-card" to="/rates"><span><WalletCards /></span><div><strong>Current Interest Rates</strong><small>Review the current rates table</small></div><ArrowRight /></Link>
         <Link className="quick-access-card" to="/loan-calculator"><span><CalendarDays /></span><div><strong>Loan Calculator</strong><small>Estimate interest and repayment</small></div><ArrowRight /></Link>
       </div>
     </div></section>

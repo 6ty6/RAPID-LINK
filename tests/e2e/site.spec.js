@@ -24,6 +24,11 @@ test('mobile menu is operable', async ({ page }, testInfo) => {
   await page.getByRole('button', { name: 'Menu' }).click()
   await expect(page.getByRole('link', { name: 'Digital Channels', exact: true }).first()).toBeVisible()
   await expect(page.getByRole('link', { name: 'Open an Account', exact: true }).last()).toBeVisible()
+  const loansGroup = page.locator('.nav-group').filter({ has: page.locator('.nav-group-link[href="/personal-loan"]') })
+  await page.getByRole('button', { name: 'Toggle Loans menu' }).click()
+  await expect(loansGroup.locator('.nav-dropdown')).toBeVisible()
+  await page.locator('.menu-toggle').click()
+  await expect(loansGroup.locator('.nav-dropdown')).toBeHidden()
 })
 
 test('mobile contact header does not alter the desktop header', async ({ page }, testInfo) => {
@@ -31,6 +36,17 @@ test('mobile contact header does not alter the desktop header', async ({ page },
   await page.goto('/home')
   await expect(page.locator('.mobile-header-utility')).toBeHidden()
   await expect(page.locator('.header-right')).toBeVisible()
+})
+
+test('desktop dropdown labels navigate, open on hover and close outside', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop')
+  await page.goto('/home')
+  const loansGroup = page.locator('.nav-group').filter({ has: page.locator('.nav-group-link[href="/personal-loan"]') })
+  await expect(loansGroup.locator('.nav-group-link')).toHaveAttribute('href', '/personal-loan')
+  await loansGroup.hover()
+  await expect(loansGroup.locator('.nav-dropdown')).toBeVisible()
+  await page.locator('.hero').click({ position: { x: 20, y: 250 } })
+  await expect(loansGroup.locator('.nav-dropdown')).toBeHidden()
 })
 
 test('slider and account form first step work', async ({ page }) => {
@@ -61,12 +77,13 @@ test('homepage tools and connected news lead to the intended pages', async ({ pa
   await expect(announcementBar).toBeVisible()
   await expect(announcementBar.locator('a')).toHaveCount(0)
   await expect(announcementBar.locator('.announcement-track')).toHaveCSS('animation-duration', '110s')
-  await expect(page.locator('.quick-access-card[href="/rates"]')).toBeVisible()
+  await expect(page.locator('.quick-access-card[href="/rates"]')).toContainText('Current Interest Rates')
   await expect(page.locator('.quick-access-card[href="/loan-calculator"]')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Read Bank of Ghana revises sanctions for dud cheques' })).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')
   await expect(page.getByRole('button', { name: 'Downloadables' })).toHaveCount(0)
 
   await page.goto('/deduct-at-source-loan')
+  await expect(page.locator('.product-action a[href="https://rapidlinkfinance.com/loanform"]')).toBeVisible()
   await expect(page.getByRole('link', { name: 'View Loan Rates Guide' })).toHaveAttribute('href', '/rate-chart')
 })
 

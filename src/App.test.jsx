@@ -182,11 +182,14 @@ describe('RapidLink site', () => {
   it('exposes homepage loan tools, connected news and reordered navigation', () => {
     const { container } = renderAt('/home')
     const page = within(container)
-    expect(page.getByRole('link', { name: /Current Loan Rates/ })).toHaveAttribute('href', '/rates')
+    expect(page.getByRole('heading', { name: 'Tools at your fingertips' })).toBeInTheDocument()
+    expect(page.getByRole('link', { name: /Current Interest Rates/ })).toHaveAttribute('href', '/rates')
     expect(container.querySelector('.quick-access-card[href="/loan-calculator"]')).toBeInTheDocument()
     expect(page.getByRole('link', { name: /Bank of Ghana revises sanctions for dud cheques/ })).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')
     expect(page.queryByRole('button', { name: 'Downloadables' })).not.toBeInTheDocument()
-    expect([...container.querySelectorAll('.nav-group>button')].map(button => button.textContent)).toEqual(['Savings & Investments', 'Loans', 'About Us'])
+    expect([...container.querySelectorAll('.nav-group-link')].map(link => link.textContent)).toEqual(['Savings & Investments', 'Loans', 'About Us'])
+    expect(page.getByRole('link', { name: 'Savings & Investments' })).toHaveAttribute('href', '/rapid-savings')
+    expect(container.querySelector('.nav-group-link[href="/personal-loan"]')).toBeInTheDocument()
   })
 
   it('shows a non-clickable site-wide announcement banner', () => {
@@ -207,6 +210,7 @@ describe('RapidLink site', () => {
 
   it('links the Deduction at Source product to the PDF rates guide', () => {
     const { container } = renderAt('/deduct-at-source-loan')
+    expect(container.querySelector('.product-action a[href="https://rapidlinkfinance.com/loanform"]')).toBeInTheDocument()
     expect(within(container).getByRole('link', { name: 'View Loan Rates Guide' })).toHaveAttribute('href', '/rate-chart')
   })
 

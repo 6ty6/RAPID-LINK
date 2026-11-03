@@ -103,7 +103,7 @@ export const faqs = [
 ]
 
 export const navGroups = [
-  { label: 'Savings & Investments', items: [['Rapid Savings','/rapid-savings'],['Rapid Susu','/rapid-susu'],['Rapid Edu-Grow','/rapid-edu-grow'],['Rapid Target Savings','/rapid-target-savings'],['Fixed Deposit','/fixed-deposit'],['Advantage Investment','/advantage-investment'],['Current Rates','/rates']] },
-  { label: 'Loans', items: [['Personal Loans','/personal-loan'],['Group Loans','/group-loan'],['Deduction at Source','/deduct-at-source-loan'],['Business Loans','/business-loan'],['Loan Calculator','/loan-calculator']] },
-  { label: 'About Us', items: [['Institutional Profile','/institutional-profile'],['Board of Directors','/board-of-directors'],['Careers','/rapidlink-careers']] },
+  { label: 'Savings & Investments', href: '/rapid-savings', items: [['Rapid Savings','/rapid-savings'],['Rapid Susu','/rapid-susu'],['Rapid Edu-Grow','/rapid-edu-grow'],['Rapid Target Savings','/rapid-target-savings'],['Fixed Deposit','/fixed-deposit'],['Advantage Investment','/advantage-investment'],['Current Rates','/rates']] },
+  { label: 'Loans', href: '/personal-loan', items: [['Personal Loans','/personal-loan'],['Group Loans','/group-loan'],['Deduction at Source','/deduct-at-source-loan'],['Business Loans','/business-loan'],['Loan Calculator','/loan-calculator']] },
+  { label: 'About Us', href: '/institutional-profile', items: [['Institutional Profile','/institutional-profile'],['Board of Directors','/board-of-directors'],['Careers','/rapidlink-careers']] },
 ]
