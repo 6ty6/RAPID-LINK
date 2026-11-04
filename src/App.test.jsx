@@ -224,6 +224,25 @@ describe('RapidLink site', () => {
     expect(mobileContacts.getByRole('link', { name: /Controller \/ SME 053 373 0336/ })).toHaveAttribute('href', 'tel:+233533730336')
   })
 
+  it('links to every official RapidLink social profile from the footer', () => {
+    const { container } = renderAt('/home')
+    const footer = within(container.querySelector('footer'))
+    const profiles = [
+      ['LinkedIn', 'https://www.linkedin.com/company/rapidlinkmicrofinance'],
+      ['TikTok', 'https://www.tiktok.com/@rapidlink_media'],
+      ['Instagram', 'https://www.instagram.com/rapidlinkmicrofinance/'],
+      ['Facebook', 'https://www.facebook.com/profile.php?id=61584683032500'],
+      ['X', 'https://x.com/rapidlink_media'],
+    ]
+
+    profiles.forEach(([name, href]) => {
+      const link = footer.getByRole('link', { name: `Follow RapidLink on ${name}` })
+      expect(link).toHaveAttribute('href', href)
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    })
+  })
+
   it('links the Deduction at Source product to the PDF rates guide', () => {
     const { container } = renderAt('/deduct-at-source-loan')
     expect(container.querySelector('.product-action a[href="https://rapidlinkfinance.com/loanform"]')).toBeInTheDocument()
