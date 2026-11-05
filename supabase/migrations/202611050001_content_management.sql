@@ -26,6 +26,31 @@ create table if not exists public.content_admins (
   created_at timestamptz not null default now()
 );
 
+-- A Supabase invitation is the approval step for this private portal. Users
+-- created by ordinary sign-up flows are not granted content access.
+create or replace function public.authorize_invited_content_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.invited_at is not null then
+    insert into public.content_admins (user_id)
+    values (new.id)
+    on conflict (user_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+
+revoke all on function public.authorize_invited_content_user() from public;
+
+drop trigger if exists authorize_invited_content_user on auth.users;
+create trigger authorize_invited_content_user
+after insert on auth.users
+for each row execute function public.authorize_invited_content_user();
+
 -- Preserve previously approved vacancy administrators when upgrading an
 -- existing project from the vacancy-only portal.
 insert into public.content_admins (user_id, created_at)

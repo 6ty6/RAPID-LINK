@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Briefcase, Eye, EyeOff, FileText, Lock, Trash } from '../icons'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Briefcase, CircleAlert, Eye, EyeOff, FileText, Lock, Trash, X } from '../icons'
 import { PageMeta } from '../components/Shared'
 import {
   contentAdminConfigured,
@@ -54,6 +54,53 @@ function ManagementHero({ eyebrow, title, intro, onSignOut }) {
   </section>
 }
 
+function ConfirmDialog({ open, tone = 'warning', title, message, confirmLabel, busy, onConfirm, onCancel }) {
+  const titleId = useId()
+  const messageId = useId()
+  const cancelRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    cancelRef.current?.focus()
+
+    const handleKeyDown = event => {
+      if (event.key === 'Escape' && !busy) onCancel()
+      if (event.key !== 'Tab') return
+      const controls = [...document.querySelectorAll('.confirm-dialog button:not(:disabled)')]
+      if (!controls.length) return
+      const first = controls[0]
+      const last = controls[controls.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = previousOverflow
+    }
+  }, [open, busy, onCancel])
+
+  if (!open) return null
+  return <div className="confirm-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && !busy && onCancel()}>
+    <section className={`confirm-dialog is-${tone}`} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={messageId}>
+      <button className="confirm-close" type="button" aria-label="Close confirmation" disabled={busy} onClick={onCancel}><X size={20} /></button>
+      <div className="confirm-icon" aria-hidden="true">{tone === 'danger' ? <Trash size={26} /> : <CircleAlert size={26} />}</div>
+      <p className="eyebrow">Please confirm</p>
+      <h2 id={titleId}>{title}</h2>
+      <p id={messageId}>{message}</p>
+      <div className="confirm-actions"><button ref={cancelRef} className="button button-secondary" type="button" disabled={busy} onClick={onCancel}>Keep it</button><button className={`button ${tone === 'danger' ? 'button-danger-solid' : 'button-warning-solid'}`} type="button" disabled={busy} onClick={onConfirm}>{busy ? 'Please wait…' : confirmLabel}</button></div>
+    </section>
+  </div>
+}
+
 function Login({ onAuthenticated }) {
   const [credentials, setCredentials] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
@@ -93,6 +140,7 @@ function VacancyWorkspace({ vacancies, setVacancies, token }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [confirmation, setConfirmation] = useState(null)
 
   const edit = vacancy => setEditing({ ...vacancy, responsibilities: vacancy.responsibilities?.length ? vacancy.responsibilities : [''] })
   const updateResponsibility = (index, value) => setEditing({ ...editing, responsibilities: editing.responsibilities.map((item, itemIndex) => itemIndex === index ? value : item) })
@@ -116,7 +164,6 @@ function VacancyWorkspace({ vacancies, setVacancies, token }) {
 
   const remove = async () => {
     if (!editing.id || editing.is_local) return
-    if (!window.confirm(`Permanently delete the vacancy “${editing.title}”? This cannot be undone.`)) return
     setBusy(true)
     setError('')
     setMessage('')
@@ -129,12 +176,12 @@ function VacancyWorkspace({ vacancies, setVacancies, token }) {
       setError(caught.message)
     } finally {
       setBusy(false)
+      setConfirmation(null)
     }
   }
 
   const unpublish = async () => {
     if (!editing.id || editing.is_local || !editing.is_published) return
-    if (!window.confirm(`Remove “${editing.title}” from the careers page? The vacancy will remain saved as a draft.`)) return
     setBusy(true)
     setError('')
     setMessage('')
@@ -147,10 +194,11 @@ function VacancyWorkspace({ vacancies, setVacancies, token }) {
       setError(caught.message)
     } finally {
       setBusy(false)
+      setConfirmation(null)
     }
   }
 
-  return <div className="admin-grid">
+  return <><div className="admin-grid">
     <aside className="admin-vacancy-list"><div className="admin-list-heading"><h2>Positions</h2><button type="button" onClick={() => setEditing(emptyVacancy)}>New vacancy</button></div>
       {vacancies.length ? vacancies.map(vacancy => <button className={`admin-vacancy-item${editing.id === vacancy.id ? ' is-active' : ''}`} type="button" key={vacancy.id} onClick={() => edit(vacancy)}><Briefcase size={20} /><span><strong>{vacancy.title}</strong><small>{vacancy.is_local ? 'Website default' : `${vacancy.status === 'open' ? 'Open' : 'Closed'} · ${vacancy.is_published ? 'Published' : 'Draft'}`}</small></span></button>) : <p className="admin-empty-copy">No database vacancies yet.</p>}
     </aside>
@@ -170,9 +218,9 @@ function VacancyWorkspace({ vacancies, setVacancies, token }) {
       </div>
       <label className="checkbox"><input type="checkbox" checked={editing.is_published} onChange={event => setEditing({ ...editing, is_published: event.target.checked })} />Publish this vacancy on the careers page</label>
       {error && <p className="form-error" role="alert">{error}</p>}{message && <p className="admin-success" role="status">{message}</p>}
-      <div className="form-actions">{editing.id && !editing.is_local && <button className="button button-danger" type="button" disabled={busy} onClick={remove}><Trash size={18} /> Delete permanently</button>}{editing.id && !editing.is_local && editing.is_published && <button className="button button-unpublish" type="button" disabled={busy} onClick={unpublish}>Remove from website</button>}<button className="button" type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save vacancy'}</button></div>
+      <div className="form-actions">{editing.id && !editing.is_local && <button className="button button-danger" type="button" disabled={busy} onClick={() => setConfirmation('delete')}><Trash size={18} /> Delete permanently</button>}{editing.id && !editing.is_local && editing.is_published && <button className="button button-unpublish" type="button" disabled={busy} onClick={() => setConfirmation('unpublish')}>Remove from website</button>}<button className="button" type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save vacancy'}</button></div>
     </form>
-  </div>
+  </div><ConfirmDialog open={confirmation === 'delete'} tone="danger" title="Delete this vacancy permanently?" message={`“${editing.title}” will be removed from content management and cannot be recovered.`} confirmLabel="Delete vacancy" busy={busy} onConfirm={remove} onCancel={() => setConfirmation(null)} /><ConfirmDialog open={confirmation === 'unpublish'} title="Remove this vacancy from the website?" message={`“${editing.title}” will disappear from the careers page but remain available here as a draft.`} confirmLabel="Remove from website" busy={busy} onConfirm={unpublish} onCancel={() => setConfirmation(null)} /></>
 }
 
 function NewsWorkspace({ articles, setArticles, token }) {
@@ -181,6 +229,7 @@ function NewsWorkspace({ articles, setArticles, token }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [imageBusy, setImageBusy] = useState(false)
+  const [confirmation, setConfirmation] = useState(null)
 
   const edit = article => setEditing({ ...article, body: sectionsToBody(article.sections) })
   const updateTitle = value => setEditing(current => ({ ...current, title: value, slug: current.id ? current.slug : slugify(value) }))
@@ -222,7 +271,6 @@ function NewsWorkspace({ articles, setArticles, token }) {
 
   const remove = async () => {
     if (!editing.id || editing.is_local) return
-    if (!window.confirm(`Permanently delete the story “${editing.title}”? This cannot be undone.`)) return
     setBusy(true)
     setError('')
     setMessage('')
@@ -235,12 +283,12 @@ function NewsWorkspace({ articles, setArticles, token }) {
       setError(caught.message)
     } finally {
       setBusy(false)
+      setConfirmation(null)
     }
   }
 
   const unpublish = async () => {
     if (!editing.id || editing.is_local || !editing.is_published) return
-    if (!window.confirm(`Remove “${editing.title}” from the homepage and News page? The story will remain saved as a draft.`)) return
     setBusy(true)
     setError('')
     setMessage('')
@@ -253,10 +301,11 @@ function NewsWorkspace({ articles, setArticles, token }) {
       setError(caught.message)
     } finally {
       setBusy(false)
+      setConfirmation(null)
     }
   }
 
-  return <div className="admin-grid">
+  return <><div className="admin-grid">
     <aside className="admin-vacancy-list"><div className="admin-list-heading"><h2>Stories</h2><button type="button" onClick={() => setEditing(emptyNews())}>New story</button></div>
       {articles.length ? articles.map(article => <button className={`admin-vacancy-item${editing.id === article.id ? ' is-active' : ''}`} type="button" key={article.id} onClick={() => edit(article)}><FileText size={20} /><span><strong>{article.title}</strong><small>{article.category} · {article.is_local ? 'Website default' : article.is_published ? 'Published' : 'Draft'}</small></span></button>) : <p className="admin-empty-copy">No database news yet.</p>}
     </aside>
@@ -288,9 +337,9 @@ function NewsWorkspace({ articles, setArticles, token }) {
         <label className="checkbox"><input type="checkbox" checked={editing.is_published} onChange={event => setEditing({ ...editing, is_published: event.target.checked })} />Publish this story publicly</label>
       </div>
       {error && <p className="form-error" role="alert">{error}</p>}{message && <p className="admin-success" role="status">{message}</p>}
-      <div className="form-actions">{editing.id && !editing.is_local && <button className="button button-danger" type="button" disabled={busy || imageBusy} onClick={remove}><Trash size={18} /> Delete permanently</button>}{editing.id && !editing.is_local && editing.is_published && <button className="button button-unpublish" type="button" disabled={busy || imageBusy} onClick={unpublish}>Remove from website</button>}<button className="button" type="submit" disabled={busy || imageBusy}>{busy ? 'Saving…' : 'Save story'}</button></div>
+      <div className="form-actions">{editing.id && !editing.is_local && <button className="button button-danger" type="button" disabled={busy || imageBusy} onClick={() => setConfirmation('delete')}><Trash size={18} /> Delete permanently</button>}{editing.id && !editing.is_local && editing.is_published && <button className="button button-unpublish" type="button" disabled={busy || imageBusy} onClick={() => setConfirmation('unpublish')}>Remove from website</button>}<button className="button" type="submit" disabled={busy || imageBusy}>{busy ? 'Saving…' : 'Save story'}</button></div>
     </form>
-  </div>
+  </div><ConfirmDialog open={confirmation === 'delete'} tone="danger" title="Delete this story permanently?" message={`“${editing.title}” will be removed from content management and cannot be recovered.`} confirmLabel="Delete story" busy={busy} onConfirm={remove} onCancel={() => setConfirmation(null)} /><ConfirmDialog open={confirmation === 'unpublish'} title="Remove this story from the website?" message={`“${editing.title}” will disappear from the homepage and News page but remain available here as a draft.`} confirmLabel="Remove from website" busy={busy} onConfirm={unpublish} onCancel={() => setConfirmation(null)} /></>
 }
 
 export default function CareerManagement() {

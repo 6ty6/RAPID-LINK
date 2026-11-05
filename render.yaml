@@ -4,6 +4,13 @@ services:
     runtime: static
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
+    envVars:
+      # Public Supabase browser configuration. Render prompts for these values
+      # when the Blueprint is created or synchronized.
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
     routes:
       # React Router handles every route that is not a real built asset.
       - type: rewrite
