@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RapidLink Website Project Report - Caleb Adom Awuah</title>
+  <style>
+    :root { --navy:#102f49; --blue:#1239d8; --orange:#ed6a00; --ink:#1d2c38; --muted:#5b6872; --line:#d8e0e5; --soft:#f4f7f9; }
+    * { box-sizing:border-box; }
+    html { background:#e8edf0; }
+    body { width:min(100% - 32px, 980px); margin:32px auto; color:var(--ink); background:white; box-shadow:0 18px 60px rgba(16,47,73,.16); font:16px/1.68 Georgia,'Times New Roman',serif; }
+    .cover { min-height:1120px; padding:150px 90px 90px; display:flex; flex-direction:column; justify-content:center; text-align:center; border-top:14px solid var(--blue); border-bottom:14px solid var(--orange); page-break-after:always; }
+    .cover h1 { margin:0 0 38px; color:var(--blue); font:800 1.1rem/1.3 Arial,sans-serif; letter-spacing:.18em; }
+    .cover h2 { margin:0 0 22px; color:var(--navy); font:800 2.6rem/1.14 Arial,sans-serif; }
+    .cover h3 { margin:0 0 70px; color:var(--orange); font:700 1.35rem/1.4 Arial,sans-serif; }
+    .cover p { margin:8px 0; color:var(--muted); font-family:Arial,sans-serif; }
+    .report { padding:72px 82px 100px; }
+    h1,h2,h3,h4,h5,h6 { color:var(--navy); font-family:Arial,sans-serif; line-height:1.24; page-break-after:avoid; }
+    .report h2 { margin:54px 0 18px; padding-bottom:9px; border-bottom:2px solid var(--orange); font-size:1.55rem; }
+    .report h3 { margin:34px 0 12px; font-size:1.17rem; }
+    .report h4 { margin:25px 0 8px; font-size:1.04rem; }
+    p { margin:0 0 15px; }
+    ul,ol { margin:8px 0 22px; padding-left:27px; }
+    li { margin:5px 0; padding-left:4px; }
+    strong { color:#172f43; }
+    hr { margin:48px 0; border:0; border-top:1px solid var(--line); }
+    .table-wrap { margin:18px 0 30px; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font:14px/1.5 Arial,sans-serif; }
+    th { color:white; background:var(--navy); text-align:left; }
+    th,td { padding:11px 12px; border:1px solid var(--line); vertical-align:top; }
+    tbody tr:nth-child(even) { background:var(--soft); }
+    code { padding:2px 5px; border-radius:4px; background:var(--soft); font-size:.92em; }
+    @page { size:A4; margin:16mm 15mm 18mm; }
+    @media print {
+      html,body { margin:0; width:auto; background:white; box-shadow:none; }
+      .cover { min-height:250mm; padding:45mm 20mm 25mm; }
+      .report { padding:0; }
+      h2 { break-before:auto; }
+      table,ul,ol { break-inside:avoid; }
+      a { color:inherit; text-decoration:none; }
+    }
+    @media (max-width:700px) {
+      body { width:100%; margin:0; box-shadow:none; }
+      .cover { min-height:100vh; padding:80px 28px; }
+      .cover h2 { font-size:2rem; }
+      .report { padding:44px 24px 70px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="cover"><h1>RAPIDLINK MICROFINANCE LIMITED</h1>
+<h2>New Corporate Website Redesign and Digital Service Expansion</h2>
+<h3>Project Requirements and Implementation Report</h3>
+<p><strong>Prepared for:</strong> Project Supervisor and RapidLink Management <strong>Prepared by:</strong> Caleb Adom Awuah <strong>Document version:</strong> 1.0 <strong>Date:</strong> 4 November 2026 <strong>Project status:</strong> Evolving prototype and phased implementation</p></section>
+  <main class="report"><h2>Document Control</h2>
+<div class="table-wrap"><table><thead><tr>
+<th>Item</th>
+<th>Description</th>
+</tr></thead><tbody>
+<tr>
+<td>Document purpose</td>
+<td>To present the business case, requirements, methodology, benefits and implementation plan for the new RapidLink website</td>
+</tr>
+<tr>
+<td>Intended audience</td>
+<td>Project supervisor, RapidLink management, compliance representatives, content owners, technical team and authorised administrators</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Caleb Adom Awuah</td>
+</tr>
+<tr>
+<td>Proposed methodology</td>
+<td>Iterative and Incremental Evolutionary Prototyping supported by Rapid Application Development and security review practices</td>
+</tr>
+<tr>
+<td>Proposed platform</td>
+<td>Responsive React web application deployed as a secure static website, with approved external services and protected server-side systems where required</td>
+</tr>
+</tbody></table></div>
+<hr>
+<h2>Executive Summary</h2>
+<p>This report presents the redesign and planned expansion of the RapidLink Microfinance Limited website. The project is intended to replace a limited and visually inconsistent public website with a modern, responsive and customer-centred digital platform. The website will remain primarily a corporate advertising, information and customer-assistance channel. It will promote RapidLink's services, make reliable information easier to locate, guide customers towards approved application channels and prepare the organisation for future growth into broader banking operations.</p>
+<p>The current prototype establishes the main public-facing foundation. It includes a responsive homepage, product pages for savings, investments and loans, current interest-rate information, a loan calculator, digital-channel information, institutional and board profiles, news, frequently asked questions, careers, contact information, branch maps, document preview and download facilities, official social-media links and mobile-friendly navigation. The design uses RapidLink's official colours and imagery while separating the application into maintainable React components and pages.</p>
+<p>The next stages should introduce stronger customer-support, governance and content-management capabilities. Priority additions include an approved privacy policy, website terms, customer complaints and feedback, fraud-awareness information, newsletter management, product comparison, authorised news and vacancy administration, company galleries, and future support for specialised accounts, exchange rates and ATM or agent locations.</p>
+<p>The recommended delivery method is an <strong>Iterative and Incremental Evolutionary Prototyping Model</strong>, supported by Rapid Application Development practices. This method is suitable because the project builds on an existing system, requirements will continue to evolve, and external services will be introduced gradually. Each approved prototype will become part of the production solution rather than being discarded. Formal content, security, compliance, accessibility and quality-assurance reviews will control the risks associated with rapid development.</p>
+<p>The completed website is expected to improve RapidLink's public image, customer confidence, product visibility, communication efficiency and readiness for future digital banking services. It will also provide a structured foundation that can be expanded without repeatedly rebuilding the entire site.</p>
+<hr>
+<h2>1. Introduction</h2>
+<p>Financial-service customers increasingly expect accurate information, convenient digital access and prompt assistance from an institution's website. A financial institution's website is also a major trust signal: customers use its content, appearance, security and reliability to judge the organisation itself.</p>
+<p>RapidLink requires a website that presents its services professionally while remaining easy to use on mobile phones, tablets and desktop computers. The solution must advertise products, provide useful tools, direct customers to legitimate service channels, communicate news and notices, and support future growth. Because the institution may expand into broader banking operations, the website should be designed as a scalable digital foundation rather than a temporary promotional page.</p>
+<p>This report defines the project objectives, scope, stakeholders, delivery method, functional requirements, non-functional requirements, implementation process, benefits, risks and recommended next steps.</p>
+<h2>2. Background and Problem Statement</h2>
+<p>The previous website contained valuable institutional and product information, but its presentation and structure did not fully satisfy current customer expectations. Several areas required improvement:</p>
+<ul>
+<li>inconsistent layouts and image usage across pages;</li>
+<li>product pages with excessive empty space or weak visual hierarchy;</li>
+<li>limited mobile optimisation;</li>
+<li>difficulty locating important services such as rates, calculators, branch directions and application channels;</li>
+<li>limited support for future news, vacancies and downloadable documents;</li>
+<li>insufficient customer-support, complaint and fraud-awareness facilities;</li>
+<li>limited administrative controls for authorised content owners;</li>
+<li>weak preparation for future products, branches, ATMs, newsletters and external systems; and</li>
+<li>missing or pending privacy, legal and governance content.</li>
+</ul>
+<p>The redesign addresses these weaknesses while retaining approved information and business rules from the existing system. The central problem is therefore not merely visual. RapidLink needs a maintainable, trustworthy and extensible customer-information platform that supports its present microfinance operations and possible future banking services.</p>
+<h2>3. Project Aim</h2>
+<p>The aim of the project is to design and implement a secure, responsive, accessible and scalable corporate website that promotes RapidLink's products, improves customer access to information and support, and provides a controlled foundation for future financial-service integrations.</p>
+<h2>4. Project Objectives</h2>
+<p>The project will:</p>
+<ol>
+<li>present RapidLink as a credible, modern and customer-centred financial institution;</li>
+<li>promote savings, investment, loan and digital-channel products clearly;</li>
+<li>make rates, calculators, application guidance and branch information easy to access;</li>
+<li>improve customer communication through announcements, news, FAQs and official social platforms;</li>
+<li>provide accessible contact, complaint, feedback and escalation channels;</li>
+<li>preserve approved calculations, rates, content and external application processes;</li>
+<li>allow authorised personnel to manage selected content securely;</li>
+<li>support mobile, tablet and desktop users consistently;</li>
+<li>improve maintainability by separating the application into reusable components and pages;</li>
+<li>prepare the platform for newsletters, specialised accounts, galleries, exchange rates, ATM locations and other future services; and</li>
+<li>introduce appropriate security, privacy, compliance, accessibility and quality controls.</li>
+</ol>
+<h2>5. Project Scope</h2>
+<h3>5.1 In Scope</h3>
+<p>The planned website includes:</p>
+<ul>
+<li>corporate homepage and promotional slider;</li>
+<li>automated, readable announcement banner;</li>
+<li>savings, investment and loan product pages;</li>
+<li>current interest-rate information and loan-rate documents;</li>
+<li>loan repayment calculator;</li>
+<li>account-opening and loan-application guidance;</li>
+<li>digital banking channel information;</li>
+<li>institutional profile, mission, vision and impact information;</li>
+<li>board-of-directors profiles and biographies;</li>
+<li>news, articles and category filters;</li>
+<li>careers, vacancies and secure vacancy administration;</li>
+<li>FAQs, contact information, branch maps and directions;</li>
+<li>mobile application promotion;</li>
+<li>official social-media links;</li>
+<li>downloadable-document preview and download;</li>
+<li>customer complaints, feedback and escalation facilities;</li>
+<li>privacy, security, fraud-awareness and legal information;</li>
+<li>newsletter subscriptions and customer notices;</li>
+<li>product comparison;</li>
+<li>company achievements, sponsorships and gallery content;</li>
+<li>future specialised or organisational accounts;</li>
+<li>future ATM, agent and expanded branch location services; and</li>
+<li>approved third-party integration points.</li>
+</ul>
+<h3>5.2 Out of Scope Unless Separately Approved</h3>
+<p>The public website will not independently perform the following activities without approved secure back-end services and regulatory review:</p>
+<ul>
+<li>core banking transactions;</li>
+<li>storage of account balances or transaction histories in the browser;</li>
+<li>direct processing of card or mobile-money payments;</li>
+<li>uncontrolled approval of loans or accounts;</li>
+<li>publication of unapproved interest or exchange rates;</li>
+<li>public access to administrative functions;</li>
+<li>storage of staff passwords or privileged keys in front-end code; or</li>
+<li>replacement of an approved core banking, customer relationship or identity-management platform.</li>
+</ul>
+<h2>6. Stakeholders and Users</h2>
+<h3>6.1 Internal Stakeholders</h3>
+<ul>
+<li>RapidLink executive management;</li>
+<li>project supervisor;</li>
+<li>marketing and communications team;</li>
+<li>customer-service and complaints personnel;</li>
+<li>loans, savings and operations teams;</li>
+<li>compliance, legal and data-protection representatives;</li>
+<li>information technology and security personnel;</li>
+<li>human resources and careers administrators; and</li>
+<li>authorised news and content administrators.</li>
+</ul>
+<h3>6.2 External Users</h3>
+<ul>
+<li>existing customers;</li>
+<li>prospective customers;</li>
+<li>individuals seeking loans, savings or investment products;</li>
+<li>SMEs and organisational customers;</li>
+<li>job applicants;</li>
+<li>regulators and business partners;</li>
+<li>journalists and members of the public; and</li>
+<li>customers using assistive technologies or limited-bandwidth connections.</li>
+</ul>
+<h2>7. Current Prototype and Foundation</h2>
+<p>The evolving prototype currently provides the following foundation:</p>
+<ul>
+<li>a responsive React and Vite application;</li>
+<li>page-based navigation using React Router;</li>
+<li>separate components for the header, footer, shared content and route effects;</li>
+<li>a redesigned desktop and mobile header;</li>
+<li>mobile contact information and responsive menus;</li>
+<li>homepage slider and announcements;</li>
+<li>savings, investment and loan product presentation;</li>
+<li>current interest-rate and loan-calculator pages;</li>
+<li>PDF document preview and download support;</li>
+<li>institutional profile, mission, vision and animated impact counters;</li>
+<li>board member imagery and accessible biography dialogs;</li>
+<li>digital-channel information and mobile-application promotion;</li>
+<li>news listing and article routes;</li>
+<li>scalable vacancy cards and a protected management design;</li>
+<li>contact details, two branch locations and map directions;</li>
+<li>official LinkedIn, TikTok, Instagram, Facebook and X links;</li>
+<li>branded imagery and consistent colour styling;</li>
+<li>automated component and browser-testing foundations; and</li>
+<li>deployment configuration for a static hosting provider with single-page routing support.</li>
+</ul>
+<p>Some visible functions are intentionally prototypes. For example, data-submission features must not be treated as production-ready until an approved server-side service, data-retention policy, authentication mechanism and compliance review are available.</p>
+<h2>8. Recommended Development Methodology</h2>
+<h3>8.1 Selected Method</h3>
+<p>The recommended method is <strong>Iterative and Incremental Evolutionary Prototyping supported by Rapid Application Development practices and security-by-design controls</strong>.</p>
+<p>Evolutionary prototyping means that an initial working version is repeatedly reviewed and improved until it becomes the final system. Incremental delivery means that the website is divided into manageable modules that can be approved and released independently. RAD practices provide rapid visual development and frequent stakeholder feedback. Security-by-design introduces mandatory controls throughout the process instead of adding security only at the end.</p>
+<h3>8.2 Reasons for Selecting the Method</h3>
+<p>This approach is appropriate because:</p>
+<ul>
+<li>the project improves an existing website instead of starting with no system;</li>
+<li>approved content and calculations must be retained while layouts are redesigned;</li>
+<li>management benefits from seeing and testing working pages before approval;</li>
+<li>requirements will evolve as RapidLink introduces new services;</li>
+<li>future external systems may not all be available at the beginning;</li>
+<li>customer-facing modules can be delivered before complex administration systems;</li>
+<li>errors in content, usability or branding can be detected early; and</li>
+<li>the financial context requires formal security, compliance and quality gates.</li>
+</ul>
+<h3>8.3 Why Pure Rapid Prototyping Is Insufficient</h3>
+<p>A purely rapid approach could prioritise speed over documentation, security, accessibility, testing and regulatory accuracy. A financial-institution website must not publish incorrect product information or collect customer data through an insecure process. The hybrid method preserves rapid feedback while requiring approval at defined control points.</p>
+<h3>8.4 Iteration Control Gates</h3>
+<p>Every iteration should pass the following gates:</p>
+<ol>
+<li><strong>Requirements approval:</strong> the business owner confirms the purpose and acceptance criteria.</li>
+<li><strong>Content approval:</strong> authorised personnel approve rates, product descriptions, addresses and claims.</li>
+<li><strong>Design approval:</strong> the layout, images and branding are reviewed.</li>
+<li><strong>Security and privacy review:</strong> data collection, authentication and external links are assessed.</li>
+<li><strong>Compliance review:</strong> applicable financial, advertising and data-protection obligations are checked.</li>
+<li><strong>Quality assurance:</strong> functional, accessibility, responsive and browser tests are completed.</li>
+<li><strong>User acceptance:</strong> representatives of the intended users validate the feature.</li>
+<li><strong>Release approval:</strong> an authorised decision-maker approves deployment.</li>
+</ol>
+<h2>9. Proposed Building Process</h2>
+<h3>9.1 Stage 1: Initiation and Existing-System Review</h3>
+<ul>
+<li>confirm project sponsorship and governance;</li>
+<li>identify stakeholders and content owners;</li>
+<li>review the old website, approved public information and external services;</li>
+<li>identify content that should be retained, corrected, removed or replaced;</li>
+<li>document business, customer, technical and compliance problems; and</li>
+<li>establish project scope and priorities.</li>
+</ul>
+<h3>9.2 Stage 2: Requirements and Acceptance Criteria</h3>
+<ul>
+<li>document functional and non-functional requirements;</li>
+<li>define customer journeys and administrative roles;</li>
+<li>identify data to be collected and the legal basis for collection;</li>
+<li>define measurable acceptance criteria;</li>
+<li>classify immediate, later and future requirements; and</li>
+<li>identify dependencies on external systems and approvals.</li>
+</ul>
+<h3>9.3 Stage 3: Information Architecture and Content Design</h3>
+<ul>
+<li>organise navigation and page hierarchy;</li>
+<li>group products into understandable categories;</li>
+<li>define relationships between the homepage, news, rates, applications and support;</li>
+<li>create reusable content structures for products, news and vacancies;</li>
+<li>prepare approved text, images and documents; and</li>
+<li>design clear calls to action.</li>
+</ul>
+<h3>9.4 Stage 4: Prototype Design</h3>
+<ul>
+<li>develop responsive working prototypes;</li>
+<li>apply RapidLink branding and approved imagery;</li>
+<li>demonstrate desktop, tablet and mobile versions;</li>
+<li>conduct stakeholder reviews;</li>
+<li>record requested changes; and</li>
+<li>obtain approval before implementation proceeds.</li>
+</ul>
+<h3>9.5 Stage 5: Incremental Implementation</h3>
+<p>Implementation should proceed by module:</p>
+<ol>
+<li>shared structure, branding, navigation and footer;</li>
+<li>homepage and announcements;</li>
+<li>savings, investment and loan products;</li>
+<li>rates, documents and calculator tools;</li>
+<li>institutional, board and digital-channel information;</li>
+<li>news, careers and public content collections;</li>
+<li>contact, maps, complaints and customer support;</li>
+<li>secure content administration;</li>
+<li>newsletters, galleries and product comparison; and</li>
+<li>approved future banking and third-party integrations.</li>
+</ol>
+<h3>9.6 Stage 6: Testing and Approval</h3>
+<p>Each module will undergo automated and manual testing, stakeholder review and user acceptance. Defects will be corrected before deployment.</p>
+<h3>9.7 Stage 7: Deployment</h3>
+<ul>
+<li>create an optimised production build;</li>
+<li>configure the approved hosting environment and domain;</li>
+<li>enforce HTTPS;</li>
+<li>configure single-page application routing;</li>
+<li>verify public environment variables and external links;</li>
+<li>complete production smoke testing; and</li>
+<li>obtain release approval.</li>
+</ul>
+<h3>9.8 Stage 8: Monitoring and Continuous Improvement</h3>
+<ul>
+<li>monitor uptime, performance and application errors;</li>
+<li>review customer feedback and analytics;</li>
+<li>update content, dependencies and security controls;</li>
+<li>maintain backups of source code and managed data;</li>
+<li>review access rights periodically; and</li>
+<li>plan the next approved development iteration.</li>
+</ul>
+<h2>10. Functional Requirements</h2>
+<p>Functional requirements describe what the system must do.</p>
+<h3>10.1 Navigation and Shared Interface</h3>
+<ul>
+<li><strong>FR-001:</strong> The system shall provide consistent navigation on all public pages.</li>
+<li><strong>FR-002:</strong> Savings and investment products shall appear before loan products in the primary navigation.</li>
+<li><strong>FR-003:</strong> Navigation items with submenus shall be usable by mouse, keyboard and touch.</li>
+<li><strong>FR-004:</strong> Submenus shall open through the approved hover, focus or activation behaviour and close when the user selects an item, presses Escape or clicks outside.</li>
+<li><strong>FR-005:</strong> The mobile header shall provide important customer contact information.</li>
+<li><strong>FR-006:</strong> The footer shall provide product, company, contact and official social-media links.</li>
+<li><strong>FR-007:</strong> Unknown routes shall display a useful fallback or appropriate product route without producing a blank page.</li>
+</ul>
+<h3>10.2 Homepage and Advertising</h3>
+<ul>
+<li><strong>FR-008:</strong> The homepage shall present approved promotional slides with images, text and calls to action.</li>
+<li><strong>FR-009:</strong> Desktop slider timing and mobile slider presentation shall be configurable without affecting each other.</li>
+<li><strong>FR-010:</strong> The mobile slider shall display readable text with the corresponding image.</li>
+<li><strong>FR-011:</strong> The announcement banner shall animate at a readable speed and shall not require a link.</li>
+<li><strong>FR-012:</strong> The homepage shall provide direct access to current interest rates and the loan calculator.</li>
+<li><strong>FR-013:</strong> Homepage news cards shall link to the corresponding full articles.</li>
+<li><strong>FR-014:</strong> The homepage shall promote approved digital services and the RapidLink mobile application.</li>
+</ul>
+<h3>10.3 Products and Applications</h3>
+<ul>
+<li><strong>FR-015:</strong> The system shall provide separate pages for approved savings, investment and loan products.</li>
+<li><strong>FR-016:</strong> Each product page shall display its purpose, benefits, eligibility, required documents and approved action.</li>
+<li><strong>FR-017:</strong> Product pages shall use approved product-specific imagery.</li>
+<li><strong>FR-018:</strong> The Deduction at Source product shall direct eligible customers to the approved external loan-application channel.</li>
+<li><strong>FR-019:</strong> General application links shall remain disabled or explanatory where an approved destination is unavailable.</li>
+<li><strong>FR-020:</strong> The account-opening interface shall validate required fields before allowing progress.</li>
+<li><strong>FR-021:</strong> No application form shall submit personal information until an approved secure server-side service is configured.</li>
+<li><strong>FR-022:</strong> A future comparison function shall allow users to compare approved product attributes.</li>
+</ul>
+<h3>10.4 Rates, Calculator and Documents</h3>
+<ul>
+<li><strong>FR-023:</strong> The system shall display approved current interest-rate information.</li>
+<li><strong>FR-024:</strong> Authorised content owners shall be able to update rate information through an approved process.</li>
+<li><strong>FR-025:</strong> The loan calculator shall accept principal and duration values and produce an estimated result using approved calculations.</li>
+<li><strong>FR-026:</strong> Calculator results shall state that they are estimates and not final offers.</li>
+<li><strong>FR-027:</strong> The Deduction at Source page shall link to the approved loan-rate guide.</li>
+<li><strong>FR-028:</strong> Customers shall be able to preview supported documents before choosing to download them.</li>
+<li><strong>FR-029:</strong> Download actions shall use clear filenames and preserve the source document.</li>
+<li><strong>FR-030:</strong> The system shall provide a fallback message if document preview is unavailable.</li>
+</ul>
+<h3>10.5 Corporate Information</h3>
+<ul>
+<li><strong>FR-031:</strong> The system shall display the approved institutional profile.</li>
+<li><strong>FR-032:</strong> Mission and vision information shall be presented in an engaging and accessible format.</li>
+<li><strong>FR-033:</strong> Impact counters shall present only verified organisational figures.</li>
+<li><strong>FR-034:</strong> The board page shall display approved director photographs, names and roles.</li>
+<li><strong>FR-035:</strong> Users shall be able to open accessible director-biography dialogs and close them by button, Escape key or outside interaction where appropriate.</li>
+<li><strong>FR-036:</strong> Superseded or unapproved management pages shall not be publicly accessible.</li>
+</ul>
+<h3>10.6 Digital Channels</h3>
+<ul>
+<li><strong>FR-037:</strong> The system shall describe each approved RapidLink digital channel.</li>
+<li><strong>FR-038:</strong> Digital-channel pages shall use the correct approved images and instructions.</li>
+<li><strong>FR-039:</strong> Mobile-application actions shall direct users to verified application sources or approved guidance.</li>
+</ul>
+<h3>10.7 News and Announcements</h3>
+<ul>
+<li><strong>FR-040:</strong> The system shall display news in a scalable card-based collection.</li>
+<li><strong>FR-041:</strong> Users shall be able to filter news by approved category.</li>
+<li><strong>FR-042:</strong> Every article shall have a unique address, title, date, category, image, summary and full content.</li>
+<li><strong>FR-043:</strong> Homepage news and the main news collection shall share the same approved content source where appropriate.</li>
+<li><strong>FR-044:</strong> Authorised staff shall eventually be able to create, edit, preview, publish, unpublish and archive news.</li>
+<li><strong>FR-045:</strong> Unauthorised users shall not have access to news-management operations.</li>
+</ul>
+<h3>10.8 Careers and Vacancies</h3>
+<ul>
+<li><strong>FR-046:</strong> The careers page shall display vacancies as reusable cards.</li>
+<li><strong>FR-047:</strong> Each vacancy shall include title, department, location, employment type, summary, status and approved actions.</li>
+<li><strong>FR-048:</strong> Users shall be able to view full vacancy details.</li>
+<li><strong>FR-049:</strong> Application actions shall use an approved application process.</li>
+<li><strong>FR-050:</strong> Authorised human-resources staff shall be able to create, edit, publish, open, close and archive vacancies.</li>
+<li><strong>FR-051:</strong> Vacancy administration shall use authenticated accounts and server-side authorisation.</li>
+<li><strong>FR-052:</strong> Closing or hiding a vacancy shall not remove historical records unless retention rules permit deletion.</li>
+</ul>
+<h3>10.9 Contact, Branches and Customer Support</h3>
+<ul>
+<li><strong>FR-053:</strong> The contact page shall provide approved telephone numbers, email addresses, physical addresses and digital addresses.</li>
+<li><strong>FR-054:</strong> The system shall display Head Office and branch locations on a map.</li>
+<li><strong>FR-055:</strong> Each location shall provide an independent directions action.</li>
+<li><strong>FR-056:</strong> The system shall provide a dedicated complaints and feedback page.</li>
+<li><strong>FR-057:</strong> Complaint submission shall support category, branch, customer contact, description and optional approved attachments.</li>
+<li><strong>FR-058:</strong> Successful complaint submission shall provide a reference number and expected response information.</li>
+<li><strong>FR-059:</strong> Complaints shall be routed to an approved secure case-management or customer-service system.</li>
+<li><strong>FR-060:</strong> The complaints process shall provide an escalation route and fraud-reporting contact.</li>
+<li><strong>FR-061:</strong> A future location service shall support additional branches, agents and ATMs without redesigning the page.</li>
+</ul>
+<h3>10.10 FAQs and Customer Education</h3>
+<ul>
+<li><strong>FR-062:</strong> The FAQ page shall organise approved questions and answers into understandable categories.</li>
+<li><strong>FR-063:</strong> FAQ controls shall be accessible by keyboard and assistive technologies.</li>
+<li><strong>FR-064:</strong> The system shall provide approved education on responsible borrowing, digital safety and fraud prevention.</li>
+<li><strong>FR-065:</strong> Security information shall explain how customers can recognise official RapidLink channels.</li>
+</ul>
+<h3>10.11 Newsletter and Engagement</h3>
+<ul>
+<li><strong>FR-066:</strong> Users shall be able to subscribe to approved newsletters and notices.</li>
+<li><strong>FR-067:</strong> Subscription shall require clear consent and confirmation.</li>
+<li><strong>FR-068:</strong> Every marketing message shall provide an unsubscribe mechanism.</li>
+<li><strong>FR-069:</strong> Subscription records shall be stored only in an approved secure service.</li>
+<li><strong>FR-070:</strong> The system shall support approved promotions, regulatory notices, product updates and financial-education content.</li>
+<li><strong>FR-071:</strong> Official social-media links shall open the correct RapidLink profiles safely.</li>
+</ul>
+<h3>10.12 Gallery, Sponsorship and Achievements</h3>
+<ul>
+<li><strong>FR-072:</strong> The system shall provide a structured gallery for approved achievements, events, sponsorships and community programmes.</li>
+<li><strong>FR-073:</strong> Gallery entries shall contain a title, date, description, image and category.</li>
+<li><strong>FR-074:</strong> Images shall include descriptive alternative text and usage approval.</li>
+<li><strong>FR-075:</strong> Authorised content owners shall be able to manage gallery entries through an approved process.</li>
+</ul>
+<h3>10.13 Future Banking Features</h3>
+<ul>
+<li><strong>FR-076:</strong> The product structure shall support future specialised, organisational, youth, SME or other approved accounts.</li>
+<li><strong>FR-077:</strong> Specialised products shall not be published until their terms and eligibility are approved.</li>
+<li><strong>FR-078:</strong> Exchange rates shall be displayed only when RapidLink provides the service and a reliable approved data source exists.</li>
+<li><strong>FR-079:</strong> Exchange-rate information shall show source and last-updated time.</li>
+<li><strong>FR-080:</strong> Future integrations shall fail safely and shall not make the rest of the website unavailable.</li>
+</ul>
+<h3>10.14 Administration and Audit</h3>
+<ul>
+<li><strong>FR-081:</strong> Administrative pages shall require authenticated, authorised staff accounts.</li>
+<li><strong>FR-082:</strong> Role-based permissions shall limit staff to approved responsibilities.</li>
+<li><strong>FR-083:</strong> Sensitive authorisation shall be enforced by the server or database, not by merely hiding page links.</li>
+<li><strong>FR-084:</strong> Content changes shall record the responsible user and relevant timestamp where supported.</li>
+<li><strong>FR-085:</strong> Published content shall support review and approval before public release.</li>
+<li><strong>FR-086:</strong> Privileged passwords and service-role keys shall never be included in browser-delivered code.</li>
+</ul>
+<h2>11. Non-Functional Requirements</h2>
+<p>Non-functional requirements define how well the system must operate.</p>
+<h3>11.1 Usability</h3>
+<ul>
+<li><strong>NFR-001:</strong> A first-time visitor should be able to locate products, rates, support and contact information without specialist knowledge.</li>
+<li><strong>NFR-002:</strong> Important actions shall use clear and consistent labels.</li>
+<li><strong>NFR-003:</strong> Forms shall provide field-level guidance, meaningful validation and confirmation messages.</li>
+<li><strong>NFR-004:</strong> The interface shall avoid unnecessary complexity, excessive animation and crowded layouts.</li>
+</ul>
+<h3>11.2 Responsive Design</h3>
+<ul>
+<li><strong>NFR-005:</strong> The website shall operate at common mobile, tablet, laptop and desktop widths.</li>
+<li><strong>NFR-006:</strong> Content shall remain readable without horizontal scrolling at supported mobile widths.</li>
+<li><strong>NFR-007:</strong> Touch targets shall be appropriately sized and spaced.</li>
+<li><strong>NFR-008:</strong> Desktop improvements shall not unintentionally disrupt mobile presentation, and vice versa.</li>
+</ul>
+<h3>11.3 Accessibility</h3>
+<ul>
+<li><strong>NFR-009:</strong> The public website should target WCAG 2.1 Level AA or the organisation's approved successor standard.</li>
+<li><strong>NFR-010:</strong> All functionality shall be usable with a keyboard.</li>
+<li><strong>NFR-011:</strong> Images shall provide appropriate alternative text unless decorative.</li>
+<li><strong>NFR-012:</strong> Controls shall expose meaningful accessible names, roles and states.</li>
+<li><strong>NFR-013:</strong> Text and interactive elements shall meet approved colour-contrast requirements.</li>
+<li><strong>NFR-014:</strong> The website shall respect reduced-motion preferences.</li>
+<li><strong>NFR-015:</strong> Focus indicators shall remain visible.</li>
+</ul>
+<h3>11.4 Performance</h3>
+<ul>
+<li><strong>NFR-016:</strong> Images shall be compressed and sized appropriately for their display context.</li>
+<li><strong>NFR-017:</strong> Non-critical images and external content should load lazily where appropriate.</li>
+<li><strong>NFR-018:</strong> Production assets shall be minified and cacheable.</li>
+<li><strong>NFR-019:</strong> Large libraries, documents and administrative modules should be loaded only when required.</li>
+<li><strong>NFR-020:</strong> Performance shall be reviewed on mobile and limited-bandwidth connections.</li>
+</ul>
+<h3>11.5 Security</h3>
+<ul>
+<li><strong>NFR-021:</strong> Production traffic shall use HTTPS.</li>
+<li><strong>NFR-022:</strong> User input shall be validated on both client and server where data is submitted.</li>
+<li><strong>NFR-023:</strong> Authentication shall use an approved identity service and secure session handling.</li>
+<li><strong>NFR-024:</strong> Authorisation shall be enforced server-side or through database security policies.</li>
+<li><strong>NFR-025:</strong> Secrets shall not be stored in public source code or front-end environment variables.</li>
+<li><strong>NFR-026:</strong> Forms shall implement appropriate controls against spam, automated abuse and malicious uploads.</li>
+<li><strong>NFR-027:</strong> Dependencies shall be reviewed and updated to address known vulnerabilities.</li>
+<li><strong>NFR-028:</strong> External links opening new tabs shall use safe isolation attributes.</li>
+<li><strong>NFR-029:</strong> Security incidents and suspicious administrative activity should be logged and reviewed.</li>
+</ul>
+<h3>11.6 Privacy and Data Protection</h3>
+<ul>
+<li><strong>NFR-030:</strong> Personal data collection shall be limited to what is necessary for the stated purpose.</li>
+<li><strong>NFR-031:</strong> Every data-collection form shall provide an approved privacy notice or link.</li>
+<li><strong>NFR-032:</strong> Consent shall be specific, informed and recorded where consent is the applicable basis.</li>
+<li><strong>NFR-033:</strong> Retention and deletion periods shall be defined for complaints, subscriptions, applications and administrative records.</li>
+<li><strong>NFR-034:</strong> Personal information shall not be exposed through analytics, logs or client-side code.</li>
+<li><strong>NFR-035:</strong> Data processors and external services shall be approved before integration.</li>
+</ul>
+<h3>11.7 Reliability and Availability</h3>
+<ul>
+<li><strong>NFR-036:</strong> Public pages shall fail gracefully when an external map, document or service is unavailable.</li>
+<li><strong>NFR-037:</strong> A failure in one optional integration shall not make the whole website unusable.</li>
+<li><strong>NFR-038:</strong> Production availability and errors shall be monitored.</li>
+<li><strong>NFR-039:</strong> Source code, configuration and managed content shall have appropriate backup and recovery procedures.</li>
+<li><strong>NFR-040:</strong> Deployment shall support safe rollback to a previous working version.</li>
+</ul>
+<h3>11.8 Maintainability</h3>
+<ul>
+<li><strong>NFR-041:</strong> The application shall use clearly separated pages, components, data and styles.</li>
+<li><strong>NFR-042:</strong> Important CSS sections and components shall be labelled and organised for editing.</li>
+<li><strong>NFR-043:</strong> Repeated content structures shall use reusable data models and components.</li>
+<li><strong>NFR-044:</strong> Configuration values shall be documented and separated from source code where appropriate.</li>
+<li><strong>NFR-045:</strong> Automated tests shall protect critical navigation, calculations, links and content behaviour.</li>
+<li><strong>NFR-046:</strong> Technical and content-management procedures shall be documented.</li>
+</ul>
+<h3>11.9 Scalability and Extensibility</h3>
+<ul>
+<li><strong>NFR-047:</strong> Adding products, articles, vacancies, branches and gallery entries shall not require redesigning the entire site.</li>
+<li><strong>NFR-048:</strong> Public content and administrative services shall be separable so that future back-end systems can be introduced safely.</li>
+<li><strong>NFR-049:</strong> The architecture shall support future APIs without exposing privileged credentials.</li>
+<li><strong>NFR-050:</strong> The hosting approach shall support increased public traffic and asset delivery.</li>
+</ul>
+<h3>11.10 Compatibility</h3>
+<ul>
+<li><strong>NFR-051:</strong> The website shall support current stable versions of major browsers used by RapidLink customers.</li>
+<li><strong>NFR-052:</strong> The site shall remain functional when optional browser features are unavailable.</li>
+<li><strong>NFR-053:</strong> Documents and media shall use broadly supported formats or provide suitable fallbacks.</li>
+</ul>
+<h3>11.11 Search Visibility and Discoverability</h3>
+<ul>
+<li><strong>NFR-054:</strong> Every public page shall provide an accurate title and description.</li>
+<li><strong>NFR-055:</strong> Page headings shall follow a logical hierarchy.</li>
+<li><strong>NFR-056:</strong> Search engines shall receive crawlable navigation and meaningful content.</li>
+<li><strong>NFR-057:</strong> Social sharing information, canonical addresses and structured data should be introduced where approved.</li>
+<li><strong>NFR-058:</strong> Administrative and private routes shall not be advertised for search indexing.</li>
+</ul>
+<h3>11.12 Branding and Content Quality</h3>
+<ul>
+<li><strong>NFR-059:</strong> The design shall use approved RapidLink colours, logos, imagery and typography consistently.</li>
+<li><strong>NFR-060:</strong> Financial rates, terms and claims shall identify an authorised owner and review process.</li>
+<li><strong>NFR-061:</strong> Images of people shall be culturally appropriate and relevant to RapidLink's Ghanaian audience.</li>
+<li><strong>NFR-062:</strong> Published language shall be professional, understandable and free from avoidable errors.</li>
+<li><strong>NFR-063:</strong> Outdated announcements, vacancies and rates shall be reviewed and removed or archived promptly.</li>
+</ul>
+<h3>11.13 Compliance and Auditability</h3>
+<ul>
+<li><strong>NFR-064:</strong> The website shall display approved institutional, regulatory and contact information.</li>
+<li><strong>NFR-065:</strong> Privacy, terms, complaint and accessibility information shall be approved before production publication.</li>
+<li><strong>NFR-066:</strong> Material content changes should be traceable to an authorised owner.</li>
+<li><strong>NFR-067:</strong> External systems shall be assessed for security, availability, privacy and contractual suitability.</li>
+</ul>
+<h2>12. Proposed Technical Architecture</h2>
+<p>The public interface is implemented as a component-based React application built with Vite. React Router controls page navigation, while shared components provide the header, navigation, footer and reusable visual structures. Responsive styling is maintained in organised CSS. Static images, documents and approved public content can be served through the hosting platform or an approved content service.</p>
+<p>Functions that store customer or administrative data require a separate secure service. The browser should communicate with approved APIs over HTTPS. Authentication and authorisation must be enforced by the server or database. A managed back-end service may be used for authorised content management, provided that public registration is disabled where necessary, row-level or equivalent access controls are configured, and privileged keys remain outside the public application.</p>
+<p>External application portals, maps, social platforms, document services and future rate feeds should be integrated through clearly defined interfaces. Every integration should have a verified owner, destination, fallback behaviour and review process.</p>
+<h2>13. Security, Privacy and Governance</h2>
+<p>Security and privacy are essential because the website represents a financial institution and may collect customer information. The following governance measures are required:</p>
+<ul>
+<li>approve a privacy policy, website terms and data-protection notices;</li>
+<li>identify a responsible owner for every data-collection process;</li>
+<li>prohibit sensitive credentials in browser code;</li>
+<li>use invitation-only or centrally managed staff accounts;</li>
+<li>apply least-privilege access to news, careers and complaint systems;</li>
+<li>review access whenever staff roles change;</li>
+<li>validate and protect all forms and file uploads;</li>
+<li>establish retention, deletion, backup and incident-response procedures;</li>
+<li>display official contact and fraud-reporting guidance; and</li>
+<li>complete security and compliance review before connecting banking systems.</li>
+</ul>
+<h2>14. Testing and Quality Assurance</h2>
+<h3>14.1 Functional Testing</h3>
+<p>Confirm that navigation, forms, calculators, filters, dialogs, document actions, maps and links behave according to their requirements.</p>
+<h3>14.2 Integration Testing</h3>
+<p>Verify communication with approved application portals, databases, email services, maps, authentication systems and future APIs.</p>
+<h3>14.3 Responsive and Browser Testing</h3>
+<p>Test representative mobile, tablet and desktop dimensions in supported browsers. Particular attention should be given to navigation, sliders, forms, dialogs and content cards.</p>
+<h3>14.4 Accessibility Testing</h3>
+<p>Test keyboard navigation, focus order, accessible names, headings, colour contrast, alternative text, dialogs, reduced motion and screen-reader behaviour.</p>
+<h3>14.5 Performance Testing</h3>
+<p>Review image sizes, asset loading, large JavaScript modules, third-party scripts and mobile loading behaviour.</p>
+<h3>14.6 Security Testing</h3>
+<p>Review authentication, authorisation, input validation, file uploads, secrets, dependency risks, external links, error exposure and abuse protection.</p>
+<h3>14.7 User-Acceptance Testing</h3>
+<p>Selected representatives from management, marketing, customer service, operations and intended customers should complete agreed tasks and confirm acceptance criteria.</p>
+<h3>14.8 Regression Testing</h3>
+<p>Automated checks should confirm that new changes do not break approved routes, calculations, contact details, content relationships or mobile layouts.</p>
+<h2>15. Deployment and Maintenance</h2>
+<p>The website can be deployed as an optimised static application through an approved hosting provider. The production environment should provide HTTPS, custom-domain support, caching, deployment history and routing rules for React pages. Changes should be kept in version control and released through an approved branch and review process.</p>
+<p>Routine maintenance shall include:</p>
+<ul>
+<li>updating rates, notices, vacancies and contact information;</li>
+<li>reviewing links and documents;</li>
+<li>publishing approved news and galleries;</li>
+<li>applying dependency and security updates;</li>
+<li>reviewing monitoring and error reports;</li>
+<li>testing backups and rollback procedures;</li>
+<li>reviewing staff access; and</li>
+<li>conducting periodic accessibility, privacy and content audits.</li>
+</ul>
+<h2>16. Expected Benefits</h2>
+<h3>16.1 Benefits to Customers</h3>
+<ul>
+<li>faster access to understandable product information;</li>
+<li>convenient access from mobile devices;</li>
+<li>clearer rates, requirements and application guidance;</li>
+<li>useful tools for preliminary loan planning;</li>
+<li>reliable branch locations and directions;</li>
+<li>easier access to complaints, support and escalation;</li>
+<li>safer identification of official digital and social channels;</li>
+<li>improved awareness of fraud and responsible financial behaviour; and</li>
+<li>more timely news, notices and service information.</li>
+</ul>
+<h3>16.2 Benefits to RapidLink</h3>
+<ul>
+<li>stronger and more consistent corporate identity;</li>
+<li>improved product promotion and customer engagement;</li>
+<li>greater confidence among customers, partners and regulators;</li>
+<li>reduced repetitive enquiries through self-service information;</li>
+<li>better control over public content and staff permissions;</li>
+<li>measurable engagement through approved analytics;</li>
+<li>faster publication of vacancies, news and notices;</li>
+<li>a reusable foundation for new products and branches;</li>
+<li>reduced cost and risk of repeatedly rebuilding the site; and</li>
+<li>improved readiness for broader banking operations.</li>
+</ul>
+<h3>16.3 Technical and Operational Benefits</h3>
+<ul>
+<li>maintainable component-based architecture;</li>
+<li>separation of public information from protected administration;</li>
+<li>phased integration with external services;</li>
+<li>improved testing and deployment repeatability;</li>
+<li>easier mobile and accessibility improvements;</li>
+<li>safer management of secrets and permissions; and</li>
+<li>clear documentation for future developers and content owners.</li>
+</ul>
+<h2>17. Risks and Mitigation</h2>
+<div class="table-wrap"><table><thead><tr>
+<th>Risk</th>
+<th>Possible impact</th>
+<th>Proposed mitigation</th>
+</tr></thead><tbody>
+<tr>
+<td>Unapproved or outdated financial information</td>
+<td>Customer harm and reputational or regulatory risk</td>
+<td>Assign content owners, approval workflow, review dates and rapid correction process</td>
+</tr>
+<tr>
+<td>Insecure forms or administration</td>
+<td>Data exposure or unauthorised publication</td>
+<td>Use approved back-end services, secure authentication, server-side authorisation and security testing</td>
+</tr>
+<tr>
+<td>Dependence on external services</td>
+<td>Broken maps, applications or feeds</td>
+<td>Verify providers, monitor availability and provide clear fallbacks</td>
+</tr>
+<tr>
+<td>Scope growth during banking transition</td>
+<td>Delays, cost increases and inconsistent features</td>
+<td>Prioritise requirements and deliver controlled increments</td>
+</tr>
+<tr>
+<td>Weak staff access management</td>
+<td>Unauthorised content changes</td>
+<td>Invitation-only accounts, role-based access and periodic review</td>
+</tr>
+<tr>
+<td>Large images and documents</td>
+<td>Slow mobile performance</td>
+<td>Compress assets, load appropriately and monitor performance</td>
+</tr>
+<tr>
+<td>Insufficient approved content</td>
+<td>Incomplete pages or placeholders</td>
+<td>Establish content owners and approval deadlines before release</td>
+</tr>
+<tr>
+<td>Accessibility defects</td>
+<td>Exclusion of users and increased compliance risk</td>
+<td>Apply accessibility standards throughout design and testing</td>
+</tr>
+<tr>
+<td>Customer misunderstanding of estimates</td>
+<td>Incorrect financial expectations</td>
+<td>Use approved formulas, disclaimers and clear distinction between estimates and offers</td>
+</tr>
+<tr>
+<td>Lack of maintenance ownership</td>
+<td>Outdated or unreliable website</td>
+<td>Establish operating procedures, responsibilities and review schedules</td>
+</tr>
+</tbody></table></div>
+<h2>18. Phased Implementation Priorities</h2>
+<h3>Phase 1: Public Website Foundation</h3>
+<p>Complete and approve branding, navigation, homepage, product pages, rates, calculator, corporate information, digital channels, news, careers, contact details, maps and social links.</p>
+<h3>Phase 2: Trust, Compliance and Customer Support</h3>
+<p>Prioritise privacy and legal pages, complaints and feedback, fraud awareness, customer education, accessibility review and formal content governance.</p>
+<h3>Phase 3: Secure Content Management</h3>
+<p>Introduce authorised management for vacancies, news, notices and galleries using approved authentication, roles and audit controls.</p>
+<h3>Phase 4: Engagement and Product Discovery</h3>
+<p>Add newsletter subscription, product comparison, achievements, sponsorships and expanded customer guidance.</p>
+<h3>Phase 5: Future Banking Services</h3>
+<p>Introduce only approved specialised accounts, exchange rates, ATM or agent locations and integration with future banking or customer-service platforms.</p>
+<h2>19. Success Measures</h2>
+<p>Project success should be measured through approved indicators such as:</p>
+<ul>
+<li>percentage of priority pages with approved current content;</li>
+<li>successful completion of common customer tasks;</li>
+<li>mobile performance and accessibility results;</li>
+<li>reduction in repeated basic-information enquiries;</li>
+<li>number and resolution time of online complaints;</li>
+<li>engagement with products, news and official social channels;</li>
+<li>newsletter subscription and unsubscribe accuracy;</li>
+<li>website availability and error rates;</li>
+<li>time required to publish approved content; and</li>
+<li>absence of unauthorised administrative access or exposed secrets.</li>
+</ul>
+<h2>20. Assumptions and Dependencies</h2>
+<p>The project assumes that:</p>
+<ul>
+<li>RapidLink will provide and approve accurate content, images, rates and legal notices;</li>
+<li>each product and customer process will have an identified business owner;</li>
+<li>third-party systems will provide suitable security and availability;</li>
+<li>administrative users will receive approved accounts and training;</li>
+<li>personal-data collection will not begin without an approved privacy and storage process;</li>
+<li>hosting, domain and external-service costs will receive management approval; and</li>
+<li>future banking features will undergo separate technical, legal and regulatory review.</li>
+</ul>
+<h2>21. Recommendations</h2>
+<ol>
+<li>Approve the iterative and incremental evolutionary prototyping methodology.</li>
+<li>Establish a small project steering group representing management, marketing, customer service, compliance and IT.</li>
+<li>Complete privacy, legal, complaint and fraud-awareness content before expanding customer-data collection.</li>
+<li>Nominate an authorised owner and review schedule for every rate, product and contact detail.</li>
+<li>Treat the website as an advertising and customer-assistance platform unless a secure back-end integration is formally approved.</li>
+<li>Complete current public-page testing and content approval before implementing large future modules.</li>
+<li>Build administration functions only with authenticated accounts, server-side permissions and audit controls.</li>
+<li>Introduce newsletters, galleries, specialised accounts and exchange rates in controlled phases.</li>
+<li>Maintain continuous accessibility, performance and security testing.</li>
+<li>Review the architecture again before connecting any core banking or sensitive customer-information system.</li>
+</ol>
+<h2>22. Conclusion</h2>
+<p>The new RapidLink website is more than a visual redesign. It is a strategic customer-information, advertising and service-support platform that can strengthen RapidLink's public image while preparing the organisation for future growth. The current prototype already demonstrates the value of clearer product presentation, responsive design, useful customer tools, organised corporate information and improved communication.</p>
+<p>An Iterative and Incremental Evolutionary Prototyping Model provides the most suitable delivery approach because it accommodates stakeholder feedback, preserves approved elements of the existing system and supports the gradual introduction of external services. Rapid development must, however, be controlled by content, security, compliance, accessibility, testing and release approvals.</p>
+<p>With appropriate governance and phased implementation, the project will provide immediate promotional value, improve customer satisfaction and create a maintainable digital foundation for RapidLink's possible transition into broader banking services.</p>
+<hr>
+<h2>Approval Record</h2>
+<div class="table-wrap"><table><thead><tr>
+<th>Role</th>
+<th>Name</th>
+<th>Decision/Signature</th>
+<th>Date</th>
+</tr></thead><tbody>
+<tr>
+<td>Project Supervisor</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RapidLink Management Representative</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Compliance/Data Protection Representative</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Information Technology Representative</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table></div>
+<hr>
+<p><strong>Prepared by Caleb Adom Awuah</strong> <strong>RapidLink Website Redesign and Digital Service Expansion Project</strong></p></main>
+</body>
+</html>

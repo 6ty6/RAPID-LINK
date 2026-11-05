@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Check } from '../icons'
 import { config } from '../config'
 
-export function PageMeta({ title, description }) {
+export function PageMeta({ title, description, noIndex = false }) {
   const { pathname } = useLocation()
 
   useEffect(() => {
@@ -23,7 +23,15 @@ export function PageMeta({ title, description }) {
       document.head.appendChild(canonical)
     }
     canonical.href = `https://rapidlinkgh.com${pathname === '/' ? '/home' : pathname}`
-  }, [title, description, pathname])
+
+    let robots = document.querySelector('meta[name="robots"]')
+    if (!robots) {
+      robots = document.createElement('meta')
+      robots.name = 'robots'
+      document.head.appendChild(robots)
+    }
+    robots.content = noIndex ? 'noindex, nofollow' : 'index, follow'
+  }, [title, description, pathname, noIndex])
 
   return null
 }

@@ -26,20 +26,20 @@ Copy `.env.example` to `.env.local` only when verified integration values are av
 
 - `VITE_GENERAL_LOAN_PORTAL_URL`: verified public general-loan portal URL.
 - `VITE_ACCOUNT_API_BASE_URL`: public origin for a future approved same-origin adapter. The current UI intentionally does not submit data.
-- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`: public Supabase project configuration for the invitation-only vacancy portal.
+- `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`: public Supabase project configuration for the invitation-only news and vacancy content portal.
 
-## Careers management
+## Restricted content management
 
-The public vacancy grid is available at `/rapidlink-careers`. Authorised staff use the unlinked `/career-management` route to create, edit, publish, open or close vacancies.
+The public vacancy grid is available at `/rapidlink-careers`, and approved stories appear on `/stories` and the homepage. Authorised staff use the unlinked `/content-management` route to create drafts, edit content and control publication. Leaving the management page ends the local portal session and requires staff to sign in again.
 
 To enable management securely:
 
 1. Create or select the approved Supabase project and run `supabase/careers.sql` in its SQL editor.
 2. Disable public user registration in Supabase Authentication and invite only approved staff.
-3. Insert each approved staff user ID into `public.career_admins` as shown at the bottom of the SQL file.
+3. Insert each approved staff user ID into `public.content_admins` as shown at the bottom of the SQL file.
 4. Put the project URL and public anon key in `.env.local`, then rebuild the site.
 
-Authorization is enforced by database row-level security, not by hiding the route. Never place a service-role key or staff password in a Vite environment variable.
+Authorization is enforced by database row-level security, not by hiding the route. The route is omitted from public navigation and marked `noindex`, but these are only discoverability controls. Never place a service-role key or staff password in a Vite environment variable.
 
 The public build is configured for search-engine indexing. Keep production contact details and metadata accurate before deployment.
 

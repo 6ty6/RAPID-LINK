@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
-import { newsArticles, products } from '../content'
+import { products } from '../content'
 import { AppDownload, PageMeta } from '../components/Shared'
+import usePublishedNews from '../hooks/usePublishedNews'
 
 const slides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/rapid-savings', action: 'Explore savings' },
@@ -87,7 +88,8 @@ function ProductCard({ productKey }) {
 }
 
 export default function Home() {
-  const latestNews = [...newsArticles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
+  const { articles } = usePublishedNews()
+  const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
 
   return <>
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />

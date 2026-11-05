@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { config } from '../config'
-import { faqs, newsArticles } from '../content'
+import { faqs } from '../content'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
 import { careerVacancies } from '../content'
 import { careersAdminConfigured, getPublishedVacancies } from '../services/careers'
+import usePublishedNews from '../hooks/usePublishedNews'
 
 function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center' }) {
   return <>
@@ -220,6 +221,7 @@ function NewsCard({ article }) {
 }
 
 export function Stories() {
+  const { articles: newsArticles, loading, error } = usePublishedNews()
   const [category, setCategory] = useState('All News')
   const [query, setQuery] = useState('')
   const [visibleCount, setVisibleCount] = useState(6)
@@ -250,7 +252,7 @@ export function Stories() {
         <div className="news-browser-heading"><div><p className="eyebrow">Latest updates</p><h2 id="latest-news-title">Explore the newsroom</h2></div><label className="news-search"><span className="visually-hidden">Search news</span><Search size={20} /><input type="search" placeholder="Search news" value={query} onChange={event => { setQuery(event.target.value); setVisibleCount(6) }} /></label></div>
         <div className="news-filter-row" aria-label="Filter news by category">{categories.map(item => <button type="button" className={category === item ? 'is-active' : ''} aria-pressed={category === item} onClick={() => selectCategory(item)} key={item}>{item}</button>)}</div>
         <p className="news-result-count" aria-live="polite">{filtered.length} {filtered.length === 1 ? 'story' : 'stories'} found</p>
-        {cardArticles.length ? <div className="news-grid">{cardArticles.map(article => <NewsCard article={article} key={article.slug} />)}</div> : <div className="career-empty panel"><Search size={30} /><h3>No stories found</h3><p>Try another search term or select a different category.</p></div>}
+        {loading ? <div className="career-empty panel" role="status"><h3>Loading approved news…</h3></div> : error && !newsArticles.length ? <div className="career-empty panel" role="alert"><Info size={30} /><h3>News is temporarily unavailable</h3><p>Please try again later or follow RapidLink on its official social channels.</p></div> : cardArticles.length ? <div className="news-grid">{cardArticles.map(article => <NewsCard article={article} key={article.slug} />)}</div> : <div className="career-empty panel"><Search size={30} /><h3>No stories found</h3><p>Try another search term or select a different category.</p></div>}
         {cardArticles.length < (isFiltering ? filtered.length : Math.max(filtered.length - 1, 0)) && <div className="news-load-more"><button className="button button-secondary" type="button" onClick={() => setVisibleCount(count => count + 6)}>Load more stories</button></div>}
       </div>
     </div></section>
@@ -259,7 +261,10 @@ export function Stories() {
 
 export function StoryArticle() {
   const { slug } = useParams()
+  const { articles: newsArticles, loading } = usePublishedNews()
   const article = newsArticles.find(item => item.slug === slug)
+
+  if (loading) return <><PageMeta title="Loading story" description="Loading the requested RapidLink story." /><section className="section centered" role="status"><h1>Loading story…</h1></section></>
 
   if (!article) return <>
     <PageMeta title="Story not found" description="The requested RapidLink story could not be found." />
@@ -282,7 +287,7 @@ export function StoryArticle() {
 }
 
 export function Careers() {
-  const [vacancies, setVacancies] = useState(careersAdminConfigured ? [] : careerVacancies)
+  const [vacancies, setVacancies] = useState(careerVacancies)
   const [loading, setLoading] = useState(careersAdminConfigured)
   const [loadError, setLoadError] = useState(false)
   const [selectedVacancy, setSelectedVacancy] = useState(null)
@@ -321,7 +326,7 @@ export function Careers() {
         <label><span className="visually-hidden">Search vacancies</span><Search size={20} /><input type="search" placeholder="Search by role or location" value={query} onChange={event => setQuery(event.target.value)} /></label>
         <label><span className="visually-hidden">Filter by department</span><select value={department} onChange={event => setDepartment(event.target.value)}>{departments.map(item => <option key={item}>{item}</option>)}</select></label>
       </div>
-      {loading ? <div className="career-empty panel" role="status"><h3>Loading opportunities…</h3></div> : loadError ? <div className="career-empty panel" role="alert"><Briefcase size={30} /><h3>Opportunities are temporarily unavailable</h3><p>Please contact <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a> for approved vacancy information.</p></div> : visibleVacancies.length ? <div className="vacancy-grid">{visibleVacancies.map(vacancy => <article className="vacancy-card" key={vacancy.id}>
+      {loading ? <div className="career-empty panel" role="status"><h3>Loading opportunities…</h3></div> : loadError && !vacancies.length ? <div className="career-empty panel" role="alert"><Briefcase size={30} /><h3>Opportunities are temporarily unavailable</h3><p>Please contact <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a> for approved vacancy information.</p></div> : visibleVacancies.length ? <div className="vacancy-grid">{visibleVacancies.map(vacancy => <article className="vacancy-card" key={vacancy.id}>
         <div className="vacancy-card-top"><div className="vacancy-icon"><Briefcase size={23} /></div><span className={`vacancy-status is-${vacancy.status}`}>{vacancy.status === 'open' ? 'Open' : 'Closed'}</span></div>
         <p className="vacancy-department">{vacancy.department}</p><h3>{vacancy.title}</h3>
         <div className="vacancy-meta"><span><MapPin size={17} />{vacancy.location}</span><span><Briefcase size={17} />{vacancy.employment_type}</span></div>

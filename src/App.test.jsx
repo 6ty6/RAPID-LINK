@@ -122,10 +122,19 @@ describe('RapidLink site', () => {
     expect(page.getByRole('link', { name: /Apply for this position/ })).toHaveAttribute('href', expect.stringContaining('info@rapidlinkfinance.com'))
   })
 
-  it('keeps vacancy management unavailable until secure authentication is configured', () => {
-    renderAt('/career-management')
-    expect(screen.getByRole('heading', { name: 'Vacancy management is not configured' })).toBeInTheDocument()
+  it('keeps the hidden content portal unavailable until secure authentication is configured', () => {
+    const { container } = renderAt('/content-management')
+    expect(screen.getByRole('heading', { name: 'Content management is securely locked' })).toBeInTheDocument()
     expect(screen.queryByRole('textbox', { name: /Job title/ })).not.toBeInTheDocument()
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
+    expect(container.querySelector('a[href="/content-management"]')).not.toBeInTheDocument()
+  })
+
+  it('provides a protected staff invitation acceptance route', async () => {
+    renderAt('/accept-invite')
+    expect(screen.getByRole('heading', { name: 'Create your portal password' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'This link cannot be used' })).toBeInTheDocument()
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
   })
 
   it('filters the scalable news grid by category', async () => {
