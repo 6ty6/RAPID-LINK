@@ -1,4 +1,5 @@
 export const config = {
+  siteUrl: (import.meta.env.VITE_SITE_URL || 'https://rapidlinkgh.com').replace(/\/$/, ''),
   generalLoanPortal: import.meta.env.VITE_GENERAL_LOAN_PORTAL_URL || '',
   moneyQubeUrl: 'https://lendqubegh.loan',
   appStoreUrl: 'https://apps.apple.com/gh/app/rapidlink-mobile/id6450372073',

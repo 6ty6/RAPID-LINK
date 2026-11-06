@@ -15,6 +15,8 @@ describe('RapidLink site', () => {
     renderAt('/rapid-savings')
     expect(screen.getByRole('heading', { name: 'Rapid Savings', level: 1 })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Open an account' })).toHaveAttribute('href', '/open-account')
+    expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', 'https://rapidlinkgh.com/rapid-savings')
+    expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/assets/rapid-savings-hero.png')
   })
 
   it('shows the assigned image in a loan product hero', () => {

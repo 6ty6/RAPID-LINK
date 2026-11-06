@@ -5,6 +5,8 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     envVars:
+      - key: VITE_SITE_URL
+        value: https://rapidlinkgh.com
       # Public Supabase browser configuration. Render prompts for these values
       # when the Blueprint is created or synchronized.
       - key: VITE_SUPABASE_URL
