@@ -169,6 +169,8 @@ describe('RapidLink site', () => {
   it('shows the flyer for three seconds, then the copy for eight seconds', () => {
     vi.useFakeTimers()
     renderAt('/home')
+    // Route navigation focuses the hero heading, which pauses the carousel.
+    act(() => document.activeElement.blur())
     const heading = screen.getByRole('heading', { name: 'Build steadily. Move confidently.', hidden: true })
     expect(heading.closest('.hero-content')).toHaveAttribute('aria-hidden', 'true')
     act(() => vi.advanceTimersByTime(3000))
@@ -282,7 +284,7 @@ describe('RapidLink site', () => {
 
   it('shows both branches on the contact map with separate directions', () => {
     const { container } = renderAt('/contact')
-    const page = within(container)
+    const page = within(container.querySelector('main'))
     const map = page.getByTitle('Map showing RapidLink Head Office and Madina Branch')
     expect(map).toHaveAttribute('loading', 'lazy')
     expect(map.getAttribute('src')).toContain('Rapidlink%20Microfinance%20Head%20Office%2C%2017%20Farrar%20Avenue')
