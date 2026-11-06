@@ -112,7 +112,11 @@ grant execute on function public.is_career_admin() to authenticated;
 
 drop policy if exists "Published vacancies are public" on public.career_vacancies;
 create policy "Published vacancies are public" on public.career_vacancies
-for select using (is_published = true or public.is_content_admin());
+for select to anon, authenticated using (is_published = true);
+
+drop policy if exists "Content admins can read all vacancies" on public.career_vacancies;
+create policy "Content admins can read all vacancies" on public.career_vacancies
+for select to authenticated using ((select public.is_content_admin()));
 
 drop policy if exists "Career admins can insert vacancies" on public.career_vacancies;
 create policy "Career admins can insert vacancies" on public.career_vacancies
@@ -124,7 +128,11 @@ for update to authenticated using (public.is_career_admin()) with check (public.
 
 drop policy if exists "Published news is public" on public.news_articles;
 create policy "Published news is public" on public.news_articles
-for select using (is_published = true or public.is_content_admin());
+for select to anon, authenticated using (is_published = true);
+
+drop policy if exists "Content admins can read all news" on public.news_articles;
+create policy "Content admins can read all news" on public.news_articles
+for select to authenticated using ((select public.is_content_admin()));
 
 drop policy if exists "Content admins can insert news" on public.news_articles;
 create policy "Content admins can insert news" on public.news_articles
