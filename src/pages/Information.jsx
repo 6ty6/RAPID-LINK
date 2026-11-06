@@ -193,7 +193,7 @@ export function DigitalChannels() {
     <section className="digital-products-section"><div className="shell digital-grid">{channels.map(([title, text, image, link]) => <article className="digital-card" key={title}>
       <div className="digital-card-image"><img src={image} alt={title} /></div>
       <h2>{title}</h2>
-      <details className="digital-card-details"><summary className="button">Learn More</summary><p>{text}</p>{link && <a href={link}>Open service <ArrowRight size={16} /></a>}</details>
+      <details className="digital-card-details"><summary className="button">Learn More</summary><p>{text}</p>{link && <a href={link} target="_blank" rel="noopener noreferrer">Open service <ArrowRight size={16} /></a>}</details>
     </article>)}</div></section>
     <AppDownload />
   </>
@@ -279,7 +279,7 @@ export function StoryArticle() {
       <header className="news-article-header"><div className="shell narrow"><Link className="news-back-link" to="/stories">← Back to all news</Link><div className="news-meta"><span>{article.category}</span><time dateTime={article.publishedAt}>{formatNewsDate(article.publishedAt)}</time></div><h1>{article.title}</h1><p>{article.summary}</p></div></header>
       <div className="shell news-article-image"><img src={article.image} alt={article.imageAlt} /></div>
       <div className="shell narrow news-article-body">{article.sections.map((section, index) => <section key={`${section.heading || 'introduction'}-${index}`}>{section.heading && <h2>{section.heading}</h2>}{section.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</section>)}
-        {article.externalLink && <a className="button" href={article.externalLink} target="_blank" rel="noreferrer">{article.externalLabel} <ArrowRight size={18} /></a>}
+        {article.externalLink && <a className="button" href={article.externalLink} target="_blank" rel="noopener noreferrer">{article.externalLabel} <ArrowRight size={18} /></a>}
       </div>
     </article>
     {related.length > 0 && <section className="section news-related"><div className="shell"><div className="section-heading"><p className="eyebrow">Continue reading</p><h2>Related updates</h2></div><div className="news-grid">{related.map(item => <NewsCard article={item} key={item.slug} />)}</div></div></section>}
@@ -381,7 +381,7 @@ export function Contact() {
               <h3>{branch.title}</h3>
               <p>{branch.address}</p>
               <span>Digital address: {branch.digital}</span>
-              <a className="button button-secondary contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(branch.query)}`} target="_blank" rel="noreferrer">Directions to {branch.title} <ArrowRight size={17} /></a>
+              <a className="button button-secondary contact-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(branch.query)}`} target="_blank" rel="noopener noreferrer">Directions to {branch.title} <ArrowRight size={17} /></a>
             </article>)}
           </div>
         </div>

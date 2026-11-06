@@ -212,9 +212,29 @@ describe('RapidLink site', () => {
     expect(container.querySelector('.quick-access-card[href="/loan-calculator"]')).toBeInTheDocument()
     expect(page.getByRole('link', { name: /Bank of Ghana revises sanctions for dud cheques/ })).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')
     expect(page.queryByRole('button', { name: 'Downloadables' })).not.toBeInTheDocument()
-    expect([...container.querySelectorAll('.nav-group-link')].map(link => link.textContent)).toEqual(['Savings & Investments', 'Loans', 'About Us'])
-    expect(page.getByRole('link', { name: 'Savings & Investments' })).toHaveAttribute('href', '/rapid-savings')
-    expect(container.querySelector('.nav-group-link[href="/personal-loan"]')).toBeInTheDocument()
+    expect([...container.querySelectorAll('.site-header .nav-group-trigger')].map(button => button.textContent)).toEqual(['Savings & Investments', 'Loans', 'About Us'])
+    expect(container.querySelector('.site-header .nav-group-trigger')).toHaveAttribute('aria-expanded', 'false')
+    expect(container.querySelector('.site-header .nav-group > a')).not.toBeInTheDocument()
+  })
+
+  it('opens header and footer groups from one non-navigating trigger', async () => {
+    const user = userEvent.setup()
+    const { container } = renderAt('/home')
+    const header = within(container.querySelector('.site-header'))
+    const headerTrigger = header.getByRole('button', { name: 'Savings & Investments' })
+
+    await user.click(headerTrigger)
+    expect(headerTrigger).toHaveAttribute('aria-expanded', 'true')
+    expect(header.getByRole('link', { name: 'Rapid Savings' })).toHaveAttribute('href', '/rapid-savings')
+
+    await user.click(container.querySelector('main'))
+    expect(headerTrigger).toHaveAttribute('aria-expanded', 'false')
+
+    const footer = within(container.querySelector('footer'))
+    const footerTrigger = footer.getByRole('button', { name: 'Loans' })
+    await user.click(footerTrigger)
+    expect(footerTrigger).toHaveAttribute('aria-expanded', 'true')
+    expect(footer.getByRole('link', { name: 'Loan Calculator' })).toHaveAttribute('href', '/loan-calculator')
   })
 
   it('shows a non-clickable site-wide announcement banner', () => {

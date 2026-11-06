@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, Phone, X } from '../icons'
 import { navGroups } from '../content'
@@ -9,6 +9,7 @@ const cx = (...values) => values.filter(Boolean).join(' ')
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState('')
+  const hoverOpenedGroup = useRef('')
   const location = useLocation()
 
   useEffect(() => {
@@ -38,6 +39,27 @@ export default function Header() {
   const closeGroupAfterFocus = event => {
     if (!event.currentTarget.contains(event.relatedTarget)) setOpenGroup('')
   }
+
+  const openGroupFromHover = label => {
+    hoverOpenedGroup.current = label
+    setOpenGroup(label)
+  }
+
+  const closeGroupFromHover = () => {
+    hoverOpenedGroup.current = ''
+    setOpenGroup('')
+  }
+
+  const toggleGroup = label => {
+    if (hoverOpenedGroup.current === label) {
+      hoverOpenedGroup.current = ''
+      setOpenGroup(label)
+      return
+    }
+    setOpenGroup(current => current === label ? '' : label)
+  }
+
+  const groupId = label => `header-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-menu`
 
   return <>
     <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -71,16 +93,21 @@ export default function Header() {
             {navGroups.map(group => <div
               className="nav-group"
               key={group.label}
-              onPointerEnter={event => event.pointerType === 'mouse' && setOpenGroup(group.label)}
-              onPointerLeave={event => event.pointerType === 'mouse' && setOpenGroup('')}
-              onFocusCapture={event => {
-                if (!event.target.closest('.nav-group-toggle')) setOpenGroup(group.label)
-              }}
+              onPointerEnter={event => event.pointerType === 'mouse' && openGroupFromHover(group.label)}
+              onPointerLeave={event => event.pointerType === 'mouse' && closeGroupFromHover()}
               onBlurCapture={closeGroupAfterFocus}
             >
-              <NavLink className={({ isActive }) => cx('nav-group-link', (isActive || group.items.some(([, href]) => location.pathname === href)) && 'active')} to={group.href}>{group.label}</NavLink>
-              <button className="nav-group-toggle" type="button" aria-label={`Toggle ${group.label} menu`} aria-expanded={openGroup === group.label} onClick={() => setOpenGroup(openGroup === group.label ? '' : group.label)}><ChevronDown size={16} /></button>
-              <div className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
+              <button
+                className={cx('nav-group-trigger', group.items.some(([, href]) => location.pathname === href) && 'active')}
+                type="button"
+                aria-expanded={openGroup === group.label}
+                aria-controls={groupId(group.label)}
+                onClick={() => toggleGroup(group.label)}
+              >
+                <span>{group.label}</span>
+                <ChevronDown size={16} />
+              </button>
+              <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
             </div>)}
             <NavLink to="/digital-channels">Digital Channels</NavLink>
             <NavLink to="/stories">News</NavLink>

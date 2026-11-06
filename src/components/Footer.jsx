@@ -1,4 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { ChevronDown } from '../icons'
+import { navGroups } from '../content'
 
 const socialLinks = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
@@ -16,13 +19,65 @@ const socialIconPaths = {
   x: 'M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.74-8.85L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z',
 }
 
+const footerMenuDescriptions = {
+  'Savings & Investments': 'Choose an account or investment option.',
+  Loans: 'Explore borrowing options and loan tools.',
+  'About Us': 'Learn more about RapidLink and our people.',
+}
+
 function SocialIcon({ name }) {
-  return <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
-    <path d={socialIconPaths[name]} />
-  </svg>
+  return <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false"><path d={socialIconPaths[name]} /></svg>
 }
 
 export default function Footer() {
+  const [openGroup, setOpenGroup] = useState('')
+  const hoverOpenedGroup = useRef('')
+  const location = useLocation()
+
+  useEffect(() => setOpenGroup(''), [location.pathname, location.hash])
+
+  useEffect(() => {
+    const closeMenus = event => {
+      if (event.key === 'Escape') setOpenGroup('')
+      if (event.type === 'pointerdown' && (!(event.target instanceof Element) || !event.target.closest('.footer-menu-group'))) setOpenGroup('')
+    }
+    document.addEventListener('keydown', closeMenus)
+    document.addEventListener('pointerdown', closeMenus)
+    return () => {
+      document.removeEventListener('keydown', closeMenus)
+      document.removeEventListener('pointerdown', closeMenus)
+    }
+  }, [])
+
+  const groupId = label => `footer-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-menu`
+  const openGroupFromHover = label => {
+    hoverOpenedGroup.current = label
+    setOpenGroup(label)
+  }
+  const closeGroupFromHover = () => {
+    hoverOpenedGroup.current = ''
+    setOpenGroup('')
+  }
+  const toggleGroup = label => {
+    if (hoverOpenedGroup.current === label) {
+      hoverOpenedGroup.current = ''
+      setOpenGroup(label)
+      return
+    }
+    setOpenGroup(current => current === label ? '' : label)
+  }
+
+  const dropdown = group => {
+    const isOpen = openGroup === group.label
+    return <div className="footer-menu-group" key={group.label} onPointerEnter={event => event.pointerType === 'mouse' && openGroupFromHover(group.label)} onPointerLeave={event => event.pointerType === 'mouse' && closeGroupFromHover()} onBlur={event => !event.currentTarget.contains(event.relatedTarget) && setOpenGroup('')}>
+      <button className="footer-menu-trigger" type="button" aria-expanded={isOpen} aria-controls={groupId(group.label)} onClick={() => toggleGroup(group.label)}><span>{group.label}</span><ChevronDown size={16} /></button>
+      <div id={groupId(group.label)} className={`footer-menu-list${group.label === 'Savings & Investments' ? ' is-wide' : ''}`} hidden={!isOpen}>
+        <div className="footer-menu-heading"><span aria-hidden="true" /><div><strong>{group.label}</strong><small>{footerMenuDescriptions[group.label]}</small></div></div>
+        <div className={`footer-menu-links${group.label === 'Savings & Investments' ? ' is-two-column' : ''}`}>{group.items.map(([label, href]) => <Link key={href} to={href}>{label}</Link>)}</div>
+      </div>
+    </div>
+  }
+
   return <footer>
     <div className="shell footer-grid">
       <div className="footer-brand">
@@ -31,23 +86,30 @@ export default function Footer() {
         <nav className="footer-socials" aria-label="Official RapidLink social media profiles">
           <h2>Follow RapidLink</h2>
           <div className="footer-social-links">
-            {socialLinks.map((social) => <a
-              className="footer-social-link"
-              href={social.href}
-              key={social.name}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Follow RapidLink on ${social.name}`}
-              title={social.name}
-            >
-              <SocialIcon name={social.icon} />
-            </a>)}
+            {socialLinks.map(social => <a className="footer-social-link" href={social.href} key={social.name} target="_blank" rel="noopener noreferrer" aria-label={`Follow RapidLink on ${social.name}`} title={social.name}><SocialIcon name={social.icon} /></a>)}
           </div>
         </nav>
       </div>
-      <div><h2>Explore</h2><Link to="/rapid-savings">Savings</Link><Link to="/personal-loan">Loans</Link><Link to="/rates">Rates</Link><Link to="/digital-channels">Digital channels</Link></div>
-      <div><h2>Company</h2><Link to="/institutional-profile">About us</Link><Link to="/stories">News</Link><Link to="/faqs">FAQs</Link><Link to="/rapidlink-careers">Careers</Link></div>
-      <div><h2>Get in touch</h2><a href="tel:+233303955183">030 395 5183</a><a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a><p>17 Farrar Avenue, Asylum Down, Accra<br />Digital address: GA-049-5378</p></div>
+      <nav className="footer-links-column" aria-label="Explore RapidLink products">
+        <h2>Explore</h2>
+        {dropdown(navGroups[0])}
+        {dropdown(navGroups[1])}
+        <Link to="/rates">Current rates</Link>
+        <Link to="/digital-channels">Digital channels</Link>
+      </nav>
+      <nav className="footer-links-column" aria-label="Company information">
+        <h2>Company</h2>
+        {dropdown(navGroups[2])}
+        <Link to="/stories">News</Link>
+        <Link to="/faqs">FAQs</Link>
+        <Link to="/contact">Contact</Link>
+      </nav>
+      <div className="footer-contact">
+        <h2>Get in touch</h2>
+        <a href="tel:+233303955183">030 395 5183</a>
+        <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
+        <p>17 Farrar Avenue, Asylum Down, Accra<br />Digital address: GA-049-5378</p>
+      </div>
     </div>
     <div className="shell footer-bottom"><span>© {new Date().getFullYear()} RapidLink Microfinance Ltd.</span><span>Approved privacy-policy content is pending.</span></div>
   </footer>

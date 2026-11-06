@@ -92,7 +92,7 @@ export function ProductPage() {
   if (!product) return <NotFound />
   const action = product.loan
     ? key === 'deduct-at-source-loan'
-      ? <a className="button" href="https://rapidlinkfinance.com/loanform">Apply for a Loan <span aria-hidden="true">→</span></a>
+      ? <a className="button" href="https://rapidlinkfinance.com/loanform" target="_blank" rel="noopener noreferrer">Apply for a Loan <span aria-hidden="true">→</span></a>
       : <Link className="button" to="/apply-loan">Apply for a Loan <span aria-hidden="true">→</span></Link>
     : <Link className="button" to="/open-account">Open an account</Link>
   const sectionHeading = product.loan
