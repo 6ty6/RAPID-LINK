@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { products } from '../content'
+import { getProducts } from '../services/content'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
+
+const products = getProducts()
 
 function PdfCanvasPage({ document, pageNumber }) {
   const canvasRef = useRef(null)

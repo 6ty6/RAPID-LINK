@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
-import { newsArticles } from '../content'
-import { contentAdminConfigured, getPublishedNews } from '../services/careers'
+import { getInitialNews, getPublishedNews, isNewsContentRemote } from '../services/content'
 
 export default function usePublishedNews() {
-  const [articles, setArticles] = useState(newsArticles)
-  const [loading, setLoading] = useState(contentAdminConfigured)
+  const [articles, setArticles] = useState(getInitialNews)
+  const [loading, setLoading] = useState(isNewsContentRemote)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!contentAdminConfigured) return
+    if (!isNewsContentRemote) return
     getPublishedNews()
       .then(setArticles)
       .catch(() => setError(true))

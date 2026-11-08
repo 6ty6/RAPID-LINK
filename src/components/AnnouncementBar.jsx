@@ -1,4 +1,6 @@
-import { announcements } from '../content'
+import { getAnnouncements } from '../services/content'
+
+const announcements = getAnnouncements()
 
 function AnnouncementGroup({ duplicate = false }) {
   return <div className="announcement-group" aria-hidden={duplicate || undefined}>
