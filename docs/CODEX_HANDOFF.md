@@ -237,13 +237,18 @@ Prepared files:
 - `npm run test:db`
 - corresponding changes in `supabase/careers.sql`
 
-Local Supabase database testing was postponed after Docker downloads consumed substantial disk space. The local Docker images were removed. **Do not claim the database security tests passed.**
+Local testing was previously postponed because of Docker disk usage. On
+9 November 2026, the missing project Supabase CLI was restored from locked
+dependencies and `npm.cmd run test:db` passed all 28 checks against the local
+stack (`127.0.0.1:54322`). Evidence:
+`docs/security-evidence/local-rls-2026-11-09.md`.
 
-The user chose to defer this security-verification step. It remains required before production:
+This is local evidence only. The following remain required before production:
 
 - confirm public sign-ups are disabled in the hosted Supabase project;
 - confirm required migrations are applied; and
-- prove anonymous create, update, delete and upload attempts fail.
+- verify hosted news/vacancy access restrictions; and
+- test anonymous storage upload restrictions separately (not covered by the current 28-test suite).
 
 ## 7. Existing content-management prototype
 
@@ -326,8 +331,9 @@ and do not add CMS tables while the CMS comparison is pending. Inspect Git and
 confirm cms-restructure is active. The content-access layer and the site,
 homepage, Institutional Profile and Board content migrations are complete.
 Continue with the CMS comparison due 13 November 2026, using official sources.
-Do not claim Supabase database security tests passed; that verification is
-deferred and remains outstanding.
+The 28 local Supabase RLS checks passed on 9 November 2026. Do not present that
+as proof of hosted database/Auth configuration or storage upload restrictions;
+those checks remain outstanding.
 ```
 
 ## 12. Safe transfer checklist

@@ -36,6 +36,14 @@ The migrations and tests are intended to prove:
 
 ## Run the automated tests
 
+Latest local result: **28/28 passed on 9 November 2026**. See
+`docs/security-evidence/local-rls-2026-11-09.md`. Hosted verification and storage
+upload tests remain outstanding.
+
+If `npm.cmd run test:db` reports that `supabase` is not recognized, restore the
+project dependencies with `npm.cmd ci` before retrying; the CLI is already
+declared in the project's development dependencies.
+
 The tests require Docker Desktop and the local Supabase stack:
 
 ```powershell
