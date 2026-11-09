@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { PublicContentContext } from '../content/PublicContentContext.jsx'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
-import { getBoard, getFaqs, getVacanciesSnapshot, getInstitutionalProfile, getVacancies, getSiteInformation } from '../content/index.js'
+import { getBoard, getFaqs, getVacanciesSnapshot, getInstitutionalProfile, getVacancies, getSiteInformation, getPage } from '../content/index.js'
 import usePublishedNews from '../hooks/usePublishedNews'
 
 const faqs = getFaqs()
@@ -32,7 +33,8 @@ function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedT
 }
 
 function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
-  const [value, setValue] = useState(0)
+  const snapshot = useContext(PublicContentContext)
+  const [value, setValue] = useState(snapshot ? target : 0)
   const counterRef = useRef(null)
 
   useEffect(() => {
@@ -177,12 +179,13 @@ export function PeoplePage() {
 
 export function DigitalChannels() {
   const channels = siteInformation.digitalChannels
+  const page = getPage('digital-channels')
 
   return <>
-    <PageMeta title="Digital channels" description="Access RapidLink services from your phone." />
+    <PageMeta {...page.meta} />
     <section className="digital-public-hero" aria-labelledby="digital-channels-title">
-      <h1 id="digital-channels-title" className="visually-hidden">Digital channels</h1>
-      <img src="/assets/digital-channels-hero.png" alt="Digital Products: RapidLink mobile app and RapidPay USSD" />
+      <h1 id="digital-channels-title" className="visually-hidden">{page.hero.title}</h1>
+      <img src={page.hero.image} alt={page.hero.imageAlt} />
     </section>
     <section className="digital-products-section"><div className="shell digital-grid">{channels.map(channel => <article className="digital-card" key={channel.title}>
       <div className="digital-card-image"><img src={channel.image} alt={channel.title} /></div>
@@ -195,7 +198,7 @@ export function DigitalChannels() {
 
 export function FAQs() {
   return <>
-    <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." image="/assets/faq-hero-v3.png" />
+    <PageHero {...getPage('faqs').hero} />
     <section className="section"><div className="shell narrow accordion">{faqs.map(({ id, question, answer }) => <details key={id}>
       <summary>{question}<ChevronDown aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div></section>
@@ -235,7 +238,7 @@ export function Stories() {
   }
 
   return <>
-    <PageHero eyebrow="Newsroom" title="News, notices and useful updates" intro="Stay informed about RapidLink services, customer notices and financial information." image="/assets/news-hero-v3.png" />
+    <PageHero {...getPage('stories').hero} />
     <section className="news-section"><div className="shell">
       {!isFiltering && featured && <article className="news-featured">
         <div className="news-featured-image"><img src={featured.image} alt={featured.imageAlt} /></div>
@@ -258,11 +261,11 @@ export function StoryArticle() {
   const { articles: newsArticles, loading } = usePublishedNews()
   const article = newsArticles.find(item => item.slug === slug)
 
-  if (loading) return <><PageMeta title="Loading story" description="Loading the requested RapidLink story." /><section className="section centered" role="status"><h1>Loading story…</h1></section></>
+  if (loading) return <><PageMeta {...getPage('story-loading').meta} /><section className="section centered" role="status"><h1>{getPage('story-loading').heading}</h1></section></>
 
   if (!article) return <>
-    <PageMeta title="Story not found" description="The requested RapidLink story could not be found." />
-    <PageHero eyebrow="Newsroom" title="Story not found" intro="This story may have moved or is no longer available." />
+    <PageMeta {...getPage('story-not-found').meta} noIndex />
+    <PageHero {...getPage('story-not-found').hero} noIndex />
     <section className="section centered"><Link className="button" to="/stories">Return to News</Link></section>
   </>
 
@@ -281,7 +284,8 @@ export function StoryArticle() {
 }
 
 export function Careers() {
-  const [initial] = useState(getVacanciesSnapshot)
+  const snapshot = useContext(PublicContentContext)
+  const [initial] = useState(() => snapshot ? { records: snapshot.vacancies, loading: false } : getVacanciesSnapshot())
   const [vacancies, setVacancies] = useState(initial.records)
   const [loading, setLoading] = useState(initial.loading)
   const [loadError, setLoadError] = useState(false)
@@ -314,7 +318,7 @@ export function Careers() {
   })
 
   return <>
-    <AboutHero eyebrow="Careers" title="Work with RapidLink" intro="Be part of an institution focused on financial inclusion in Ghana." image="/assets/about-careers.jpeg" />
+    <AboutHero {...getPage('rapidlink-careers').hero} />
     <section className="section careers-section"><div className="shell">
       <div className="careers-heading"><div><p className="eyebrow">Current opportunities</p><h2>Find your place on our team</h2><p>Explore available positions and discover where your experience can make an impact.</p></div><div className="careers-count"><strong>{visibleVacancies.length}</strong><span>{visibleVacancies.length === 1 ? 'position' : 'positions'}</span></div></div>
       <div className="career-filters">
@@ -355,7 +359,7 @@ export function Contact() {
   const mapUrl = `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(branches[0].query)}&daddr=${encodeURIComponent(branches[1].query)}`
 
   return <>
-    <PageHero eyebrow="Contact" title="We’re here to help" intro="Call, email or visit one of RapidLink’s Accra branches." image="/assets/contact-hero-v2.png" />
+    <PageHero {...getPage('contact').hero} />
     <section className="section"><div className="shell two-cards">
       {branches.map(branch => <Branch key={branch.id} title={branch.contactTitle} address={branch.address} digital={branch.digitalAddress} phones={branch.phones} />)}
     </div></section>

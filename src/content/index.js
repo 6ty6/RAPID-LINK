@@ -15,6 +15,7 @@ const content = createContentRepository({
 })
 
 export const {
+  getPage, getDocuments, getDocumentBySlug, getSharedContent,
   getAnnouncements, getFaqs, getNavigation, getProducts, getProductBySlug,
   getNewsSnapshot, getVacanciesSnapshot, getNews, getNewsBySlug, getVacancies,
   getBoard, getHomepageContent, getInstitutionalProfile, getSiteInformation,

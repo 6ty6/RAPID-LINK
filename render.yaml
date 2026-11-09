@@ -14,10 +14,32 @@ services:
       - key: VITE_SUPABASE_ANON_KEY
         sync: false
     routes:
-      # React Router handles every route that is not a real built asset.
+      # Only valid client-only routes get an SPA shell. Missing paths must reach
+      # Render's native 404 response; do not restore a catch-all 200 rewrite.
       - type: rewrite
-        source: /*
-        destination: /index.html
+        source: /content-management
+        destination: /spa.html
+      - type: rewrite
+        source: /content-management/
+        destination: /spa.html
+      - type: rewrite
+        source: /career-management
+        destination: /spa.html
+      - type: rewrite
+        source: /career-management/
+        destination: /spa.html
+      - type: rewrite
+        source: /accept-invite
+        destination: /spa.html
+      - type: rewrite
+        source: /accept-invite/
+        destination: /spa.html
+      - type: rewrite
+        source: /loan-calculator
+        destination: /spa.html
+      - type: rewrite
+        source: /loan-calculator/
+        destination: /spa.html
     headers:
       - path: /*
         name: X-Content-Type-Options

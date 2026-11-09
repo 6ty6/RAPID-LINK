@@ -10,6 +10,15 @@ const copy = value => structuredClone(value)
  */
 export function createContentRepository({ local, publicSource = null }) {
   const repository = {
+    getSharedContent: () => copy(local.getSharedContent()),
+    getPage: slug => copy(local.getPages().find(page => page.slug === slug)),
+    getDocuments: ({ category, pageSlug, productSlug } = {}) => copy(local.getDocuments().filter(document =>
+      document.publicationStatus === 'published' && typeof document.file === 'string' && document.file.trim() &&
+      (!category || document.category === category) &&
+      (!pageSlug || document.relatedPages?.includes(pageSlug)) &&
+      (!productSlug || document.relatedProducts?.includes(productSlug))
+    )),
+    getDocumentBySlug: slug => repository.getDocuments().find(document => document.slug === slug),
     getAnnouncements: () => copy(local.getAnnouncements()),
     getFaqs: () => copy(local.getFaqs()),
     getNavigation: () => copy(local.getNavigation()),

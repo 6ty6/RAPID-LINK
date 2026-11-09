@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node tools/build.mjs",
+    "build:client": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:db": "supabase test db",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:prerender": "playwright test --config playwright.prerender.config.js"
   },
   "dependencies": {
     "pdfjs-dist": "^6.5.438",

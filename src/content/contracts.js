@@ -22,6 +22,8 @@
  * @typedef {{records: Array<NewsArticle>, loading: boolean}} NewsSnapshot
  * @typedef {{records: Array<Vacancy>, loading: boolean}} VacancySnapshot
  * @typedef {{getAnnouncements: () => Announcement[], getFaqs: () => Faq[],
+ *   getSharedContent: () => typeof import('./shared.js').sharedContent,
+ *   getPages: () => Page[], getDocuments: () => PublicDocument[],
  *   getNavigation: () => NavigationGroup[], getProducts: () => Product[],
  *   getNews: () => NewsArticle[], getVacancies: () => Vacancy[],
  *   getBoard: () => typeof import('./board.js').boardContent,
@@ -31,9 +33,18 @@
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
  *   getVacancies: () => Promise<Vacancy[]>}} PublicContentAdapter
  *
- * Reserved for later migration (not yet returned by public functions):
- * @typedef {{slug: string, title: string, intro: string, heroImage?: string,
- *   sections: Array<{id: string, heading?: string, paragraphs: string[]}>}} Page
+ * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
+ *   imageAlt?: string}} PageHero
+ * @typedef {{slug: string, hero?: PageHero, documentSlug?: string, heading?: string,
+ *   meta?: {title: string, description: string, image?: string}}} Page
+ * @typedef {{slug: string, title: string, description: string, category: string,
+ *   file: string | null, previewFile?: string | null, dialogTitle?: string,
+ *   publicationStatus: 'draft' | 'published' | 'archived',
+ *   approvalStatus: 'pending-verification' | 'approved',
+ *   version: string | null, effectiveDate: string | null,
+ *   relatedPages: string[], relatedProducts: string[]}} PublicDocument
+ *
+ * Reserved standalone contracts for later migration:
  * @typedef {{slug: string, title: string, address: string, digital: string,
  *   phones: string[], mapQuery: string}} Branch
  * @typedef {{id: string, label: string, value: string, href: string}} OfficialContact
@@ -42,8 +53,6 @@
  *   biography: string[]}} BoardMember
  * @typedef {{slug: string, title: string, description: string, image: string,
  *   href?: string}} DigitalChannel
- * @typedef {{slug: string, title: string, file: string, previewFile?: string,
- *   version?: string, effectiveDate?: string}} PublicDocument
  */
 
 export {}

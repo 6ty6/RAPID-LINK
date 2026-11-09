@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { announcements, faqs } from './content.js'
+import * as contentAccess from './content/index.js'
 
 Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true })
 
@@ -12,6 +13,63 @@ function renderAt(route) {
 }
 
 describe('RapidLink site', () => {
+  it('preserves the shared app promotion and footer on both app-download pages', () => {
+    for (const route of ['/home', '/digital-channels']) {
+      const view = renderAt(route)
+      const app = within(view.container.querySelector('.app-section'))
+      expect(app.getByRole('heading', { name: 'Banking access in your pocket' })).toBeInTheDocument()
+      expect(app.getByText('View account information, check balances, transfer funds and review transaction history from iOS or Android.')).toBeInTheDocument()
+      expect(app.getByRole('img')).toHaveAttribute('src', '/assets/rapidlink-mobile-app.png')
+      expect(app.getByRole('img')).toHaveAttribute('alt', 'RapidLink mobile app screens showing login, payments and account information')
+      const ios = app.getByRole('link', { name: 'Download for iOS' })
+      const android = app.getByRole('link', { name: 'Get it on Google Play' })
+      expect(ios).toHaveAttribute('href', 'https://apps.apple.com/gh/app/rapidlink-mobile/id6450372073')
+      expect(android).toHaveAttribute('href', 'https://play.google.com/store/apps/details?id=com.borderlessmobile.rlinkmfi&pli=1')
+      for (const link of [ios, android]) {
+        expect(link).toHaveAttribute('target', '_blank')
+        expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      }
+      const footer = within(view.container.querySelector('footer'))
+      expect(footer.getByText('Accessible financial services for individuals, communities and small businesses in Ghana.')).toBeInTheDocument()
+      expect(footer.getByText('Approved privacy-policy content is pending.')).toBeInTheDocument()
+      expect(footer.getByText(`© ${new Date().getFullYear()} RapidLink Microfinance Ltd.`)).toBeInTheDocument()
+      for (const [name, href] of [['Current rates', '/rates'], ['Digital channels', '/digital-channels'], ['News', '/stories'], ['FAQs', '/faqs'], ['Contact', '/contact']]) {
+        expect(footer.getByRole('link', { name })).toHaveAttribute('href', href)
+      }
+      view.unmount()
+    }
+  })
+  it('offers no guide preview or product link when its document is unpublished or absent', () => {
+    vi.spyOn(contentAccess, 'getDocumentBySlug').mockReturnValue(undefined)
+    const guidePage = renderAt('/rate-chart')
+    expect(screen.queryByRole('button', { name: 'View document' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Download' })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'We couldn’t find that page' })).toBeInTheDocument()
+    guidePage.unmount()
+    renderAt('/deduct-at-source-loan')
+    expect(screen.queryByRole('link', { name: 'View Loan Rates Guide' })).not.toBeInTheDocument()
+  })
+  it('preserves public page headings, descriptions and social images after metadata extraction', () => {
+    const cases = [
+      ['/faqs', 'Frequently asked questions', 'Clear answers to common questions about RapidLink products and services.', '/assets/faq-hero-v3.png'],
+      ['/stories', 'News, notices and useful updates', 'Stay informed about RapidLink services, customer notices and financial information.', '/assets/news-hero-v3.png'],
+      ['/contact', 'We’re here to help', 'Call, email or visit one of RapidLink’s Accra branches.', '/assets/contact-hero-v2.png'],
+      ['/rates', 'Fixed deposit rates', 'Published rates as of 19 October 2026.', '/assets/rates-hero-v2.png'],
+      ['/rate-chart', 'Rates Chart (2025)', 'View or download RapidLink’s controller (government) loan rates guide.', '/assets/rates-hero-v2.png'],
+      ['/open-account', 'Start your account application', 'Complete the four steps below. Your sensitive details are kept in page memory and are not stored by this preview.', '/assets/rapidlink-logo.png'],
+      ['/digital-channels', 'Digital channels', 'Access RapidLink services from your phone.', '/assets/rapidlink-logo.png'],
+      ['/missing-page', 'We couldn’t find that page', 'The address may have changed or the page may no longer be available.', '/assets/rapidlink-logo.png'],
+    ]
+    for (const [route, title, description, image] of cases) {
+      const view = renderAt(route)
+      expect(screen.getByRole('heading', { level: 1, name: title })).toBeInTheDocument()
+      expect(document.title).toBe(`${title} | RapidLink Microfinance`)
+      expect(document.querySelector('meta[name="description"]')).toHaveAttribute('content', description)
+      expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', `https://rapidlinkgh.com${image}`)
+      expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', `https://rapidlinkgh.com${route}`)
+      view.unmount()
+    }
+  })
   it('preserves announcement text and FAQ answers through the content layer', () => {
     const { container } = renderAt('/faqs')
     const banner = screen.getByRole('complementary', { name: 'RapidLink announcements' })

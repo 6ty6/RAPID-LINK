@@ -20,8 +20,8 @@ const mobileSliderQuery = '(max-width: 760px)'
 function HeroSlider() {
   const [current, setCurrent] = useState(0)
   const [interactionPaused, setInteractionPaused] = useState(false)
-  const [isMobileSlider, setIsMobileSlider] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
-  const [showCopy, setShowCopy] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
+  const [isMobileSlider, setIsMobileSlider] = useState(false)
+  const [showCopy, setShowCopy] = useState(false)
   const slide = slides[current]
   const isPaused = interactionPaused
   const move = (step) => {
@@ -40,6 +40,7 @@ function HeroSlider() {
       setIsMobileSlider(event.matches)
       setShowCopy(event.matches)
     }
+    updateSliderTiming(mediaQuery)
     mediaQuery.addEventListener('change', updateSliderTiming)
     return () => mediaQuery.removeEventListener('change', updateSliderTiming)
   }, [])

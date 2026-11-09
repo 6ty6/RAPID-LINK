@@ -182,11 +182,45 @@ The new access layer is used by the header, footer, announcement bar, homepage, 
 
 ### Verification evidence
 
+Latest local extension on 9 November 2026: general page hero/SEO records now live
+in `src/content/pages.js`, and the existing Controller guide metadata lives in
+`src/content/documents.js`. Public getters are `getPage`, `getDocuments` and
+`getDocumentBySlug`. Document lists/lookups exclude drafts and records without a
+file path. The guide's existing public availability is preserved while its
+business verification remains pending; missing dates/versions are not invented.
+See `docs/content-access-layer.md` for the future-document addition procedure.
+No upload/editor features were added. Calculator logic and pricing tables are
+unchanged. These latest metadata changes are local and uncommitted.
+
+The subsequent shared-content extraction adds `src/content/shared.js` and
+`getSharedContent()` for the existing mobile-app promotion and footer copy.
+Store URLs remain application configuration. Both app-download consumers,
+footer links, menu behavior and pending privacy wording are preserved. These
+changes are also local and uncommitted.
+
+Pre-rendering is now implemented locally. `npm.cmd run build` generates complete
+HTML and absolute route metadata for public routes, including published stories.
+The configured-content verification generated 26 routes. Staff/invitation routes
+and the calculator remain SPA-only. Preview indexing stays disabled by default.
+Public JSON snapshots support hydration; failed content retrieval stops the
+build. Rebuild and deploy after publishing/unpublishing to refresh static copies.
+See `docs/pre-rendering.md` for source selection, hosting fallback changes and
+verification. No live deployment or rebuild webhook was configured.
+These changes and the preceding extractions remain uncommitted.
+
+The subsequent HTTP 404 implementation generates `dist/404.html`, reserves SPA
+rewrites for exact valid staff/invitation/calculator routes and removes wildcard
+200 fallbacks. Missing pages/articles/assets return 404 in the built local
+preview; all public and allowed SPA routes still return 200. The error message
+works without JavaScript. See `docs/http-404.md`; actual Render/CDN status and
+custom-error-body verification remains required after preview deployment.
+
 After the latest migrations:
 
 ```text
-npm.cmd test       39/39 tests passed after reconciliation
+npm.cmd test       53/53 tests passed after HTTP 404 handling
 npm.cmd run build  passed
+npm.cmd run test:prerender  8/8 desktop/mobile and HTTP checks passed
 ```
 
 The build still reports a non-failing large-chunk warning caused mainly by PDF.js assets. This is a later performance/code-splitting task, not a current functional failure.
@@ -243,10 +277,10 @@ Recommended work sequence:
 After the CMS comparison, continue low-risk content restructuring in this order unless Edmund changes direction:
 
 1. product descriptions and images, excluding rates and calculator parameters;
-2. remaining common page and download metadata;
-3. pre-rendering and rebuild-on-publish plan;
+2. review the latest local common-page/document metadata and shared-content extractions;
+3. review the local pre-rendering build and plan an approved rebuild-on-publish trigger;
 4. preview deployment configuration;
-5. real server-level 404 and production security headers;
+5. verify the implemented 404 routing on the deployed preview and complete production security headers;
 6. Lighthouse, accessibility and security-header evidence; and
 7. approved regulatory content after departmental sign-off.
 
