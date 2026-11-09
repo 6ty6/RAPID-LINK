@@ -19,17 +19,21 @@ const mobileSliderQuery = '(max-width: 760px)'
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0)
+  const [loadedSlides, setLoadedSlides] = useState(() => new Set([0]))
   const [interactionPaused, setInteractionPaused] = useState(false)
   const [isMobileSlider, setIsMobileSlider] = useState(false)
   const [showCopy, setShowCopy] = useState(false)
   const slide = slides[current]
   const isPaused = interactionPaused
   const move = (step) => {
+    const next = (current + step + slides.length) % slides.length
     setShowCopy(isMobileSlider)
-    setCurrent(value => (value + step + slides.length) % slides.length)
+    setLoadedSlides(value => new Set(value).add(next))
+    setCurrent(next)
   }
   const showSlide = (index) => {
     setShowCopy(isMobileSlider)
+    setLoadedSlides(value => new Set(value).add(index))
     setCurrent(index)
   }
 
@@ -68,7 +72,7 @@ function HeroSlider() {
     onBlurCapture={leaveFocus}
   >
     {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-      <picture>
+      {loadedSlides.has(index) && <picture>
         {item.mobileImage && <source media={mobileSliderQuery} srcSet={item.mobileImage} />}
         <img
           src={item.image}
@@ -77,7 +81,7 @@ function HeroSlider() {
           fetchpriority={index === 0 ? 'high' : 'low'}
           decoding="async"
         />
-      </picture>
+      </picture>}
     </div>)}
     <div className={`shell hero-content slide-content-fade ${showCopy ? 'is-visible' : ''}`} aria-hidden={!showCopy} aria-live={isPaused ? 'polite' : 'off'} key={slide.title}>
       <p className="eyebrow animated-copy">{slide.eyebrow}</p>
