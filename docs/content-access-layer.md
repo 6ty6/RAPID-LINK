@@ -4,7 +4,7 @@ This stage implements the read boundary requested in the handoff. It selects no
 final CMS, adds no database models or admin features, and changes no calculator
 parameters. Existing public text, links, ordering, images and pricing statements
 are preserved for comparison; preservation does not mean departmental approval.
-The controlling instructions used here are those recorded in section 4 of
+The controlling instructions used here are those recorded in section 3 of
 `CODEX_HANDOFF.md`; the original review Word file was unavailable on this computer.
 
 ## Public interface
@@ -18,6 +18,10 @@ path avoids ambiguity with the legacy `src/content.js` data file.
 | `getFaqs()` | Array of `{ id, question, answer }` | Bundled content |
 | `getNavigation()` | Groups with `{ label, href, items: [{ label, href }] }` | Bundled content |
 | `getProducts()` | Array of existing product records, each with `slug` | Bundled content |
+| `getBoard()` | Board hero, members and presentation labels | `src/content/board.js` |
+| `getHomepageContent()` | Homepage metadata, slider and section records | `src/content/home.js` |
+| `getInstitutionalProfile()` | Hero, paragraphs, purpose and impact records | `src/content/institutionalProfile.js` |
+| `getSiteInformation()` | Contacts, branches, social profiles and digital channels | `src/content/site.js` |
 | `getProductBySlug(slug)` | Product or `undefined` | Bundled content |
 | `getNews()` | Promise of existing public news records | Configured public adapter or bundled content |
 | `getNewsBySlug(slug)` | Promise of article or `undefined` | Same source as `getNews()` |
@@ -36,8 +40,10 @@ replace them with persisted IDs when these records move to an approved CMS.
 
 ## Adapter and behavior
 
-`local.js` adapts `src/content.js`. The latter remains the existing data source
-and supports the unchanged staff prototype. `repository.js` accepts a local
+`local.js` adapts the bundled-data getters in
+`src/services/content/localContentRepository.js`, which read `src/content.js`
+and the extracted homepage, board, institutional and site records. The legacy
+data file also supports the unchanged staff prototype. `repository.js` accepts a local
 adapter and an optional public remote adapter. `index.js` selects the existing
 Supabase public-read functions when both current public environment values are
 present. Credentials, authentication and staff writes stay outside this API.
@@ -55,15 +61,27 @@ error/fallback behavior. This stage does not silently repopulate successful
 remote results with static articles or vacancies. Existing fallback behavior
 must be reviewed before removing duplicate data after the CMS decision.
 
-Migrated consumers: announcement bar, FAQ page, header/footer grouped navigation,
-homepage product cards, product pages, news hook and public careers list. Other
-page copy and entity records remain in their existing components for incremental
-extraction. The admin and invitation routes retain their existing service calls.
+Migrated consumers include the announcement bar, FAQs, header/footer, homepage,
+product pages, news hook, careers, board, institutional profile, contact page,
+digital channels and loan-support guidance. The admin and invitation routes
+retain their existing service calls. Calculator logic and parameters are unchanged.
+
+## Reconciliation on 9 November 2026
+
+Local commit `2d98329` and remote commits `53c324d`/`64e4331` independently added
+content interfaces. Their merge retains the remote structured data and page
+extractions alongside local record contracts, defensive copies, parity tests
+and remote-result/error tests. Public components use `src/content/index.js`.
+The earlier `src/services/content/index.js` path remains a compatibility facade
+that delegates to that same repository while preserving its tuple and keyed-map
+return shapes. It no longer selects or fetches content independently. A backup
+branch preserves the complete pre-merge local commit.
 
 ## Next stages and pre-rendering plan
 
-After review, extract homepage sections, institutional copy, board records,
-digital channels, branches, contacts and document metadata one group at a time.
+The remote branch already extracted homepage sections, institutional copy,
+board records, digital channels, branches and contacts. After review, continue
+with remaining common page and document metadata one group at a time.
 Add the corresponding getters only with real source records and parity checks.
 Keep unconfirmed rates, legal wording and governance approvals pending.
 

@@ -1,4 +1,6 @@
-import { contentAdminConfigured, getPublishedNews, getPublishedVacancies } from '../services/careers.js'
+import {
+  isNewsRepositoryConfigured, getRemotePublishedNews, getRemotePublishedVacancies,
+} from '../services/content/supabaseContentRepository.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
 
@@ -6,13 +8,14 @@ import { createContentRepository } from './repository.js'
 // wiring rather than changing public components or adding staff operations here.
 const content = createContentRepository({
   local: localContent,
-  publicSource: contentAdminConfigured ? {
-    getNews: getPublishedNews,
-    getVacancies: getPublishedVacancies,
+  publicSource: isNewsRepositoryConfigured ? {
+    getNews: getRemotePublishedNews,
+    getVacancies: getRemotePublishedVacancies,
   } : null,
 })
 
 export const {
   getAnnouncements, getFaqs, getNavigation, getProducts, getProductBySlug,
   getNewsSnapshot, getVacanciesSnapshot, getNews, getNewsBySlug, getVacancies,
+  getBoard, getHomepageContent, getInstitutionalProfile, getSiteInformation,
 } = content

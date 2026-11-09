@@ -2,6 +2,10 @@ import { describe, expect, it, vi } from 'vitest'
 import { announcements, faqs, navGroups, products, newsArticles, careerVacancies } from '../content.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
+import { boardContent } from './board.js'
+import { homepageContent } from './home.js'
+import { institutionalProfileContent } from './institutionalProfile.js'
+import { siteInformation } from './site.js'
 
 describe('public content repository', () => {
   const local = () => createContentRepository({ local: localContent })
@@ -22,6 +26,20 @@ describe('public content repository', () => {
       expect(content.getProductBySlug(slug)).toEqual({ slug, ...product })
     }
     expect(content.getProductBySlug('missing')).toBeUndefined()
+  })
+
+  it('preserves the remote branch extractions and isolates nested edits', () => {
+    const content = local()
+    expect(content.getBoard()).toEqual(boardContent)
+    expect(content.getHomepageContent()).toEqual(homepageContent)
+    expect(content.getInstitutionalProfile()).toEqual(institutionalProfileContent)
+    expect(content.getSiteInformation()).toEqual(siteInformation)
+    content.getBoard().members[0].name = 'Unexpected change'
+    content.getHomepageContent().hero.slides[0].title = 'Unexpected change'
+    content.getSiteInformation().contact.supportLines[0].display = 'Unexpected change'
+    expect(content.getBoard()).toEqual(boardContent)
+    expect(content.getHomepageContent()).toEqual(homepageContent)
+    expect(content.getSiteInformation()).toEqual(siteInformation)
   })
 
   it('returns the bundled public content when no remote adapter is configured', async () => {

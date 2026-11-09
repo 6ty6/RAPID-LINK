@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { getProductBySlug } from '../content/index.js'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
+
 function PdfCanvasPage({ document, pageNumber }) {
   const canvasRef = useRef(null)
 

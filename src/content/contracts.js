@@ -23,7 +23,11 @@
  * @typedef {{records: Array<Vacancy>, loading: boolean}} VacancySnapshot
  * @typedef {{getAnnouncements: () => Announcement[], getFaqs: () => Faq[],
  *   getNavigation: () => NavigationGroup[], getProducts: () => Product[],
- *   getNews: () => NewsArticle[], getVacancies: () => Vacancy[]}} LocalContentAdapter
+ *   getNews: () => NewsArticle[], getVacancies: () => Vacancy[],
+ *   getBoard: () => typeof import('./board.js').boardContent,
+ *   getHomepageContent: () => typeof import('./home.js').homepageContent,
+ *   getInstitutionalProfile: () => typeof import('./institutionalProfile.js').institutionalProfileContent,
+ *   getSiteInformation: () => typeof import('./site.js').siteInformation}} LocalContentAdapter
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
  *   getVacancies: () => Promise<Vacancy[]>}} PublicContentAdapter
  *

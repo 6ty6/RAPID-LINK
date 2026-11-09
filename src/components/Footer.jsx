@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown } from '../icons'
-import { getNavigation } from '../content/index.js'
+import { getNavigation as getNavigationGroups, getSiteInformation } from '../content/index.js'
 
-const socialLinks = [
-  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
-  { name: 'TikTok', href: 'https://www.tiktok.com/@rapidlink_media', icon: 'tiktok' },
-  { name: 'Instagram', href: 'https://www.instagram.com/rapidlinkmicrofinance/', icon: 'instagram' },
-  { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61584683032500', icon: 'facebook' },
-  { name: 'X', href: 'https://x.com/rapidlink_media', icon: 'x' },
-]
+const navGroups = getNavigationGroups()
+const { branches, contact, socialProfiles } = getSiteInformation()
+const primaryBranch = branches[0]
 
 const socialIconPaths = {
   linkedin: 'M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z',
@@ -30,7 +26,6 @@ function SocialIcon({ name }) {
 }
 
 export default function Footer() {
-  const navGroups = getNavigation()
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
   const location = useLocation()
@@ -87,7 +82,7 @@ export default function Footer() {
         <nav className="footer-socials" aria-label="Official RapidLink social media profiles">
           <h2>Follow RapidLink</h2>
           <div className="footer-social-links">
-            {socialLinks.map(social => <a className="footer-social-link" href={social.href} key={social.name} target="_blank" rel="noopener noreferrer" aria-label={`Follow RapidLink on ${social.name}`} title={social.name}><SocialIcon name={social.icon} /></a>)}
+            {socialProfiles.map(social => <a className="footer-social-link" href={social.href} key={social.name} target="_blank" rel="noopener noreferrer" aria-label={`Follow RapidLink on ${social.name}`} title={social.name}><SocialIcon name={social.icon} /></a>)}
           </div>
         </nav>
       </div>
@@ -107,9 +102,9 @@ export default function Footer() {
       </nav>
       <div className="footer-contact">
         <h2>Get in touch</h2>
-        <a href="tel:+233303955183">030 395 5183</a>
-        <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
-        <p>17 Farrar Avenue, Asylum Down, Accra<br />Digital address: GA-049-5378</p>
+        <a href={contact.supportLines[0].href}>{contact.supportLines[0].display}</a>
+        <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        <p>{primaryBranch.address}<br />Digital address: {primaryBranch.digitalAddress}</p>
       </div>
     </div>
     <div className="shell footer-bottom"><span>© {new Date().getFullYear()} RapidLink Microfinance Ltd.</span><span>Approved privacy-policy content is pending.</span></div>
