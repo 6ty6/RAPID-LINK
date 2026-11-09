@@ -291,6 +291,22 @@ After the CMS comparison, continue low-risk content restructuring in this order 
 
 ## 9. Business information still required
 
+### Availability decisions confirmed on 9 November 2026
+
+- No current downloadable forms or KYC checklist have been supplied; future
+  availability is being discussed.
+- No new photographs, board biographies or achievements have been supplied;
+  obtaining them is being discussed.
+- Annual reports and financial statements are **not for public publication**;
+  only auditors may view them. Keep them outside the public website/CMS/assets.
+- There are no current vacancies; Caleb will be informed of future openings.
+- Caleb explicitly instructed **“keep them as they are”** when asked about the
+  existing three board profiles and Deposit Mobilization Lead vacancy. Preserve
+  those prototype displays; this is not new verification or publication approval.
+
+See `docs/business-content-status.md`. These are documentation updates only;
+no hosted records or visible page content were changed.
+
 Do not invent or publish:
 
 - loan pricing method, product-specific rates, APR, fees or calculator disclosures;
@@ -300,7 +316,7 @@ Do not invent or publish:
 - complaint acknowledgement, resolution or escalation timelines;
 - licensing and deposit-protection wording;
 - privacy, terms, cookie or accessibility statements;
-- management profiles, annual reports or whistleblowing details;
+- management profiles or whistleblowing details;
 - branch opening hours and holiday notices;
 - downloadable forms or KYC checklists;
 - production application integrations; or
@@ -312,9 +328,9 @@ Obtain written confirmation from the relevant department and Compliance before p
 
 - Production branch: `main`.
 - Restructuring branch: `cms-restructure`.
-- Render is currently for preview/testing; the free tier is not the planned production answer.
-- RapidLink uses AWS. The CMS comparison must identify possible AWS needs for hosting, database, object storage, DNS, email, monitoring and backups.
-- The intended public domain currently used by metadata is `https://rapidlinkgh.com`, but Edmund still requires formal domain confirmation.
+- The user confirmed Render as the current hosting choice, including production for now. The production plan is not yet confirmed; the review treats the free tier as preview-only.
+- AWS is a possible future hosting direction, not a confirmed migration. The CMS comparison should still assess AWS needs for hosting, database, object storage, DNS, email, monitoring and backups.
+- The user confirmed the production domain as `https://rapidlinkgh.com`.
 - Never place real credentials in this handoff or Git.
 - Create environment variables securely on each computer and in each deployment environment.
 

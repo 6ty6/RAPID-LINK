@@ -8,6 +8,14 @@
 
 ## 1. Verified instruction and boundary
 
+Business availability updates confirmed on 9 November 2026 are recorded in
+`docs/business-content-status.md`. Annual reports and financial statements are
+auditor-only and excluded from public content. Forms/KYC materials and new
+board photographs/biographies/achievements are not currently supplied. There
+are no current vacancies, but the user explicitly instructed that the existing
+prototype board and vacancy displays remain unchanged. Do not interpret those
+displays as newly approved/current or invent missing source material.
+
 This map implements section 7 of Edmund's review. It supports the instruction to define content models, move content out of React components, add a single content-access layer, plan for pre-rendering and work on a branch with preview deployments.
 
 The review also says to **pause new admin features**. Therefore this document does not extend `/content-management` or `/career-management`, select a CMS, or add new database tables. Those decisions follow the CMS comparison due on 13 November 2026.
@@ -100,7 +108,7 @@ The loan calculator is recorded for visibility but must not be changed until Cre
 |---|---|---|---|---|---|---|
 | Page-level `PageHero` and `PageMeta` props across JSX files | Page title, introduction, hero image and SEO description | General Page | `getPage(slug)` | Owning department/Marketing | Communications and relevant owner | Move page-specific values out of components, then use them for pre-rendered metadata. |
 | `src/components/Footer.jsx` → privacy placeholder | “Approved privacy-policy content is pending.” | Legal Policy | `getPolicy('privacy')` | Compliance/Legal | Authorised legal/compliance approver | No personal-data form may submit until approved content and secure handling are in place. |
-| Missing trust/disclosure pages from review section 5 | Complaints procedure, licensing/deposit protection, annual reports, whistleblowing, terms, cookies, accessibility, security centre | Complaint Procedure, General Page, Annual Report, Legal Policy, Security Notice | Corresponding content-layer functions | Department owner | Compliance/Legal/Executive as applicable | Await approved source content; models may be prepared but wording must not be invented. |
+| Missing trust/disclosure pages from review section 5 | Complaints procedure, licensing/deposit protection, whistleblowing, terms, cookies, accessibility, security centre | Complaint Procedure, General Page, Legal Policy, Security Notice | Corresponding content-layer functions | Department owner | Compliance/Legal/Executive as applicable | Await approved source content; models may be prepared but wording must not be invented. Annual reports/financial statements are excluded from public scope by the 9 November decision. |
 | Missing self-service content from review section 5 | Forms, KYC checklists, opening hours, holiday notices and service status | Downloadable Document, Product requirements, Branch, Announcement, Service Status | Corresponding content-layer functions | Owning department | Department Head/Compliance | Structure can be prepared; publication waits for approved materials. |
 
 ### 3.9 Application forms and calculator boundaries

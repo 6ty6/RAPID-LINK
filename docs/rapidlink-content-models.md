@@ -9,6 +9,15 @@
 
 **Related implementation map:** `docs/current-content-to-model-map.md`  
 
+**Business update, 9 November 2026:** See `docs/business-content-status.md`.
+Forms/KYC materials and new board photographs/biographies/achievements are not
+currently supplied; availability is being discussed. No current vacancies have
+been reported, but the user explicitly instructed that existing board and
+vacancy prototype displays stay unchanged. Annual reports and financial
+statements are auditor-only and excluded from public publication; the earlier
+proposal in section 6.16 is superseded. These updates are in this working
+Markdown specification; the existing Word export predates them.
+
 ## 1. Purpose
 
 This document defines the proposed content structures, ownership, approval controls, publishing workflow and security boundaries for the new RapidLink Microfinance website. It is intended to guide the restructuring of the current prototype into a maintainable, governed website that can support future growth into a broader banking-service platform.
@@ -360,12 +369,11 @@ Announcements must remain non-clickable unless management explicitly approves a 
 
 ### 6.16 Annual report or financial statement
 
-**Purpose:** Provides an organised archive of approved corporate reports.
-
-**Proposed owner:** Finance/Company Secretariat  
-**Proposed approver:** Executive management, Board and Compliance as applicable  
-
-Fields include report year, report type, approved title, summary, cover image, PDF asset, publication date, audit status and approval reference.
+**Excluded from the public content scope.** On 9 November 2026, the user
+confirmed that annual reports and financial statements will not be published;
+only auditors may view them. Do not create public document records, links,
+assets, pages or build snapshots for these materials. This decision does not
+authorise an auditor portal or other private document-management feature.
 
 ### 6.17 Service-status notice
 
