@@ -74,7 +74,7 @@ export default function Header() {
       </div>
       <div className="shell header-primary">
         <div className="header-left">
-          <Link to="/home" className="brand" aria-label="RapidLink home"><img src="/assets/rapidlink-logo.png" alt="RapidLink Microfinance Limited" /></Link>
+          <Link to="/home" className="brand" aria-label="RapidLink home"><img src="/assets/rapidlink-logo-400.png" srcSet="/assets/rapidlink-logo-400.png 400w, /assets/rapidlink-logo.png 1080w" sizes="168px" alt="RapidLink Microfinance Limited" /></Link>
         </div>
         <div className="header-right">
           <div className="header-contacts" aria-label="Support contacts">

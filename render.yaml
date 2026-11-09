@@ -7,6 +7,10 @@ services:
     envVars:
       - key: VITE_SITE_URL
         value: https://rapidlinkgh.com
+      # Public production pages are pre-rendered and should be discoverable.
+      # Restricted staff routes remain noindex and are excluded in robots.txt.
+      - key: VITE_INDEXABLE
+        value: "true"
       # Public Supabase browser configuration. Render prompts for these values
       # when the Blueprint is created or synchronized.
       - key: VITE_SUPABASE_URL
@@ -46,7 +50,7 @@ services:
       # Google Maps embeds, uploaded HTTPS images and local PDF workers.
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src https://www.google.com https://maps.google.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+        value: "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co; frame-src https://www.google.com https://maps.google.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
       - path: /*
         name: X-Frame-Options
         value: DENY

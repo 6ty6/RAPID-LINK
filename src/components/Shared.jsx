@@ -95,7 +95,7 @@ export function AppDownload() {
   return <section className="app-section" id="download">
     <div className="shell app-layout">
       <div className="app-device-visual">
-        <img src={appDownload.image} alt={appDownload.imageAlt} />
+        <img src={appDownload.image} alt={appDownload.imageAlt} loading="lazy" decoding="async" />
       </div>
       <div><p className="eyebrow">{appDownload.eyebrow}</p><h2>{appDownload.title}</h2><p>{appDownload.description}</p></div>
       <div className="app-actions"><a className="button" href={config.appStoreUrl} target="_blank" rel="noopener noreferrer">{appDownload.iosLabel}</a><a className="button button-secondary" href={config.playStoreUrl} target="_blank" rel="noopener noreferrer">{appDownload.androidLabel}</a></div>

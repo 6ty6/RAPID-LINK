@@ -68,7 +68,16 @@ function HeroSlider() {
     onBlurCapture={leaveFocus}
   >
     {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-      <img src={item.image} alt="" />
+      <picture>
+        {item.mobileImage && <source media={mobileSliderQuery} srcSet={item.mobileImage} />}
+        <img
+          src={item.image}
+          alt=""
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchpriority={index === 0 ? 'high' : 'low'}
+          decoding="async"
+        />
+      </picture>
     </div>)}
     <div className={`shell hero-content slide-content-fade ${showCopy ? 'is-visible' : ''}`} aria-hidden={!showCopy} aria-live={isPaused ? 'polite' : 'off'} key={slide.title}>
       <p className="eyebrow animated-copy">{slide.eyebrow}</p>

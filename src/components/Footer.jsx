@@ -72,7 +72,7 @@ export default function Footer() {
   return <footer>
     <div className="shell footer-grid">
       <div className="footer-brand">
-        <img className="footer-logo" src="/assets/rapidlink-logo.png" alt="RapidLink Microfinance Limited" />
+        <img className="footer-logo" src="/assets/rapidlink-logo-400.png" srcSet="/assets/rapidlink-logo-400.png 400w, /assets/rapidlink-logo.png 1080w" sizes="180px" loading="lazy" decoding="async" alt="RapidLink Microfinance Limited" />
         <p>{footer.description}</p>
         <nav className="footer-socials" aria-label="Official RapidLink social media profiles">
           <h2>{footer.headings.social}</h2>

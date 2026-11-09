@@ -28,7 +28,7 @@
   --navy:#102b46;
   --blue-deep:#0b2c86;
   --blue-soft:#eef1ff;
-  --orange-deep:#c95500;
+  --orange-deep:#b94700;
   --orange-soft:#fff3e9;
 
   /* Neutral colours and reusable effects */
@@ -79,7 +79,7 @@ p { margin:.2em 0 1.15em; }
 .mobile-header-utility a { min-width:0; display:flex; align-items:center; gap:8px; color:var(--navy); text-decoration:none; }
 .mobile-header-utility a>svg { flex:0 0 auto; color:var(--blue); }
 .mobile-header-utility a>span { min-width:0; display:grid; line-height:1.2; }
-.mobile-header-utility small { color:var(--muted); font-size:.62rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase; }
+.mobile-header-utility small { color:#5e6b74; font-size:.62rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase; }
 .mobile-header-utility strong { font-size:.76rem; white-space:nowrap; }
 .header-primary { min-height:76px; display:grid; grid-template-columns:auto 1fr; align-items:center; gap:30px; }
 .header-left { display:flex; align-items:center; gap:22px; }
@@ -118,6 +118,7 @@ p { margin:.2em 0 1.15em; }
 .hero:after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,rgba(8,25,38,.94) 0%,rgba(8,25,38,.75) 45%,rgba(8,25,38,.15) 100%); }
 .hero-media { position:absolute; inset:0; opacity:0; transition:opacity .8s ease-in-out; }
 .hero-media.is-active { opacity:1; }
+.hero-media picture { width:100%; height:100%; display:block; }
 .hero-media img { width:100%; height:100%; object-fit:contain; object-position:center; }
 .hero-content { position:relative; z-index:2; padding-block:65px 105px; }
 .slide-content-fade { visibility:hidden; opacity:0; }
@@ -139,9 +140,11 @@ p { margin:.2em 0 1.15em; }
 .hero .eyebrow { color:#ffad69; }
 .hero-controls { position:absolute; z-index:3; left:50%; bottom:32px; width:min(1180px,calc(100% - 40px)); transform:translateX(-50%); display:flex; align-items:center; gap:16px; }
 .hero-controls>button { width:44px; height:44px; border:1px solid rgba(255,255,255,.4); border-radius:50%; color:white; background:rgba(0,0,0,.12); display:grid; place-items:center; cursor:pointer; }
-.dots { display:flex; gap:8px; }
-.dots button { width:10px; height:10px; border:0; border-radius:999px; background:rgba(255,255,255,.5); cursor:pointer; transition:width .2s; }
-.dots button.active { width:30px; background:white; }
+.dots { display:flex; gap:2px; }
+.dots button { width:24px; height:24px; padding:0; display:grid; place-items:center; border:0; border-radius:999px; background:transparent; cursor:pointer; transition:width .2s; }
+.dots button:after { content:''; width:10px; height:10px; border-radius:999px; background:rgba(255,255,255,.5); transition:width .2s,background .2s; }
+.dots button.active { width:34px; background:transparent; }
+.dots button.active:after { width:30px; background:white; }
 
 /* ========================================================================== 
    05. SHARED SECTIONS, GRIDS AND CARDS
