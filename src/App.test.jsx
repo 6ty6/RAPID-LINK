@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App'
+import { announcements, faqs } from './content.js'
 
 Object.defineProperty(window, 'scrollTo', { value: vi.fn(), writable: true })
 
@@ -11,6 +12,13 @@ function renderAt(route) {
 }
 
 describe('RapidLink site', () => {
+  it('preserves announcement text and FAQ answers through the content layer', () => {
+    const { container } = renderAt('/faqs')
+    const banner = screen.getByRole('complementary', { name: 'RapidLink announcements' })
+    expect(banner.querySelector('.visually-hidden').textContent).toBe(announcements.join(' '))
+    const details = [...container.querySelectorAll('.accordion details')]
+    expect(details.map(detail => [detail.querySelector('summary').textContent, detail.querySelector('p').textContent])).toEqual(faqs)
+  })
   it('renders an audited product route and its action', () => {
     renderAt('/rapid-savings')
     expect(screen.getByRole('heading', { name: 'Rapid Savings', level: 1 })).toBeInTheDocument()

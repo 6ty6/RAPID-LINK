@@ -185,7 +185,33 @@ The detailed mapping is in `docs/current-content-to-model-map.md`. Important cur
 - `src/services/careers.js`: direct Supabase news/vacancy access; and
 - `src/hooks/usePublishedNews.js`: hybrid local/Supabase news loading.
 
-## 9. Exact next implementation task
+## 9. First content-access implementation (completed 6 November 2026)
+
+The first version is now implemented on `cms-restructure`. Public consumers use
+`src/content/index.js` for announcements, FAQs, grouped navigation, products,
+news and vacancies. The local adapter retains the existing data; the public
+Supabase news/vacancy calls are wrapped without extending the admin portal.
+Record contracts and the remaining migration/pre-rendering plan are documented
+in `docs/content-access-layer.md`.
+
+Verification: all 36 unit/application tests passed and the production build
+passed. The build reports a PDF chunk over 500 kB. Database RLS tests were not
+run as part of this work. Calculator code, admin features and database models
+were not changed. These implementation changes are included in the local
+content-access refactor commit prepared on 9 November 2026; they are not deployed.
+At preparation time, `origin/cms-restructure` contained two newer commits
+(`53c324d` and `64e4331`) with overlapping restructuring work. Reconcile those
+changes before pushing; the local verification covers this working tree only.
+
+The original Word review was unavailable on this computer; the user directed
+continuation using the verified instructions recorded in this handoff.
+
+Next: review this first adapter, then incrementally extract homepage sections,
+institutional copy, board records, digital channels, branches, contacts and
+document metadata. Preserve current output and the pause on calculator/admin
+work. The CMS comparison and business approvals remain pending.
+
+Original task and migration sequence, retained for reference:
 
 Build the first version of the **single content-access layer** without changing customer-visible output and without selecting a final CMS.
 

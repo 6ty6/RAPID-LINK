@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, Phone, X } from '../icons'
-import { navGroups } from '../content'
+import { getNavigation } from '../content/index.js'
 import AnnouncementBar from './AnnouncementBar'
 
 const cx = (...values) => values.filter(Boolean).join(' ')
 
 export default function Header() {
+  const navGroups = getNavigation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
@@ -98,7 +99,7 @@ export default function Header() {
               onBlurCapture={closeGroupAfterFocus}
             >
               <button
-                className={cx('nav-group-trigger', group.items.some(([, href]) => location.pathname === href) && 'active')}
+                className={cx('nav-group-trigger', group.items.some(({ href }) => location.pathname === href) && 'active')}
                 type="button"
                 aria-expanded={openGroup === group.label}
                 aria-controls={groupId(group.label)}
@@ -107,7 +108,7 @@ export default function Header() {
                 <span>{group.label}</span>
                 <ChevronDown size={16} />
               </button>
-              <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
+              <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(({ label, href }) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
             </div>)}
             <NavLink to="/digital-channels">Digital Channels</NavLink>
             <NavLink to="/stories">News</NavLink>

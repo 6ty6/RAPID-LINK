@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
-import { products } from '../content'
+import { getProductBySlug } from '../content/index.js'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
 
@@ -80,7 +80,7 @@ function HeroSlider() {
 }
 
 function ProductCard({ productKey }) {
-  const product = products[productKey]
+  const product = getProductBySlug(productKey)
   return <article className="product-card">
     <span>{product.category}</span><h3>{product.title}</h3><p>{product.intro}</p>
     <Link to={`/${productKey}`}>View details <ArrowRight size={16} /></Link>

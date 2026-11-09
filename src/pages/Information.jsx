@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { config } from '../config'
-import { faqs } from '../content'
+import { getFaqs, getVacancies, getVacanciesSnapshot } from '../content/index.js'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
-import { careerVacancies } from '../content'
-import { careersAdminConfigured, getPublishedVacancies } from '../services/careers'
 import usePublishedNews from '../hooks/usePublishedNews'
 
 function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center' }) {
@@ -200,9 +198,10 @@ export function DigitalChannels() {
 }
 
 export function FAQs() {
+  const faqs = getFaqs()
   return <>
     <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." image="/assets/faq-hero-v3.png" />
-    <section className="section"><div className="shell narrow accordion">{faqs.map(([question, answer]) => <details key={question}>
+    <section className="section"><div className="shell narrow accordion">{faqs.map(({ id, question, answer }) => <details key={id}>
       <summary>{question}<ChevronDown aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div></section>
   </>
@@ -287,8 +286,9 @@ export function StoryArticle() {
 }
 
 export function Careers() {
-  const [vacancies, setVacancies] = useState(careerVacancies)
-  const [loading, setLoading] = useState(careersAdminConfigured)
+  const [initial] = useState(getVacanciesSnapshot)
+  const [vacancies, setVacancies] = useState(initial.records)
+  const [loading, setLoading] = useState(initial.loading)
   const [loadError, setLoadError] = useState(false)
   const [selectedVacancy, setSelectedVacancy] = useState(null)
   const [query, setQuery] = useState('')
@@ -296,7 +296,7 @@ export function Careers() {
   const closeButtonRef = useRef(null)
 
   useEffect(() => {
-    getPublishedVacancies().then(setVacancies).catch(() => setLoadError(true)).finally(() => setLoading(false))
+    getVacancies().then(setVacancies).catch(() => setLoadError(true)).finally(() => setLoading(false))
   }, [])
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { products } from '../content'
+import { getProductBySlug } from '../content/index.js'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
 function PdfCanvasPage({ document, pageNumber }) {
@@ -88,7 +88,7 @@ function PdfPreview({ url }) {
 
 export function ProductPage() {
   const { '*': key } = useParams()
-  const product = products[key]
+  const product = getProductBySlug(key)
   if (!product) return <NotFound />
   const action = product.loan
     ? key === 'deduct-at-source-loan'

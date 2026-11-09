@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown } from '../icons'
-import { navGroups } from '../content'
+import { getNavigation } from '../content/index.js'
 
 const socialLinks = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
@@ -30,6 +30,7 @@ function SocialIcon({ name }) {
 }
 
 export default function Footer() {
+  const navGroups = getNavigation()
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
   const location = useLocation()
@@ -73,7 +74,7 @@ export default function Footer() {
       <button className="footer-menu-trigger" type="button" aria-expanded={isOpen} aria-controls={groupId(group.label)} onClick={() => toggleGroup(group.label)}><span>{group.label}</span><ChevronDown size={16} /></button>
       <div id={groupId(group.label)} className={`footer-menu-list${group.label === 'Savings & Investments' ? ' is-wide' : ''}`} hidden={!isOpen}>
         <div className="footer-menu-heading"><span aria-hidden="true" /><div><strong>{group.label}</strong><small>{footerMenuDescriptions[group.label]}</small></div></div>
-        <div className={`footer-menu-links${group.label === 'Savings & Investments' ? ' is-two-column' : ''}`}>{group.items.map(([label, href]) => <Link key={href} to={href}>{label}</Link>)}</div>
+        <div className={`footer-menu-links${group.label === 'Savings & Investments' ? ' is-two-column' : ''}`}>{group.items.map(({ label, href }) => <Link key={href} to={href}>{label}</Link>)}</div>
       </div>
     </div>
   }

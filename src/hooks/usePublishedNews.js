@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react'
-import { newsArticles } from '../content'
-import { contentAdminConfigured, getPublishedNews } from '../services/careers'
+import { getNews, getNewsSnapshot } from '../content/index.js'
 
 export default function usePublishedNews() {
-  const [articles, setArticles] = useState(newsArticles)
-  const [loading, setLoading] = useState(contentAdminConfigured)
+  const [initial] = useState(getNewsSnapshot)
+  const [articles, setArticles] = useState(initial.records)
+  const [loading, setLoading] = useState(initial.loading)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!contentAdminConfigured) return
-    getPublishedNews()
+    if (!initial.loading) return
+    getNews()
       .then(setArticles)
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [])
+  }, [initial])
 
   return { articles, loading, error }
 }
