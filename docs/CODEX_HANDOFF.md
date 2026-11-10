@@ -259,14 +259,17 @@ administrator access to drafts. Evidence:
 Two dedicated hosted test accounts have been created and their role assignment
 has been verified: one content administrator and one ordinary authenticated
 user. Evidence: `docs/evidence/Hosted Test User Role Verification - PASS.png`
-and `docs/evidence/Hosted Test User Role Verification.csv`. The **22/22 hosted
-public-API test run is still pending**; no successful runner output is currently
-present in `docs/evidence`.
+and `docs/evidence/Hosted Test User Role Verification.csv`. On 10 November 2026
+the hosted public-API runner passed **22/22 checks** using the publishable key
+and the dedicated administrator and ordinary-user accounts. The accepted
+terminal-only evidence contains no credentials:
+`docs/evidence/Hosted Public API Security Tests - 22 of 22 PASS.png`.
 
 ### 6.1 Exact next Supabase test sequence
 
-Steps 1-4 and 10-11 below were completed on 10 November 2026. Continue from
-step 5 without placing credentials or tokens in Git.
+Steps 1-11 below were completed on 10 November 2026. The test passwords exposed
+in the rejected first capture were rotated, the test was rerun, and a sanitized
+terminal-only result was retained as evidence.
 
 1. In the hosted Supabase SQL Editor, run the complete file:
    `supabase/migrations/202611100001_consolidate_content_admin_role.sql`.
@@ -314,7 +317,7 @@ npm.cmd run test:db
 
 The anonymous storage-upload restriction still requires a separate public-API
 test. Do not represent the 36 database checks, the seven hosted schema checks,
-or the pending 22 content-table API checks as proof of storage-bucket write
+or the 22 content-table API checks as proof of storage-bucket write
 protection.
 
 ## 7. Existing content-management prototype
@@ -437,11 +440,11 @@ confirm cms-restructure is active. The content-access layer and the site,
 homepage, Institutional Profile and Board content migrations are complete.
 Continue with the CMS comparison due 13 November 2026, using official sources.
 The single-role migration is applied and its seven hosted verification checks
-passed. The reset local Supabase suite also passed 36/36 checks, and dedicated
-admin/non-admin test users are ready. Continue at section 6.1 step 5 and run
-`npm.cmd run test:hosted-api` for 22 public-API checks. Do not present the local
-database result or hosted schema checks as proof of the public API or storage
-upload restrictions. Follow section 6.1 exactly.
+passed. The reset local Supabase suite passed 36/36 checks and the hosted
+public-API runner passed 22/22 checks with dedicated admin/non-admin users. A
+sanitized terminal-only screenshot is stored in `docs/evidence`. Do not present
+any content-table result as proof of storage upload restrictions. Follow
+section 6.1 exactly.
 ```
 
 ## 12. Safe transfer checklist
