@@ -1,6 +1,8 @@
 param(
     [string]$SourcePath = (Join-Path $PSScriptRoot '..\docs\RapidLink Website Progress Report to Edmund - Caleb Adom Awuah.md'),
-    [string]$OutputPath = (Join-Path $PSScriptRoot '..\docs\RapidLink Website Progress Report to Edmund - Caleb Adom Awuah.docx')
+    [string]$OutputPath = (Join-Path $PSScriptRoot '..\docs\RapidLink Website Progress Report to Edmund - Caleb Adom Awuah.docx'),
+    [string]$DocumentTitle = 'RapidLink Website Restructuring and Technical Verification Report',
+    [string]$ReportDate = '10 November 2026'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -149,7 +151,7 @@ $html = @"
 <html>
 <head>
 <meta charset="utf-8">
-<title>RapidLink Website Restructuring and Technical Verification Report</title>
+<title>$([System.Net.WebUtility]::HtmlEncode($DocumentTitle))</title>
 <style>
 @page { size: A4; margin: 1.9cm 1.7cm 1.8cm 1.7cm; }
 body { font-family: Aptos, Calibri, Arial, sans-serif; color: #163148; font-size: 10.5pt; line-height: 1.38; }
@@ -193,13 +195,13 @@ try {
     $document = $word.Documents.Open($tempHtml)
 
     $section = $document.Sections.Item(1)
-    $section.Headers.Item(1).Range.Text = 'RapidLink Website Restructuring and Technical Verification Report'
+    $section.Headers.Item(1).Range.Text = $DocumentTitle
     $section.Headers.Item(1).Range.Font.Name = 'Aptos'
     $section.Headers.Item(1).Range.Font.Size = 8
     $section.Headers.Item(1).Range.Font.Color = 7566195
 
     $footer = $section.Footers.Item(1).Range
-    $footer.Text = 'Prepared by Caleb Adom Awuah  |  10 November 2026  |  '
+    $footer.Text = "Prepared by Caleb Adom Awuah  |  $ReportDate  |  "
     $footer.Collapse(0)
     [void]$footer.Fields.Add($footer, -1, 'PAGE', $true)
     $section.Footers.Item(1).Range.Font.Name = 'Aptos'
