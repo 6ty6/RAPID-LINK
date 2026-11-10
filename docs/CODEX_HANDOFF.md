@@ -244,19 +244,29 @@ Prepared files:
 
 The earlier Docker-backed run passed 28/28 checks on 9 November 2026. Evidence:
 `docs/security-evidence/local-rls-2026-11-09.md`. After Edmund's follow-up, the
-suite was expanded to **36 checks**. The expanded suite validates the single
-administrator role, fixed function search path, anonymous update/delete and
-ordinary signed-in user restrictions. It is prepared but has not yet been run
-against a reset local Supabase stack.
+suite was expanded to **36 checks**. On 10 November 2026 the reset local
+Supabase stack applied the role-consolidation migration and all **36/36 pgTAP
+checks passed**. Evidence: `docs/evidence/Local RLS verification tests pass.png`.
 
-Hosted evidence already confirms that public and anonymous sign-ups are off,
-RLS is enabled, anonymous inserts are rejected, and the earlier hosted policy
-set exists. That evidence predates the new role-consolidation migration.
+The role-consolidation migration has also been applied to the hosted project.
+Its read-only verification returned **7/7 PASS**, including one administrator
+table, removal of the legacy function and policies, `SECURITY DEFINER`, the
+fixed `public, pg_temp` search path, a complete vacancy policy set and
+administrator access to drafts. Evidence:
+`docs/evidence/Consolidated Content Role Verification - PASS.png` and
+`docs/evidence/Consolidated Content Role Verification.csv`.
+
+Two dedicated hosted test accounts have been created and their role assignment
+has been verified: one content administrator and one ordinary authenticated
+user. Evidence: `docs/evidence/Hosted Test User Role Verification - PASS.png`
+and `docs/evidence/Hosted Test User Role Verification.csv`. The **22/22 hosted
+public-API test run is still pending**; no successful runner output is currently
+present in `docs/evidence`.
 
 ### 6.1 Exact next Supabase test sequence
 
-Do these steps in order. Do not run the public-API test before the migration is
-applied and the two dedicated test accounts are ready.
+Steps 1-4 and 10-11 below were completed on 10 November 2026. Continue from
+step 5 without placing credentials or tokens in Git.
 
 1. In the hosted Supabase SQL Editor, run the complete file:
    `supabase/migrations/202611100001_consolidate_content_admin_role.sql`.
@@ -303,8 +313,9 @@ npm.cmd run test:db
     after retaining the evidence if disk space is limited.
 
 The anonymous storage-upload restriction still requires a separate public-API
-test. Do not represent the database test or the 22 content-table API checks as
-proof of storage-bucket write protection.
+test. Do not represent the 36 database checks, the seven hosted schema checks,
+or the pending 22 content-table API checks as proof of storage-bucket write
+protection.
 
 ## 7. Existing content-management prototype
 
@@ -317,13 +328,14 @@ The prototype already includes:
 - publish/unpublish and delete controls; and
 - news image uploads.
 
-Existing migrations run from `202611050001_content_management.sql` through `202611050006_auto_authorize_invited_users.sql`, followed by the hardening migration dated `202611060001` and the prepared single-role migration dated `202611100001`.
+Existing migrations run from `202611050001_content_management.sql` through `202611050006_auto_authorize_invited_users.sql`, followed by the hardening migration dated `202611060001` and the applied single-role migration dated `202611100001`.
 
 The new migration copies all legacy `career_admins` members into
 `content_admins`, replaces overlapping vacancy policies, recreates
 `is_content_admin()` as `SECURITY DEFINER` with
 `search_path = public, pg_temp`, and then removes `is_career_admin()` and the
-legacy table. It has not yet been applied to the hosted project.
+legacy table. It has been applied to the hosted project and its seven
+consolidation checks have passed.
 
 Do not assume every migration exists in the hosted project. Verify it. Do not build more custom CMS features until Edmund reviews the CMS comparison.
 
@@ -424,12 +436,12 @@ and do not add CMS tables while the CMS comparison is pending. Inspect Git and
 confirm cms-restructure is active. The content-access layer and the site,
 homepage, Institutional Profile and Board content migrations are complete.
 Continue with the CMS comparison due 13 November 2026, using official sources.
-The previous 28 local Supabase RLS checks passed on 9 November 2026. A new
-single-role migration and 36-check local suite are prepared but not yet run.
-Apply the migration, run the seven-row consolidation verification, configure
-dedicated admin/non-admin test users, and run `npm.cmd run test:hosted-api` for
-22 public-API checks. Do not present the earlier local result as proof of the
-new hosted role model or storage upload restrictions. Follow section 6.1 exactly.
+The single-role migration is applied and its seven hosted verification checks
+passed. The reset local Supabase suite also passed 36/36 checks, and dedicated
+admin/non-admin test users are ready. Continue at section 6.1 step 5 and run
+`npm.cmd run test:hosted-api` for 22 public-API checks. Do not present the local
+database result or hosted schema checks as proof of the public API or storage
+upload restrictions. Follow section 6.1 exactly.
 ```
 
 ## 12. Safe transfer checklist
