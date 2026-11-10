@@ -118,9 +118,9 @@ The Render preview is configured with Content Security Policy, Permissions Polic
 
 Performance improvements have been introduced without changing the approved page structure. These include locally served fonts, responsive image delivery, prioritised active-slide loading, deferred rendering of below-the-fold content and reduced image payloads.
 
-The most recent supplied Lighthouse screenshot showed a mobile performance result of 69, accessibility 91, best practices 92 and SEO 69. A later incognito run shown during verification improved performance to 69 with the same displayed accessibility, best-practices and SEO scores. Further code changes and a separate downloaded audit were subsequently used during optimisation, but a final post-deployment Lighthouse screenshot has not yet been placed in `docs/evidence`. Therefore no higher score is claimed as final evidence in this report.
+The final supplied mobile Lighthouse report was captured from the `rapid-link-pr-1.onrender.com` branch preview on 10 November 2026. It records **99 Performance, 100 Accessibility, 100 Best Practices and 69 SEO**. Its measured performance values are 1.6 seconds First Contentful Paint, 1.9 seconds Largest Contentful Paint, 0 milliseconds Total Blocking Time, zero Cumulative Layout Shift, a 1.7-second Speed Index and a 2.1-second Time to Interactive.
 
-The SEO score on the Render preview is also affected by preview indexing controls. Final SEO verification must be repeated on the approved production domain.
+These results demonstrate that the current preview is fast, visually stable and responsive under Lighthouse's simulated mobile conditions. The SEO score is affected by Render preview indexing controls, which intentionally prevent the development preview from being treated as the production website. SEO must therefore be repeated on the approved production domain after deployment.
 
 ## 4. Current verification results
 
@@ -136,7 +136,7 @@ The SEO score on the Render preview is also affected by preview indexing control
 | Vacancy security policies | 7 | Evidence supplied |
 | Public self-sign-up | Disabled | Evidence supplied |
 | SecurityHeaders.com | A+ | Evidence supplied |
-| Final post-change Lighthouse audit | Pending new screenshot | Outstanding evidence |
+| Mobile Lighthouse audit | 99 Performance; 100 Accessibility; 100 Best Practices; 69 SEO | Verified 10 Nov 2026 |
 | Hosted real-404 response screenshot | Pending | Outstanding evidence |
 | Render branch-preview settings screenshot | Pending | Outstanding evidence |
 
@@ -184,6 +184,12 @@ The Render deployment achieved an A+ SecurityHeaders.com result, with all six re
 
 ![Figure 7. SecurityHeaders.com A+ result for the Render deployment.](evidence/header test.png)
 
+### 5.8 Mobile Lighthouse performance audit
+
+The saved Lighthouse report verifies the branch preview in mobile mode. Performance scored 99, with a 1.9-second Largest Contentful Paint, zero Total Blocking Time and zero Cumulative Layout Shift. The complete interactive report is retained as `docs/evidence/Lighthouse Mobile Performance Report.html`.
+
+![Figure 8. Final mobile Lighthouse summary for the Render branch preview.](evidence/Lighthouse Mobile Performance Summary.png)
+
 ## 6. Requirements deliberately not completed
 
 ### 6.1 Loan calculator
@@ -217,7 +223,6 @@ The following remain necessary before production launch:
 - approval of privacy and legal content before any personal-information form is introduced;
 - confirmation of the final production hosting arrangement;
 - final configuration and verification on `rapidlinkgh.com`;
-- final mobile Lighthouse evidence;
 - screenshot and response-header evidence for the hosted 404 page; and
 - final review and approval before merging `cms-restructure` into `main`.
 
