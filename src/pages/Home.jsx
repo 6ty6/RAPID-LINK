@@ -110,7 +110,7 @@ export default function Home() {
   const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, homepage.news.maximumItems)
 
   return <>
-    <PageMeta title={homepage.meta.title} description={homepage.meta.description} />
+    <PageMeta title={homepage.meta.title} description={homepage.meta.description} image={homepage.meta.image} />
     <HeroSlider />
     <section className="home-quick-access" aria-labelledby="quick-access-title"><div className="shell quick-access-layout">
       <div className="quick-access-heading"><p className="eyebrow">{homepage.quickAccess.eyebrow}</p><h2 id="quick-access-title">{homepage.quickAccess.title}</h2></div>

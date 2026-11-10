@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:db": "supabase test db",
+    "test:hosted-api": "node --env-file-if-exists=.env.local tools/verify-hosted-content-api.mjs",
+    "test:headers": "node tools/verify-security-headers.mjs",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:prerender": "playwright test --config playwright.prerender.config.js"

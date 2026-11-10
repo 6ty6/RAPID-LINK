@@ -22,7 +22,7 @@ const institutionalIcons = {
 
 function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center' }) {
   return <>
-    <PageMeta title={title} description={intro} />
+    <PageMeta title={title} description={intro} image={image} />
     <section className={`about-hero${embeddedTitle ? ' about-hero-embedded' : ''}`} style={{ '--about-image-position': position }}>
       <img src={image} alt="" />
       {embeddedTitle ? <h1 className="visually-hidden">{title}</h1> : <div className="shell about-hero-content">
@@ -271,7 +271,7 @@ export function StoryArticle() {
 
   const related = newsArticles.filter(item => item.slug !== article.slug).slice(0, 2)
   return <>
-    <PageMeta title={article.title} description={article.summary} />
+    <PageMeta title={article.title} description={article.summary} image={article.image} />
     <article className="news-article">
       <header className="news-article-header"><div className="shell narrow"><Link className="news-back-link" to="/stories">← Back to all news</Link><div className="news-meta"><span>{article.category}</span><time dateTime={article.publishedAt}>{formatNewsDate(article.publishedAt)}</time></div><h1>{article.title}</h1><p>{article.summary}</p></div></header>
       <div className="shell news-article-image"><img src={article.image} alt={article.imageAlt} /></div>

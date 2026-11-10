@@ -4,7 +4,7 @@
 
 **Prepared by:** Caleb Adom Awuah with Codex
 
-**Last updated:** 9 November 2026
+**Last updated:** 10 November 2026
 
 **Active development branch:** `cms-restructure`
 
@@ -14,7 +14,7 @@
 
 ## 1. Read this first
 
-Edmund Nii Odoi Akogyeram's review dated 6 November 2026 is the controlling brief. Before changing the project, verify the proposed work against:
+Edmund Nii Odoi Akogyeram's final six-page review dated 6 November 2026 is the controlling brief. Its page count was confirmed in Microsoft Word on 10 November 2026. Before changing the project, verify the proposed work against:
 
 1. `C:\Users\THEGHOST\Desktop\rapid doc\Website_Project_Review_Caleb.docx` — Edmund's original review on the current computer. This file is outside Git and must be copied securely to the work computer; its local path may change there.
 2. `docs/rapidlink-content-models.md` — working content-model specification.
@@ -232,23 +232,79 @@ Tests confirm that the existing calculator remains unchanged. This is intentiona
 Prepared files:
 
 - `supabase/migrations/202611060001_harden_content_read_policies.sql`
+- `supabase/migrations/202611100001_consolidate_content_admin_role.sql`
 - `supabase/tests/database/content_management_rls_test.sql`
+- `supabase/verification/verify_consolidated_content_role.sql`
+- `tools/verify-hosted-content-api.mjs`
 - `docs/supabase-security-checklist.md`
+- `docs/hosted-api-security-tests.md`
 - `npm run test:db`
+- `npm run test:hosted-api`
 - corresponding changes in `supabase/careers.sql`
 
-Local testing was previously postponed because of Docker disk usage. On
-9 November 2026, the missing project Supabase CLI was restored from locked
-dependencies and `npm.cmd run test:db` passed all 28 checks against the local
-stack (`127.0.0.1:54322`). Evidence:
-`docs/security-evidence/local-rls-2026-11-09.md`.
+The earlier Docker-backed run passed 28/28 checks on 9 November 2026. Evidence:
+`docs/security-evidence/local-rls-2026-11-09.md`. After Edmund's follow-up, the
+suite was expanded to **36 checks**. The expanded suite validates the single
+administrator role, fixed function search path, anonymous update/delete and
+ordinary signed-in user restrictions. It is prepared but has not yet been run
+against a reset local Supabase stack.
 
-This is local evidence only. The following remain required before production:
+Hosted evidence already confirms that public and anonymous sign-ups are off,
+RLS is enabled, anonymous inserts are rejected, and the earlier hosted policy
+set exists. That evidence predates the new role-consolidation migration.
 
-- confirm public sign-ups are disabled in the hosted Supabase project;
-- confirm required migrations are applied; and
-- verify hosted news/vacancy access restrictions; and
-- test anonymous storage upload restrictions separately (not covered by the current 28-test suite).
+### 6.1 Exact next Supabase test sequence
+
+Do these steps in order. Do not run the public-API test before the migration is
+applied and the two dedicated test accounts are ready.
+
+1. In the hosted Supabase SQL Editor, run the complete file:
+   `supabase/migrations/202611100001_consolidate_content_admin_role.sql`.
+2. Run the read-only evidence query:
+   `supabase/verification/verify_consolidated_content_role.sql`.
+3. Confirm every result is `PASS`. Export the result as CSV and take a screenshot
+   without exposing unrelated tabs, keys or personal data.
+4. Create two dedicated Authentication users:
+   - one approved test administrator whose UUID is in `public.content_admins`;
+   - one ordinary signed-in test user whose UUID is not in that table.
+5. Do not use a real employee password. Put the dedicated test credentials only
+   in `.env.local` on the test computer:
+
+```text
+HOSTED_TEST_ADMIN_EMAIL=
+HOSTED_TEST_ADMIN_PASSWORD=
+HOSTED_TEST_NON_ADMIN_EMAIL=
+HOSTED_TEST_NON_ADMIN_PASSWORD=
+```
+
+6. Keep the existing `VITE_SUPABASE_URL` and public
+   `VITE_SUPABASE_ANON_KEY` values in `.env.local`. Never add a service-role key.
+7. Run:
+
+```powershell
+npm.cmd run test:hosted-api
+```
+
+8. Expect **22/22 hosted public-API checks passed**. The script tests public
+   reads, draft restrictions, anonymous insert/update/delete, signed-in
+   non-admin insert/update/delete and administrator-role recognition. It creates
+   temporary records and attempts to remove them in `finally` cleanup.
+9. Save the successful console output as evidence. Never include passwords,
+   access tokens or the full contents of `.env.local`.
+10. When Docker disk space is available, run the expanded local suite:
+
+```powershell
+npx.cmd supabase start
+npx.cmd supabase db reset
+npm.cmd run test:db
+```
+
+11. Expect all **36/36** pgTAP checks to pass. Stop the local Supabase stack
+    after retaining the evidence if disk space is limited.
+
+The anonymous storage-upload restriction still requires a separate public-API
+test. Do not represent the database test or the 22 content-table API checks as
+proof of storage-bucket write protection.
 
 ## 7. Existing content-management prototype
 
@@ -261,7 +317,13 @@ The prototype already includes:
 - publish/unpublish and delete controls; and
 - news image uploads.
 
-Existing migrations run from `202611050001_content_management.sql` through `202611050006_auto_authorize_invited_users.sql`, followed by the prepared hardening migration dated `202611060001`.
+Existing migrations run from `202611050001_content_management.sql` through `202611050006_auto_authorize_invited_users.sql`, followed by the hardening migration dated `202611060001` and the prepared single-role migration dated `202611100001`.
+
+The new migration copies all legacy `career_admins` members into
+`content_admins`, replaces overlapping vacancy policies, recreates
+`is_content_admin()` as `SECURITY DEFINER` with
+`search_path = public, pg_temp`, and then removes `is_career_admin()` and the
+legacy table. It has not yet been applied to the hosted project.
 
 Do not assume every migration exists in the hosted project. Verify it. Do not build more custom CMS features until Edmund reviews the CMS comparison.
 
@@ -288,6 +350,21 @@ After the CMS comparison, continue low-risk content restructuring in this order 
 5. verify the implemented 404 routing on the deployed preview and complete production security headers;
 6. Lighthouse, accessibility and security-header evidence; and
 7. approved regulatory content after departmental sign-off.
+
+Social metadata now uses page-specific absolute `rapidlinkgh.com` images for the
+homepage, About pages, Digital Channels and individual stories. Application
+tests increased to 54/54 passed and the build still pre-renders 26 public routes.
+
+The production demo passes the repository security-header verifier. The branch
+preview was directly observed missing CSP, Permissions-Policy, Referrer-Policy
+and X-Frame-Options even though `render.yaml` defines them. Resolve the Render
+preview service configuration before accepting preview security evidence. See
+`docs/security-header-verification.md`.
+
+PDF.js remains lazy-loaded and is retained for now because direct PDF links
+previously downloaded instead of reliably previewing. The final Lighthouse
+performance score is 99 with this implementation. See
+`docs/pdf-preview-assessment.md`.
 
 ## 9. Business information still required
 
@@ -347,9 +424,12 @@ and do not add CMS tables while the CMS comparison is pending. Inspect Git and
 confirm cms-restructure is active. The content-access layer and the site,
 homepage, Institutional Profile and Board content migrations are complete.
 Continue with the CMS comparison due 13 November 2026, using official sources.
-The 28 local Supabase RLS checks passed on 9 November 2026. Do not present that
-as proof of hosted database/Auth configuration or storage upload restrictions;
-those checks remain outstanding.
+The previous 28 local Supabase RLS checks passed on 9 November 2026. A new
+single-role migration and 36-check local suite are prepared but not yet run.
+Apply the migration, run the seven-row consolidation verification, configure
+dedicated admin/non-admin test users, and run `npm.cmd run test:hosted-api` for
+22 public-API checks. Do not present the earlier local result as proof of the
+new hosted role model or storage upload restrictions. Follow section 6.1 exactly.
 ```
 
 ## 12. Safe transfer checklist

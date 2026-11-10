@@ -31,14 +31,20 @@ The migrations and tests are intended to prove:
 - Ordinary authenticated users cannot manage content.
 - Approved content administrators can create, update and delete both content
   types.
+- A single `content_admins` role controls both news and vacancies; the legacy
+  `career_admins` table and `is_career_admin()` function are absent.
+- `is_content_admin()` is `SECURITY DEFINER` with the fixed search path
+  `public, pg_temp`.
 - The `content_admins` membership list is not readable through the public API.
 - Row-level security remains enabled on both public content tables.
 
 ## Run the automated tests
 
-Latest local result: **28/28 passed on 9 November 2026**. See
-`docs/security-evidence/local-rls-2026-11-09.md`. Hosted verification and storage
-upload tests remain outstanding.
+The previous local result was **28/28 passed on 9 November 2026**. The suite now
+contains **36 checks** after the single-role consolidation and the additional
+ordinary-user update/delete cases. The expanded suite still requires a fresh
+Docker-backed run before it can be reported as passed. See
+`docs/security-evidence/local-rls-2026-11-09.md` for the earlier result.
 
 If `npm.cmd run test:db` reports that `supabase` is not recognized, restore the
 project dependencies with `npm.cmd ci` before retrying; the CLI is already
@@ -66,14 +72,33 @@ Result: PASS
 Save the successful output with the project review evidence. If a policy is
 changed later, rerun this suite before merging into `main`.
 
+## Run the hosted public-API tests
+
+After applying the consolidation migration, follow
+`docs/hosted-api-security-tests.md` and run:
+
+```powershell
+npm.cmd run test:hosted-api
+```
+
+This check uses the publishable key and real HTTP endpoints. It requires a
+dedicated approved administrator and a dedicated signed-in non-administrator.
+It creates only temporary records and removes them after the run.
+
+Run `supabase/verification/verify_consolidated_content_role.sql` in the hosted
+SQL Editor to capture read-only evidence that the old role was removed and that
+the remaining security function and policies are configured correctly.
+
 ## Manual evidence for the supervisor
 
 Provide the following without exposing secrets or customer data:
 
 1. Screenshot showing public and anonymous sign-ups disabled.
 2. The RLS migration files and this checklist.
-3. Successful `npm run test:db` output.
+3. Successful expanded `npm run test:db` output.
 4. A screenshot of the Tables view showing RLS enabled for `news_articles` and
    `career_vacancies`.
 5. Confirmation that no service-role key exists in Render's public build
    environment.
+6. Successful `npm run test:hosted-api` output with secrets and tokens excluded.
+7. Exported results from `verify_consolidated_content_role.sql`.

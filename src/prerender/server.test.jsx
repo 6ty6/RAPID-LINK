@@ -19,6 +19,7 @@ describe('server pre-rendering', () => {
     expect(result.html).toContain('Third offence within one year')
     expect(result.html).not.toContain('Loading story')
     expect(result.metadata.canonical).toBe(`https://rapidlinkgh.com/stories/${story.slug}`)
+    expect(result.metadata.image).toBe(`https://rapidlinkgh.com${story.image}`)
     const careers = renderPage('/rapidlink-careers', snapshot)
     expect(careers.html).toContain(snapshot.vacancies[0].title)
     expect(careers.html).not.toContain('Loading approved')

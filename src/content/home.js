@@ -4,6 +4,7 @@ export const homepageContent = {
   meta: {
     title: 'Home',
     description: 'Explore RapidLink savings, loans, investments and digital banking services in Ghana.',
+    image: '/assets/hero-controller-optimized.jpg',
   },
   hero: {
     accessibleLabel: 'Featured information',

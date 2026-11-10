@@ -1,7 +1,7 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
-select plan(28);
+select plan(36);
 
 -- Test identities and records use reserved, deterministic UUIDs and are
 -- rolled back when this file finishes.
@@ -69,6 +69,47 @@ select ok(
 select ok(
   (select relrowsecurity from pg_class where oid = 'public.career_vacancies'::regclass),
   'RLS is enabled on career_vacancies'
+);
+
+select ok(
+  coalesce((
+    select p.prosecdef
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'is_content_admin'
+      and p.pronargs = 0
+  ), false),
+  'The content-administrator check is SECURITY DEFINER'
+);
+
+select ok(
+  coalesce((
+    select 'search_path=public, pg_temp' = any(p.proconfig)
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'is_content_admin'
+      and p.pronargs = 0
+  ), false),
+  'The content-administrator check has a fixed search_path'
+);
+
+select ok(
+  to_regclass('public.career_admins') is null,
+  'The legacy career-administrator table has been removed'
+);
+
+select ok(
+  not exists (
+    select 1
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+      and p.proname = 'is_career_admin'
+      and p.pronargs = 0
+  ),
+  'The legacy career-administrator function has been removed'
 );
 
 -- Anonymous website visitor.
@@ -187,6 +228,30 @@ select throws_ok(
   '42501',
   'new row violates row-level security policy for table "career_vacancies"',
   'Ordinary signed-in users cannot create vacancies'
+);
+
+select is_empty(
+  $$update public.news_articles set title = 'Ordinary-user update'
+    where id = '20000000-0000-0000-0000-000000000001'::uuid returning id$$,
+  'Ordinary signed-in users cannot update news'
+);
+
+select is_empty(
+  $$delete from public.news_articles
+    where id = '20000000-0000-0000-0000-000000000001'::uuid returning id$$,
+  'Ordinary signed-in users cannot delete news'
+);
+
+select is_empty(
+  $$update public.career_vacancies set title = 'Ordinary-user update'
+    where id = '30000000-0000-0000-0000-000000000001'::uuid returning id$$,
+  'Ordinary signed-in users cannot update vacancies'
+);
+
+select is_empty(
+  $$delete from public.career_vacancies
+    where id = '30000000-0000-0000-0000-000000000001'::uuid returning id$$,
+  'Ordinary signed-in users cannot delete vacancies'
 );
 
 -- Approved content administrator.

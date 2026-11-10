@@ -57,7 +57,7 @@ describe('RapidLink site', () => {
       ['/rates', 'Fixed deposit rates', 'Published rates as of 19 October 2026.', '/assets/rates-hero-v2.png'],
       ['/rate-chart', 'Rates Chart (2025)', 'View or download RapidLink’s controller (government) loan rates guide.', '/assets/rates-hero-v2.png'],
       ['/open-account', 'Start your account application', 'Complete the four steps below. Your sensitive details are kept in page memory and are not stored by this preview.', '/assets/rapidlink-logo.png'],
-      ['/digital-channels', 'Digital channels', 'Access RapidLink services from your phone.', '/assets/rapidlink-logo.png'],
+      ['/digital-channels', 'Digital channels', 'Access RapidLink services from your phone.', '/assets/digital-channels-hero.png'],
       ['/missing-page', 'We couldn’t find that page', 'The address may have changed or the page may no longer be available.', '/assets/rapidlink-logo.png'],
     ]
     for (const [route, title, description, image] of cases) {
@@ -69,6 +69,13 @@ describe('RapidLink site', () => {
       expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute('href', `https://rapidlinkgh.com${route}`)
       view.unmount()
     }
+  })
+  it('uses the homepage campaign image in absolute social-preview metadata', () => {
+    renderAt('/home')
+    expect(document.title).toBe('Home | RapidLink Microfinance')
+    expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/assets/hero-controller-optimized.jpg')
+    expect(document.querySelector('meta[name="twitter:image"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/assets/hero-controller-optimized.jpg')
+    expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/home')
   })
   it('preserves announcement text and FAQ answers through the content layer', () => {
     const { container } = renderAt('/faqs')
@@ -221,6 +228,8 @@ describe('RapidLink site', () => {
     const article = within(container)
     expect(article.getByRole('heading', { name: 'Bank of Ghana revises sanctions for dud cheques', level: 1 })).toBeInTheDocument()
     expect(container.querySelector('.news-article-image img')).toHaveAttribute('src', '/assets/hero-notice.jpg')
+    expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/assets/hero-notice.jpg')
+    expect(document.querySelector('meta[name="twitter:image"]')).toHaveAttribute('content', 'https://rapidlinkgh.com/assets/hero-notice.jpg')
     expect(article.getByRole('heading', { name: 'Third offence within one year' })).toBeInTheDocument()
   })
 
