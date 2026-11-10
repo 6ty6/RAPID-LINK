@@ -356,6 +356,22 @@ Recommended work sequence:
 6. Produce a two-to-three-page Word document that remains searchable and accessible.
 7. Optionally prepare a local test-data-only demonstration if it can be completed safely.
 
+### Current CMS research and personal study
+
+The initial conversation compared Directus, Strapi, Sanity, Contentful and Decap
+CMS. This is preliminary research; no CMS is selected and no formal comparison
+report or completed CMS trial is recorded in the repository. Directus and
+Sanity were suggested as initial practical candidates, subject to the required
+permissions, licences and governance controls.
+
+Caleb's personal study plan is in `docs/cms-personal-study-checklist.md`.
+Prioritise editor usability, enforced writer/approver permissions, revision and
+audit evidence, preview/rebuild behavior, recovery/export and full three-year
+cost. Understand all five at overview level and test a limited shortlist using
+synthetic content. Obtain management's editor count, approval/SSO requirements
+and budget, plus dated vendor quotations. Do not assume trial features are
+included in a free plan or extend the custom admin during evaluation.
+
 After the CMS comparison, continue low-risk content restructuring in this order unless Edmund changes direction:
 
 1. product descriptions and images, excluding rates and calculator parameters;
