@@ -1,0 +1,5 @@
+table_name,rls_status,policy_count
+career_admins,ENABLED,0
+career_vacancies,ENABLED,7
+content_admins,ENABLED,0
+news_articles,ENABLED,5
