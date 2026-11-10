@@ -359,10 +359,22 @@ Recommended work sequence:
 ### Current CMS research and personal study
 
 The initial conversation compared Directus, Strapi, Sanity, Contentful and Decap
-CMS. This is preliminary research; no CMS is selected and no formal comparison
-report or completed CMS trial is recorded in the repository. Directus and
-Sanity were suggested as initial practical candidates, subject to the required
-permissions, licences and governance controls.
+CMS. On 10 November 2026 this was expanded into a sourced full research report,
+a 10-page PDF and a three-page management summary (Word and PDF). Files:
+
+- `docs/cms-research-report.md`
+- `docs/RapidLink - Full CMS Research.pdf`
+- `docs/cms-management-summary.md`
+- `docs/RapidLink - CMS Management Summary.docx`
+- `docs/RapidLink - CMS Management Summary.pdf`
+- `docs/cms-personal-test-matrix.csv`
+- `docs/cms-cost-worksheet.csv`
+
+These are desk-research drafts, not completed product trials, vendor quotations
+or approval to select/migrate a CMS. Directus and Sanity remain initial practical
+candidates, subject to required permissions, licences and governance controls.
+All 15 scenarios in the personal test matrix are NOT RUN. The research artifacts
+were checked for pagination: full PDF 10 pages; summary PDF and Word 3 pages.
 
 Caleb's personal study plan is in `docs/cms-personal-study-checklist.md`.
 Prioritise editor usability, enforced writer/approver permissions, revision and

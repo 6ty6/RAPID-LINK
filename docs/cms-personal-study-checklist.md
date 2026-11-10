@@ -7,10 +7,18 @@ Prepared 10 November 2026. Comparison due Friday, 13 November 2026.
 An initial five-option comparison was discussed in the project conversation:
 Directus, Strapi, Sanity, Contentful and Decap CMS. It covered fit, free/paid
 options, feature gates and indicative three-year subscription calculations.
-This is preliminary desk research, not an approved selection, completed product
-trial or vendor quotation. No dedicated formal CMS comparison report was found
-in the repository during this check. The required searchable two-to-three-page
-Word report and any test-data demonstration remain to be prepared.
+This has now been expanded into `docs/cms-research-report.md` and the searchable
+10-page `docs/RapidLink - Full CMS Research.pdf`. A three-page management summary
+is available as Markdown, PDF and Word (`RapidLink - CMS Management Summary`).
+Sources and pricing were checked on 10 November 2026. This remains desk research,
+not an approved selection, completed product trial or vendor quotation. Practical
+demonstrations, quotations and management/security acceptance remain pending.
+
+Start by reading the full report, then use `docs/cms-personal-test-matrix.csv`
+to record the 15 trial scenarios. Every scenario starts NOT RUN. Duplicate the
+matrix for each candidate; record the exact version/plan and evidence. Use
+`docs/cms-cost-worksheet.csv` for quotations and operating costs; blank values
+are unquoted, not zero.
 
 Understand all five at overview level. Directus and Sanity were proposed as
 initial hands-on candidates, subject to licence, permissions and workflow
