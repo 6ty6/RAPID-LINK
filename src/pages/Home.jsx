@@ -22,17 +22,17 @@ function HeroSlider() {
   const [loadedSlides, setLoadedSlides] = useState(() => new Set([0]))
   const [interactionPaused, setInteractionPaused] = useState(false)
   const [isMobileSlider, setIsMobileSlider] = useState(false)
-  const [showCopy, setShowCopy] = useState(false)
+  const [showCopy, setShowCopy] = useState(true)
   const slide = slides[current]
   const isPaused = interactionPaused
   const move = (step) => {
     const next = (current + step + slides.length) % slides.length
-    setShowCopy(isMobileSlider)
+    setShowCopy(true)
     setLoadedSlides(value => new Set(value).add(next))
     setCurrent(next)
   }
   const showSlide = (index) => {
-    setShowCopy(isMobileSlider)
+    setShowCopy(true)
     setLoadedSlides(value => new Set(value).add(index))
     setCurrent(index)
   }
@@ -42,7 +42,7 @@ function HeroSlider() {
     const mediaQuery = window.matchMedia(mobileSliderQuery)
     const updateSliderTiming = event => {
       setIsMobileSlider(event.matches)
-      setShowCopy(event.matches)
+      setShowCopy(true)
     }
     updateSliderTiming(mediaQuery)
     mediaQuery.addEventListener('change', updateSliderTiming)
@@ -52,9 +52,8 @@ function HeroSlider() {
   useEffect(() => {
     if (isPaused) return undefined
     const timer = window.setTimeout(() => {
-      if (isMobileSlider || showCopy) move(1)
-      else setShowCopy(true)
-    }, isMobileSlider ? 11000 : showCopy ? 8000 : 3000)
+      move(1)
+    }, isMobileSlider ? 10000 : 7500)
     return () => window.clearTimeout(timer)
   }, [isPaused, isMobileSlider, showCopy, current])
 
