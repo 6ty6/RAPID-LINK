@@ -3,6 +3,7 @@ dist/
 .prerender/
 playwright-report/
 test-results/
+.worktrees/
 .env
 *.local
 ~$*.docx
