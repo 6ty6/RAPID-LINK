@@ -56,6 +56,22 @@ while ($index -lt $lines.Count) {
         continue
     }
 
+    if ($trimmed -eq '<!-- pagebreak -->') {
+        Close-Paragraph
+        Close-List
+        [void]$body.AppendLine("<div style='page-break-after: always;'></div>")
+        $index++
+        continue
+    }
+
+    if ($trimmed -eq '[[TOC]]') {
+        Close-Paragraph
+        Close-List
+        [void]$body.AppendLine('<p>[[TOC]]</p>')
+        $index++
+        continue
+    }
+
     if ($trimmed -match '^!\[(.+?)\]\((.+)\)$') {
         Close-Paragraph
         Close-List
@@ -224,6 +240,16 @@ try {
             $shape.Height = 430
         }
         $shape.Range.ParagraphFormat.Alignment = 1
+    }
+
+    $tocRange = $document.Content.Duplicate
+    $tocRange.Find.ClearFormatting()
+    $tocRange.Find.Text = '[[TOC]]'
+    $tocRange.Find.MatchWildcards = $false
+    if ($tocRange.Find.Execute()) {
+        $tocRange.Text = ''
+        [void]$document.TablesOfContents.Add($tocRange, $true, 1, 3)
+        $document.TablesOfContents.Item(1).Update()
     }
 
     $wdFormatDocumentDefault = 16
