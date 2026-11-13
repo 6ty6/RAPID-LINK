@@ -23,6 +23,14 @@ clear product entry points. Product pages should prioritize requirements,
 benefits, rates and next actions. The Institutional Profile, branch information
 and customer-support routes should be especially prominent.
 
+## Implemented architecture
+
+- formal utility header and full-width editorial mega menus;
+- split-image advisory carousel with numbered controls;
+- customer-intent navigator, product directory and structured news grid;
+- permanent institutional sitemap with a separate adviser call-to-action; and
+- mobile navigation and footer disclosures adapted to the same hierarchy.
+
 ## Guardrail
 
 Change presentation only. Do not alter content records, calculations, rates,
