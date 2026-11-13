@@ -23,6 +23,14 @@ business or accessing responsible credit. Product pages should use plain
 language, progressive disclosure and obvious help routes. Community impact,
 customer support and branch access should feel integrated rather than secondary.
 
+## Implemented architecture
+
+- floating capsule navigation with compact card popovers;
+- image-led story carousel with a warm, conversational content card;
+- life-goal product journeys and a customer-focused product story;
+- branch cards and upward-opening footer link drawers; and
+- rounded, touch-friendly mobile interactions throughout.
+
 ## Guardrail
 
 Change presentation only. Do not alter content records, calculations, rates,
