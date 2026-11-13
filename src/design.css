@@ -5,6 +5,7 @@ body { background: var(--hc-cream); color: var(--hc-ink); }
 .button { border-radius: 999px; padding-inline: 24px; background: var(--hc-orange); border-color: var(--hc-orange); box-shadow: 0 8px 22px rgba(236,107,19,.2); }
 .button:hover { background: #d75705; border-color: #d75705; }
 .button-secondary { background: #fff; color: var(--hc-blue); border-color: #d5dde5; }
+[tabindex="-1"]:focus-visible { outline: none; }
 .eyebrow { color: var(--hc-orange); font-size: .73rem; letter-spacing: .15em; }
 
 /* Floating capsule navigation with card popovers */
