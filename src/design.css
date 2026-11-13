@@ -13,6 +13,7 @@ body { color: var(--ct-ink); background: #fff; }
 .button { border-radius: 2px; background: var(--ct-orange); border-color: var(--ct-orange); box-shadow: none; font-weight: 750; }
 .button:hover { background: #c95508; border-color: #c95508; transform: none; }
 .button-secondary { background: transparent; color: var(--ct-navy); border-color: #9eabb8; }
+[tabindex="-1"]:focus-visible { outline: none; }
 .eyebrow { color: var(--ct-orange); letter-spacing: .16em; font-size: .73rem; font-weight: 800; }
 
 /* Header: utility band + formal mega navigation */
@@ -113,8 +114,10 @@ body { color: var(--ct-ink); background: #fff; }
 /* Shared app section and internal pages retain the same formal system */
 .app-section { background: var(--ct-blue); color: #fff; }
 .app-section h2, .app-section p { color: #fff; }
+.app-section .button-secondary { color: var(--ct-navy) !important; background: #fff; border-color: #fff; }
+.app-section .button-secondary:hover { color: #fff !important; background: var(--ct-navy); border-color: var(--ct-navy); }
 .page-hero { background: var(--ct-navy); border-radius: 0; }
-.page-hero h1 { font-family: Georgia, serif; }
+.page-hero h1, .about-hero h1 { font-family: Georgia, serif; }
 .product-card, .info-card, .content-card { border-radius: 2px; }
 
 /* Footer: advisory CTA + permanent institutional directory */
@@ -200,7 +203,7 @@ body { color: var(--ct-ink); background: #fff; }
   .ct-product-row { grid-template-columns: 35px 1fr auto; gap: 10px; padding: 20px 0; }
   .ct-product-row > div { display: block; }
   .ct-product-row h3 { margin: 5px 0 7px; }
-  .ct-product-row p { font-size: .82rem; }
+  .ct-product-row p { font-size: .88rem; line-height: 1.55; }
   .ct-news-grid { grid-template-columns: 1fr; }
   .ct-news-grid article { border-left: 0; border-top: 1px solid var(--ct-line); }
   .ct-footer-cta { margin-bottom: 0; width: 100%; padding: 34px 22px; flex-direction: column; align-items: flex-start; }
