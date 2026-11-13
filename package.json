@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "designs:dev": "node tools/start-design-previews.mjs",
     "build": "node tools/build.mjs",
     "build:client": "vite build",
     "preview": "vite preview",

@@ -21,6 +21,18 @@ Supabase security model or approved functionality.
 All three branches start from the same tagged baseline. They must not be merged
 into `main` until a concept is selected, tested and approved.
 
+## Start every local preview
+
+From the main project folder, start all three concepts with one command:
+
+```powershell
+npm.cmd run designs:dev
+```
+
+The launcher serves Corporate Trust on port 5174, Human-Centred on port 5175
+and Digital-First on port 5176. Press `Ctrl+C` to stop the group; if PowerShell
+asks whether to terminate the batch job, enter `Y`.
+
 ## Shared items that must not diverge
 
 - approved wording, products, images and public records;
