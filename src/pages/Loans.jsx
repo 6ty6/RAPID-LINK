@@ -2,6 +2,9 @@ import { useState } from 'react'
 import { CircleAlert, Phone } from '../icons'
 import { config } from '../config'
 import { PageHero } from '../components/Shared'
+import { getSiteInformation, getPage } from '../content/index.js'
+
+const { contact } = getSiteInformation()
 
 export function calculateLoanEstimate(principal, rate, duration) {
   const totalInterest = principal * (rate / 100) * duration
@@ -11,18 +14,18 @@ export function calculateLoanEstimate(principal, rate, duration) {
 export function ApplyLoan() {
   if (config.generalLoanPortal) {
     return <>
-      <PageHero eyebrow="Loans" title="Continue your loan application" intro="You’ll continue to RapidLink’s loan application portal." />
+      <PageHero {...getPage('apply-loan-connected').hero} />
       <section className="section"><div className="shell narrow panel centered"><a className="button" href={config.generalLoanPortal} target="_blank" rel="noopener noreferrer">Continue to the loan portal</a><p>No personal information is added to the link.</p></div></section>
     </>
   }
 
   return <>
-    <PageHero eyebrow="Loans" title="Loan application guidance" intro="RapidLink’s general online loan portal is not yet verified." />
+    <PageHero {...getPage('apply-loan').hero} />
     <section className="section"><div className="shell narrow panel">
       <div className="callout warning"><CircleAlert /><div><h2>Online application connection pending</h2><p>The existing general application page is marked “Coming Soon.” MoneyQube is verified only for one-month nano loans, so it is not used as a general application portal.</p></div></div>
       <h2>Speak with the loans team</h2>
-      <p>For Controller or SME loan assistance, call <a href="tel:+233533730336">053 373 0336</a> or <a href="tel:+233302246657">030 224 6657</a>.</p>
-      <div className="button-row"><a className="button" href="tel:+233533730336"><Phone size={18} /> Call the loans team</a><a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">MoneyQube nano loans</a></div>
+      <p>For Controller or SME loan assistance, call <a href={contact.loanSupportLines[0].href}>{contact.loanSupportLines[0].display}</a> or <a href={contact.loanSupportLines[1].href}>{contact.loanSupportLines[1].display}</a>.</p>
+      <div className="button-row"><a className="button" href={contact.loanSupportLines[0].href}><Phone size={18} /> Call the loans team</a><a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">MoneyQube nano loans</a></div>
     </div>
     </section>
   </>

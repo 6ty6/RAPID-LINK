@@ -5,11 +5,17 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "designs:dev": "node tools/start-design-previews.mjs",
+    "build": "node tools/build.mjs",
+    "build:client": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:db": "supabase test db",
+    "test:hosted-api": "node --env-file-if-exists=.env.local tools/verify-hosted-content-api.mjs",
+    "test:headers": "node tools/verify-security-headers.mjs",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:prerender": "playwright test --config playwright.prerender.config.js"
   },
   "dependencies": {
     "pdfjs-dist": "^6.5.438",

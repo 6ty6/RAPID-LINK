@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { products } from '../content'
+import { getProductBySlug, getPage, getDocumentBySlug } from '../content/index.js'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
+
 
 function PdfCanvasPage({ document, pageNumber }) {
   const canvasRef = useRef(null)
@@ -88,8 +89,9 @@ function PdfPreview({ url }) {
 
 export function ProductPage() {
   const { '*': key } = useParams()
-  const product = products[key]
+  const product = getProductBySlug(key)
   if (!product) return <NotFound />
+  const rateGuide = getDocumentBySlug('controller-loan-rates')
   const action = product.loan
     ? key === 'deduct-at-source-loan'
       ? <a className="button" href="https://rapidlinkfinance.com/loanform" target="_blank" rel="noopener noreferrer">Apply for a Loan <span aria-hidden="true">→</span></a>
@@ -111,7 +113,7 @@ export function ProductPage() {
           <article className="product-info-card"><h3>Benefits</h3><CheckList items={product.benefits} /></article>
           <article className="product-info-card"><h3>What you’ll need</h3><CheckList items={product.requirements} /></article>
         </div>
-        <div className="product-action">{action}{key === 'deduct-at-source-loan' && <Link className="button button-secondary" to="/rate-chart">View Loan Rates Guide</Link>}<p>{product.loan ? 'Continue to our application guidance.' : 'Begin your account application.'}</p></div>
+        <div className="product-action">{action}{key === 'deduct-at-source-loan' && rateGuide && <Link className="button button-secondary" to="/rate-chart">View Loan Rates Guide</Link>}<p>{product.loan ? 'Continue to our application guidance.' : 'Begin your account application.'}</p></div>
       </div>
     </div></section> : <section className="section"><div className="shell content-grid">
       <article><h2>Benefits</h2><CheckList items={product.benefits} /></article>
@@ -129,7 +131,7 @@ export function Rates() {
   ]
 
   return <>
-    <PageHero eyebrow="Savings & investments" title="Fixed deposit rates" intro="Published rates as of 19 October 2026." image="/assets/rates-hero-v2.png" />
+    <PageHero {...getPage('rates').hero} />
     <section className="section"><div className="shell narrow">
       <div className="table-wrap"><table>
         <caption>Fixed deposit rates by amount and term</caption>
@@ -142,8 +144,8 @@ export function Rates() {
 
 export function RateChart() {
   const [isOpen, setIsOpen] = useState(false)
-  const documentUrl = '/downloads/rate-chart.pdf'
-  const previewUrl = '/downloads/rate-chart-preview.txt'
+  const page = getPage('rate-chart')
+  const guide = getDocumentBySlug(page.documentSlug)
 
   useEffect(() => {
     if (!isOpen) return undefined
@@ -152,17 +154,19 @@ export function RateChart() {
     return () => document.removeEventListener('keydown', closeOnEscape)
   }, [isOpen])
 
+  if (!guide) return <NotFound />
+
   return <>
-    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink’s controller (government) loan rates guide." image="/assets/rates-hero-v2.png" />
+    <PageHero {...page.hero} />
     <section className="section"><div className="shell narrow panel centered rate-guide">
-      <h2>Controller Loan Rates Guide</h2>
-      <p>Click below to view the controller (government) loan rates guide.</p>
+      <h2>{guide.title}</h2>
+      <p>{guide.description}</p>
       <button className="button" type="button" onClick={() => setIsOpen(true)}>View document</button>
     </div></section>
     {isOpen && <div className="document-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setIsOpen(false)}>
       <section className="document-dialog" role="dialog" aria-modal="true" aria-labelledby="rate-guide-title">
-        <header><h2 id="rate-guide-title">RapidLink Controller Loan Rates Guide</h2><div><a className="button button-secondary" href={documentUrl} download>Download</a><button className="modal-close" type="button" onClick={() => setIsOpen(false)} aria-label="Close rates guide">×</button></div></header>
-        <PdfPreview url={previewUrl} />
+        <header><h2 id="rate-guide-title">{guide.dialogTitle || guide.title}</h2><div><a className="button button-secondary" href={guide.file} download>Download</a><button className="modal-close" type="button" onClick={() => setIsOpen(false)} aria-label="Close rates guide">×</button></div></header>
+        <PdfPreview url={guide.previewFile || guide.file} />
       </section>
     </div>}
   </>

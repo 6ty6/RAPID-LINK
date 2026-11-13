@@ -1,0 +1,15 @@
+check_name,result,evidence
+01 — Career vacancies table,PASS,career_vacancies
+02 — News articles table,PASS,news_articles
+03 — Content administrators table,PASS,content_admins
+04 — Career administrators table,PASS,career_admins
+05 — Content-admin security function,PASS,is_content_admin()
+06 — Career-admin security function,PASS,is_career_admin()
+07 — Invitation authorisation function,PASS,authorize_invited_content_user()
+08 — Invitation authorisation trigger,PASS,Installed on auth.users
+09 — Row Level Security,PASS,4 of 4 tables protected
+10 — News security policies,PASS,5 policies installed
+11 — Vacancy security policies,PASS,7 policies installed
+12 — News image storage bucket,PASS,"news-images — public, 5242880-byte limit"
+13 — Storage security policies,PASS,3 of 3 policies installed
+99 — OVERALL RESULT,PASS,13 of 13 checks passed

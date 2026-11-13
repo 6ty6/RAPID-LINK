@@ -1,4 +1,4 @@
-import { careerVacancies, newsArticles } from '../content'
+import { getBundledNews, getBundledVacancies } from './content/localContentRepository'
 
 const apiUrl = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\/$/, '')
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
@@ -28,7 +28,7 @@ async function request(path, { method = 'GET', body, token, prefer } = {}) {
 }
 
 export async function getPublishedVacancies() {
-  if (!careersAdminConfigured) return careerVacancies
+  if (!careersAdminConfigured) return getBundledVacancies()
   return request('/rest/v1/career_vacancies?select=*&is_published=eq.true&order=created_at.desc')
 }
 
@@ -101,7 +101,7 @@ const normalizeNewsArticle = article => ({
 })
 
 export async function getPublishedNews() {
-  if (!contentAdminConfigured) return newsArticles
+  if (!contentAdminConfigured) return getBundledNews()
   const rows = await request('/rest/v1/news_articles?select=*&is_published=eq.true&order=published_at.desc')
   return rows.map(normalizeNewsArticle)
     .sort((left, right) => right.publishedAt.localeCompare(left.publishedAt))
@@ -111,7 +111,7 @@ export async function getManagedNews(token) {
   const rows = await request('/rest/v1/news_articles?select=*&order=updated_at.desc', { token })
   const managedArticles = rows.map(normalizeNewsArticle)
   const managedSlugs = new Set(managedArticles.map(article => article.slug))
-  const websiteDefaults = newsArticles
+  const websiteDefaults = getBundledNews()
     .filter(article => !managedSlugs.has(article.slug))
     .map(article => ({ ...article, id: `local:${article.slug}`, is_local: true, is_published: true }))
   return [...managedArticles, ...websiteDefaults]

@@ -1,31 +1,39 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
-import { products } from '../content'
+import { getHomepageContent, getProductBySlug } from '../content/index.js'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
 
-const slides = [
-  { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/rapid-savings', action: 'Explore savings' },
-  { eyebrow: 'Customer notice', title: 'Issue cheques with sufficient funds.', text: 'Repeated dud cheques may attract financial penalties, a cheque ban and credit restrictions.', image: '/assets/hero-notice.jpg', link: '/stories/bank-of-ghana-dud-cheque-sanctions', action: 'Read the full notice' },
-  { eyebrow: 'Salary-backed credit', title: 'Controller loans for CAGD staff.', text: 'Published loan terms extend up to 60 months. Eligibility and current rates apply.', image: '/assets/hero-controller.png', link: '/deduct-at-source-loan', action: 'View loan information' },
-]
+const homepage = getHomepageContent()
+const slides = homepage.hero.slides
+const homepageIcons = {
+  business: Building2,
+  calendar: CalendarDays,
+  mobile: Smartphone,
+  rates: WalletCards,
+  savings: Landmark,
+}
 
 const mobileSliderQuery = '(max-width: 760px)'
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0)
+  const [loadedSlides, setLoadedSlides] = useState(() => new Set([0]))
   const [interactionPaused, setInteractionPaused] = useState(false)
-  const [isMobileSlider, setIsMobileSlider] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
-  const [showCopy, setShowCopy] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
+  const [isMobileSlider, setIsMobileSlider] = useState(false)
+  const [showCopy, setShowCopy] = useState(false)
   const slide = slides[current]
   const isPaused = interactionPaused
   const move = (step) => {
+    const next = (current + step + slides.length) % slides.length
     setShowCopy(isMobileSlider)
-    setCurrent(value => (value + step + slides.length) % slides.length)
+    setLoadedSlides(value => new Set(value).add(next))
+    setCurrent(next)
   }
   const showSlide = (index) => {
     setShowCopy(isMobileSlider)
+    setLoadedSlides(value => new Set(value).add(index))
     setCurrent(index)
   }
 
@@ -36,6 +44,7 @@ function HeroSlider() {
       setIsMobileSlider(event.matches)
       setShowCopy(event.matches)
     }
+    updateSliderTiming(mediaQuery)
     mediaQuery.addEventListener('change', updateSliderTiming)
     return () => mediaQuery.removeEventListener('change', updateSliderTiming)
   }, [])
@@ -56,14 +65,23 @@ function HeroSlider() {
   return <section
     className="hero"
     aria-roledescription="carousel"
-    aria-label="Featured information"
+    aria-label={homepage.hero.accessibleLabel}
     onMouseEnter={() => setInteractionPaused(true)}
     onMouseLeave={() => setInteractionPaused(false)}
     onFocusCapture={() => setInteractionPaused(true)}
     onBlurCapture={leaveFocus}
   >
     {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-      <img src={item.image} alt="" />
+      {loadedSlides.has(index) && <picture>
+        {item.mobileImage && <source media={mobileSliderQuery} srcSet={item.mobileImage} />}
+        <img
+          src={item.image}
+          alt=""
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchpriority={index === 0 ? 'high' : 'low'}
+          decoding="async"
+        />
+      </picture>}
     </div>)}
     <div className={`shell hero-content slide-content-fade ${showCopy ? 'is-visible' : ''}`} aria-hidden={!showCopy} aria-live={isPaused ? 'polite' : 'off'} key={slide.title}>
       <p className="eyebrow animated-copy">{slide.eyebrow}</p>
@@ -79,43 +97,48 @@ function HeroSlider() {
   </section>
 }
 
-function ProductCard({ productKey }) {
-  const product = products[productKey]
+function ProductCard({ productKey, detailLabel }) {
+  const product = getProductBySlug(productKey)
   return <article className="product-card">
     <span>{product.category}</span><h3>{product.title}</h3><p>{product.intro}</p>
-    <Link to={`/${productKey}`}>View details <ArrowRight size={16} /></Link>
+    <Link to={`/${productKey}`}>{detailLabel} <ArrowRight size={16} /></Link>
   </article>
 }
 
 export default function Home() {
   const { articles } = usePublishedNews()
-  const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
+  const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, homepage.news.maximumItems)
 
   return <>
-    <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
+    <PageMeta title={homepage.meta.title} description={homepage.meta.description} image={homepage.meta.image} />
     <HeroSlider />
     <section className="home-quick-access" aria-labelledby="quick-access-title"><div className="shell quick-access-layout">
-      <div className="quick-access-heading"><p className="eyebrow">Plan with confidence</p><h2 id="quick-access-title">Tools at your fingertips</h2></div>
+      <div className="quick-access-heading"><p className="eyebrow">{homepage.quickAccess.eyebrow}</p><h2 id="quick-access-title">{homepage.quickAccess.title}</h2></div>
       <div className="quick-access-links">
-        <Link className="quick-access-card" to="/rates"><span><WalletCards /></span><div><strong>Current Interest Rates</strong><small>Review the current rates table</small></div><ArrowRight /></Link>
-        <Link className="quick-access-card" to="/loan-calculator"><span><CalendarDays /></span><div><strong>Loan Calculator</strong><small>Estimate interest and repayment</small></div><ArrowRight /></Link>
+        {homepage.quickAccess.items.map(item => {
+          const Icon = homepageIcons[item.icon]
+          return <Link className="quick-access-card" to={item.href} key={item.href}><span><Icon /></span><div><strong>{item.title}</strong><small>{item.description}</small></div><ArrowRight /></Link>
+        })}
       </div>
     </div></section>
     <section className="section notices"><div className="shell">
-      <div className="section-heading"><p className="eyebrow">Latest news</p><h2>Updates from RapidLink</h2></div>
+      <div className="section-heading"><p className="eyebrow">{homepage.news.eyebrow}</p><h2>{homepage.news.title}</h2></div>
       <div className="notice-grid">{latestNews.map(article => <article className="notice-card" key={article.slug}>
         <CircleAlert aria-hidden="true" /><p className="notice-category">{article.category}</p><h3>{article.title}</h3><p>{article.summary}</p>
         <Link to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story <ArrowRight size={16} /></Link>
       </article>)}</div>
-      <div className="news-home-action"><Link className="button button-secondary" to="/stories">View all news <ArrowRight size={17} /></Link></div>
+      <div className="news-home-action"><Link className="button button-secondary" to={homepage.news.allNewsHref}>{homepage.news.allNewsLabel} <ArrowRight size={17} /></Link></div>
     </div></section>
     <section className="section warm"><div className="shell split">
-      <div><p className="eyebrow">What we provide</p><h2>Financial tools for real life</h2><p className="lead">Save consistently, access responsible credit, support your business and manage everyday banking from your phone.</p><Link className="text-link" to="/institutional-profile">Learn about RapidLink <ArrowRight size={17} /></Link></div>
-      <div className="service-list">{[['Savings & deposits', Landmark], ['Micro & SME loans', Building2], ['Mobile and USSD banking', Smartphone]].map(([label, Icon]) => <Link key={label} to={label.includes('loan') ? '/business-loan' : label.includes('Mobile') ? '/digital-channels' : '/rapid-savings'}><Icon /><span>{label}</span><ArrowRight /></Link>)}</div>
+      <div><p className="eyebrow">{homepage.services.eyebrow}</p><h2>{homepage.services.title}</h2><p className="lead">{homepage.services.introduction}</p><Link className="text-link" to={homepage.services.profileHref}>{homepage.services.profileLabel} <ArrowRight size={17} /></Link></div>
+      <div className="service-list">{homepage.services.items.map(item => {
+        const Icon = homepageIcons[item.icon]
+        return <Link key={item.label} to={item.href}><Icon /><span>{item.label}</span><ArrowRight /></Link>
+      })}</div>
     </div></section>
     <section className="section"><div className="shell">
-      <div className="section-heading"><p className="eyebrow">Explore products</p><h2>A clearer route to your next step</h2></div>
-      <div className="card-grid">{['rapid-savings', 'rapid-susu', 'rapid-edu-grow', 'personal-loan', 'business-loan', 'fixed-deposit'].map(key => <ProductCard key={key} productKey={key} />)}</div>
+      <div className="section-heading"><p className="eyebrow">{homepage.products.eyebrow}</p><h2>{homepage.products.title}</h2></div>
+      <div className="card-grid">{homepage.products.featuredKeys.map(key => <ProductCard key={key} productKey={key} detailLabel={homepage.products.detailLabel} />)}</div>
     </div></section>
     <AppDownload />
   </>

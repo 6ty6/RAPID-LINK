@@ -7,6 +7,10 @@ services:
     envVars:
       - key: VITE_SITE_URL
         value: https://rapidlinkgh.com
+      # Public production pages are pre-rendered and should be discoverable.
+      # Restricted staff routes remain noindex and are excluded in robots.txt.
+      - key: VITE_INDEXABLE
+        value: "true"
       # Public Supabase browser configuration. Render prompts for these values
       # when the Blueprint is created or synchronized.
       - key: VITE_SUPABASE_URL
@@ -14,14 +18,48 @@ services:
       - key: VITE_SUPABASE_ANON_KEY
         sync: false
     routes:
-      # React Router handles every route that is not a real built asset.
+      # Only valid client-only routes get an SPA shell. Missing paths must reach
+      # Render's native 404 response; do not restore a catch-all 200 rewrite.
       - type: rewrite
-        source: /*
-        destination: /index.html
+        source: /content-management
+        destination: /spa.html
+      - type: rewrite
+        source: /content-management/
+        destination: /spa.html
+      - type: rewrite
+        source: /career-management
+        destination: /spa.html
+      - type: rewrite
+        source: /career-management/
+        destination: /spa.html
+      - type: rewrite
+        source: /accept-invite
+        destination: /spa.html
+      - type: rewrite
+        source: /accept-invite/
+        destination: /spa.html
+      - type: rewrite
+        source: /loan-calculator
+        destination: /spa.html
+      - type: rewrite
+        source: /loan-calculator/
+        destination: /spa.html
     headers:
+      # Security headers apply to every public page and static asset. The CSP
+      # retains the integrations the site currently uses: Supabase content,
+      # Google Maps embeds, uploaded HTTPS images and local PDF workers.
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src https://www.google.com https://maps.google.com; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests"
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
       - path: /*
         name: Referrer-Policy
         value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()"

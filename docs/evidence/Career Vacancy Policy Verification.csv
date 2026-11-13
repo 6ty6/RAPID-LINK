@@ -1,0 +1,8 @@
+policyname,operation,roles,access_condition,write_condition
+Career admins can insert vacancies,INSERT,{authenticated},null,is_career_admin()
+Career admins can update vacancies,UPDATE,{authenticated},is_career_admin(),is_career_admin()
+Content admins can delete vacancies,DELETE,{authenticated},is_content_admin(),null
+Content admins can insert vacancies,INSERT,{authenticated},null,is_content_admin()
+Content admins can read all vacancies,SELECT,{authenticated},( SELECT is_content_admin() AS is_content_admin),null
+Content admins can update vacancies,UPDATE,{authenticated},is_content_admin(),is_content_admin()
+Published vacancies are public,SELECT,"{anon,authenticated}",(is_published = true),null

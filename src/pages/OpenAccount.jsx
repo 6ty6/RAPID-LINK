@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Check, CircleAlert } from '../icons'
 import { PageHero } from '../components/Shared'
+import { getPage } from '../content/index.js'
 
 const formSteps = ['Product', 'Personal details', 'Residence & work', 'Documents & consent']
 const initialForm = {
@@ -182,7 +183,7 @@ export default function OpenAccount() {
   }
 
   return <>
-    <PageHero eyebrow="Open an account" title="Start your account application" intro="Complete the four steps below. Your sensitive details are kept in page memory and are not stored by this preview." />
+    <PageHero {...getPage('open-account').hero} />
     <section className="section"><div className="shell form-shell">
       <ol className="stepper">{formSteps.map((label, index) => <li className={index === step ? 'active' : index < step ? 'done' : ''} key={label}><span>{index < step ? <Check /> : index + 1}</span>{label}</li>)}</ol>
       <form ref={formRef} onSubmit={submit} className="account-form">

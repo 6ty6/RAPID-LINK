@@ -1,0 +1,8 @@
+verification,result,evidence
+01 — Single administrator table,PASS,content_admins exists; career_admins does not exist
+02 — Legacy role function removed,PASS,is_career_admin() is absent
+03 — Content role is SECURITY DEFINER,PASS,is_content_admin() uses SECURITY DEFINER
+04 — Content role has fixed search_path,PASS,"search_path is fixed to public, pg_temp"
+05 — No career-admin vacancy policies,PASS,No career-admin policy names remain
+06 — One complete vacancy policy set,PASS,Expected: one public SELECT plus four content-admin policies
+07 — Content admins can read vacancy drafts,PASS,Authenticated content-admin SELECT policy exists
