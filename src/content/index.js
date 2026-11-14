@@ -1,17 +1,27 @@
 import {
   isNewsRepositoryConfigured, getRemotePublishedNews, getRemotePublishedVacancies,
 } from '../services/content/supabaseContentRepository.js'
+import {
+  getDirectusPublishedNews, getDirectusPublishedVacancies, isDirectusRepositoryConfigured,
+} from '../services/content/directusContentRepository.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
 
-// The interim Supabase service remains the adapter; a later CMS replaces this
-// wiring rather than changing public components or adding staff operations here.
+const requestedSource = (import.meta.env.VITE_CONTENT_SOURCE || 'supabase').trim().toLowerCase()
+const directusSource = requestedSource === 'directus' && isDirectusRepositoryConfigured ? {
+  getNews: getDirectusPublishedNews,
+  getVacancies: getDirectusPublishedVacancies,
+} : null
+const supabaseSource = requestedSource === 'supabase' && isNewsRepositoryConfigured ? {
+  getNews: getRemotePublishedNews,
+  getVacancies: getRemotePublishedVacancies,
+} : null
+
+// The pages depend on one stable contract. Switching the environment value
+// changes only the reader, not the React components or presentation.
 const content = createContentRepository({
   local: localContent,
-  publicSource: isNewsRepositoryConfigured ? {
-    getNews: getRemotePublishedNews,
-    getVacancies: getRemotePublishedVacancies,
-  } : null,
+  publicSource: directusSource || supabaseSource,
 })
 
 export const {

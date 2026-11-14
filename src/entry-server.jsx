@@ -13,8 +13,15 @@ export const sitePolicy = { siteUrl: config.siteUrl, indexable: import.meta.env.
 
 export async function prepareContent(source = 'configured') {
   if (!['configured', 'bundled'].includes(source)) throw new Error('Unknown pre-render content source.')
-  if (source === 'configured' && Boolean(import.meta.env.VITE_SUPABASE_URL) !== Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY)) {
-    throw new Error('Both public Supabase configuration values are required.')
+  if (source === 'configured') {
+    const contentSource = (import.meta.env.VITE_CONTENT_SOURCE || 'supabase').trim().toLowerCase()
+    if (!['local', 'supabase', 'directus'].includes(contentSource)) throw new Error('Unknown public content source.')
+    if (contentSource === 'supabase' && Boolean(import.meta.env.VITE_SUPABASE_URL) !== Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY)) {
+      throw new Error('Both public Supabase configuration values are required.')
+    }
+    if (contentSource === 'directus' && !import.meta.env.VITE_DIRECTUS_URL) {
+      throw new Error('The Directus public URL is required.')
+    }
   }
   const adapter = source === 'bundled' ? localContent : { getNews, getVacancies }
   let timer

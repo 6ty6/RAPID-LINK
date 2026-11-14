@@ -3,12 +3,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 afterEach(() => {
   vi.stubEnv('VITE_SUPABASE_URL', '')
   vi.stubEnv('VITE_SUPABASE_ANON_KEY', '')
+  vi.stubEnv('VITE_CONTENT_SOURCE', 'local')
+  vi.stubEnv('VITE_DIRECTUS_URL', '')
   vi.unstubAllGlobals()
   vi.resetModules()
 })
 
 describe('configured public content adapter', () => {
   it('uses published Supabase reads and preserves the existing news field mapping', async () => {
+    vi.stubEnv('VITE_CONTENT_SOURCE', 'supabase')
     vi.stubEnv('VITE_SUPABASE_URL', 'https://content.example.test')
     vi.stubEnv('VITE_SUPABASE_ANON_KEY', 'public-test-key')
     vi.resetModules()
@@ -37,6 +40,46 @@ describe('configured public content adapter', () => {
       expect(options.method).toBe('GET')
       expect(options.headers.Authorization).toBe('Bearer public-test-key')
       expect(options.body).toBeUndefined()
+    }
+  })
+
+  it('uses Directus public reads without changing the website content contract', async () => {
+    vi.stubEnv('VITE_CONTENT_SOURCE', 'directus')
+    vi.stubEnv('VITE_DIRECTUS_URL', 'https://directus.example.test/')
+    vi.resetModules()
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: [{
+        slug: 'directus-story', title: 'Directus story', category: 'Company News',
+        published_at: '2026-11-14', summary: 'A safe synthetic story.',
+        image: 'file-uuid', image_alt: 'Synthetic test image', featured: true,
+        is_published: true, sections: [{ paragraphs: ['Test paragraph.'] }],
+        external_link: null, external_label: null,
+      }] }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: [{
+        id: 'vacancy-uuid', title: 'Synthetic vacancy', department: 'Testing',
+        location: 'Accra', employment_type: 'Full-time', summary: 'Test role only.',
+        responsibilities: ['Test the workflow.'], status: 'open', is_published: true,
+        application_email: 'test@example.test', created_at: '2026-11-14T00:00:00Z',
+      }] }) })
+    vi.stubGlobal('fetch', fetchMock)
+    const content = await import('./index.js')
+
+    expect(content.getNewsSnapshot().loading).toBe(true)
+    await expect(content.getNews()).resolves.toEqual([{
+      slug: 'directus-story', title: 'Directus story', category: 'Company News',
+      publishedAt: '2026-11-14', summary: 'A safe synthetic story.',
+      image: 'https://directus.example.test/assets/file-uuid', imageAlt: 'Synthetic test image',
+      featured: true, sections: [{ paragraphs: ['Test paragraph.'] }],
+      externalLink: '', externalLabel: '',
+    }])
+    await expect(content.getVacancies()).resolves.toMatchObject([{
+      id: 'vacancy-uuid', title: 'Synthetic vacancy', is_published: true,
+    }])
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    for (const [url, options] of fetchMock.mock.calls) {
+      expect(url).toMatch(/^https:\/\/directus\.example\.test\/items\/(news_articles|career_vacancies)\?/)
+      expect(url).toContain('filter%5Bis_published%5D%5B_eq%5D=true')
+      expect(options).toBeUndefined()
     }
   })
 })
