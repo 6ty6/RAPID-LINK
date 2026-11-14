@@ -1,17 +1,29 @@
 import {
   isNewsRepositoryConfigured, getRemotePublishedNews, getRemotePublishedVacancies,
 } from '../services/content/supabaseContentRepository.js'
+import {
+  isSanityRepositoryConfigured, getSanityPublishedNews, getSanityPublishedVacancies,
+} from '../services/content/sanityContentRepository.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
 
-// The interim Supabase service remains the adapter; a later CMS replaces this
-// wiring rather than changing public components or adding staff operations here.
+const requestedSource = (import.meta.env.VITE_CONTENT_SOURCE || 'supabase').toLowerCase()
+const sanitySource = isSanityRepositoryConfigured ? {
+  getNews: getSanityPublishedNews,
+  getVacancies: getSanityPublishedVacancies,
+} : null
+const supabaseSource = isNewsRepositoryConfigured ? {
+  getNews: getRemotePublishedNews,
+  getVacancies: getRemotePublishedVacancies,
+} : null
+
+// Public pages consume one stable contract. Changing CMS only changes this
+// adapter selection; it does not require page or component rewrites.
 const content = createContentRepository({
   local: localContent,
-  publicSource: isNewsRepositoryConfigured ? {
-    getNews: getRemotePublishedNews,
-    getVacancies: getRemotePublishedVacancies,
-  } : null,
+  publicSource: requestedSource === 'sanity' ? sanitySource
+    : requestedSource === 'supabase' ? supabaseSource
+      : null,
 })
 
 export const {

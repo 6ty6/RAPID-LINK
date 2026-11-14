@@ -13,8 +13,15 @@ export const sitePolicy = { siteUrl: config.siteUrl, indexable: import.meta.env.
 
 export async function prepareContent(source = 'configured') {
   if (!['configured', 'bundled'].includes(source)) throw new Error('Unknown pre-render content source.')
-  if (source === 'configured' && Boolean(import.meta.env.VITE_SUPABASE_URL) !== Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY)) {
-    throw new Error('Both public Supabase configuration values are required.')
+  if (source === 'configured') {
+    const contentSource = (import.meta.env.VITE_CONTENT_SOURCE || 'supabase').toLowerCase()
+    if (!['local', 'supabase', 'sanity'].includes(contentSource)) throw new Error('Unknown public content source.')
+    if (contentSource === 'supabase' && Boolean(import.meta.env.VITE_SUPABASE_URL) !== Boolean(import.meta.env.VITE_SUPABASE_ANON_KEY)) {
+      throw new Error('Both public Supabase configuration values are required.')
+    }
+    if (contentSource === 'sanity' && !import.meta.env.VITE_SANITY_PROJECT_ID) {
+      throw new Error('A Sanity project ID is required when Sanity is selected.')
+    }
   }
   const adapter = source === 'bundled' ? localContent : { getNews, getVacancies }
   let timer
