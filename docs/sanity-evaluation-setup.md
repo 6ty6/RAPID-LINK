@@ -14,7 +14,7 @@ This branch evaluates Sanity without changing RapidLink's production content sou
 1. Sign in at <https://www.sanity.io/manage>.
 2. Create a project named **RapidLink CMS Evaluation** on the **Free** plan.
 3. Keep the default public dataset named `production`.
-4. Copy the project ID from the project settings. A project ID is public configuration, not a password.
+4. The evaluation project ID is `04unhu7g`. A project ID is public configuration, not a password.
 
 Do not add billing details, production customer data, Supabase credentials or real unpublished company information to this evaluation.
 
@@ -25,7 +25,15 @@ The two prepared document types are in `cms/sanity/schemaTypes`:
 - `newsArticle`
 - `careerVacancy`
 
-After the project ID is available, initialize a standalone Studio in `cms/sanity/studio`, import these schema types, and deploy the Studio using Sanity's included hosting. Keep Studio dependencies isolated from the public website.
+The standalone Studio is in `cms/sanity/studio` and imports these shared schema types. Its dependencies and build output remain isolated from the public website.
+
+Run it locally from the repository root with:
+
+```text
+npm --prefix cms/sanity/studio run dev
+```
+
+The first visit asks you to sign in to the Sanity account that owns project `04unhu7g`.
 
 ## Connect the website preview
 
@@ -33,7 +41,7 @@ Set these values only on the Sanity preview service or in an uncommitted local `
 
 ```text
 VITE_CONTENT_SOURCE=sanity
-VITE_SANITY_PROJECT_ID=YOUR_PROJECT_ID
+VITE_SANITY_PROJECT_ID=04unhu7g
 VITE_SANITY_DATASET=production
 VITE_SANITY_API_VERSION=2026-11-14
 ```
