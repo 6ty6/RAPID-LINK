@@ -1,0 +1,59 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>RapidLink - CMS Management Summary</title><style>@page{size:A4;margin:19mm 17mm 20mm}*{box-sizing:border-box}body{font:10.5pt/1.43 Arial,sans-serif;color:#25364a}h1{font-size:24pt;line-height:1.15;color:#102b46;border-bottom:3px solid #e88026;padding-bottom:10px;margin:0 0 15px}h2{font-size:15pt;color:#123650;margin:22px 0 10px;break-after:avoid}h3{font-size:12pt;color:#123650;margin:17px 0 8px;break-after:avoid}p{margin:0 0 11px;orphans:3;widows:3}li{margin:0 0 7px;orphans:3;widows:3}ul,ol{padding-left:21px}table{width:100%;border-collapse:collapse;font-size:8.5pt;line-height:1.32;margin:12px 0 17px}thead{display:table-header-group}tr{break-inside:avoid}td,th{border:1px solid #cbd5df;padding:7px;vertical-align:top;overflow-wrap:anywhere}th{background:#173651;color:white;text-align:left}tr:nth-child(even)td{background:#f1f5f8}a{color:#185aa1;text-decoration:underline}code{font-size:9pt}strong{color:#102b46}.pagebreak{break-before:page;page-break-before:always}.summary{font-size:10pt;line-height:1.35}.summary h1{font-size:21pt}.summary h2{font-size:12pt;margin:15px 0 8px}.summary p{margin-bottom:9px}.summary table{font-size:8.5pt}.summary li{margin-bottom:5px}</style></head><body class="summary"><h1>RapidLink CMS comparison: management summary</h1>
+<p><strong>Prepared:</strong> 10 November 2026 · <strong>Review due:</strong> 13 November 2026<br><strong>Author:</strong> Caleb Adom Awuah with research assistance<br><strong>Status:</strong> Desk-research draft; no product trial or purchase approved</p>
+<h2>1. Scope and recommendation</h2>
+<p>The CMS should manage approved public content while the React/Vite website stays on Render. Our existing content-access layer and pre-rendering build can receive a new adapter. Customer applications, complaints, identities, transactions and auditor-only financial reports remain outside public content. Calculator changes and new custom admin development remain paused.</p>
+<p>Shortlist <strong>Directus and Sanity for test-data evaluation</strong>. Directus is the SQL-continuity candidate; Sanity is the managed-backend candidate. Keep Strapi as the self-hosted alternative. The final choice depends on enforced approvals, staff usability, SSO, audit retention and full operating cost. No recommendation below is a claim of completed testing.</p>
+<table><thead><tr><th>Option</th><th>How it helps RapidLink</th><th>Principal trade-off</th></tr></thead><tbody>
+<tr><td>Directus</td><td>Dashboard/API over SQL; potential reuse of existing public tables</td><td>Validate Supabase permissions; direct SQL edits bypass its activity feed; licence limits matter</td></tr>
+<tr><td>Strapi</td><td>Dedicated content backend and admin forms; self-hosting route</td><td>Model migration and server operations; formal review workflows/audit are Enterprise</td></tr>
+<tr><td>Sanity</td><td>Hosted content backend and flexible staff Studio</td><td>Content leaves Postgres; custom roles, full audit and some backup capabilities need Enterprise</td></tr>
+<tr><td>Contentful</td><td>Managed entries, assets and collaboration</td><td>Paid plan/Space packaging can be expensive; confirm actual governance entitlements</td></tr>
+<tr><td>Decap</td><td>Git-backed editor, portable files and PR-based reviews</td><td>Authentication/repository protection and nontechnical usability require careful testing</td></tr>
+</tbody></table>
+<h2>2. Governance and hosting</h2>
+<p>An editor must be able to draft without publishing; the designated approver must control release. Confirm whether departmental separation and independent/two-stage review are mandatory. Revision history, an activity feed and a full security audit log are different controls.</p>
+<p>Self-hosted Directus/Strapi require application compute, database/media persistence, backups, monitoring and a named maintainer beyond Render&#39;s static frontend. SaaS reduces backend administration but leaves adapter, access, export and build responsibilities with RapidLink. A future frontend move to AWS does not move a SaaS content database into RapidLink&#39;s account. Decap substitutes Git/auth operations for a CMS database.</p>
+<p><strong>Evidence:</strong> source-linked product research, region/recovery distinctions and advisory examples are in the full research report. No current vendor quotation, staff demonstration or restore result has been obtained by this research.</p>
+<div class="pagebreak"></div>
+<h1>Pricing and operational responsibility</h1>
+<h2>3. Free versus paid</h2>
+<p>Directus has limited free self-hosted Core; its wider grant is conditional on revenue and employee thresholds. Strapi Community and Decap core software are free, with supporting infrastructure extra. Sanity Free has only Administrator/Viewer roles; Contentful Free has two roles. Free editing does not establish an adequate approval/audit package.</p>
+<h2>4. Three-year subscription examples</h2>
+<p>USD arithmetic checked 10 November 2026. Assume five paid staff unless noted. Exclude tax, setup, migration, training, maintenance, website hosting and unlisted services. These packages are not equivalent governance quotations.</p>
+<table><thead><tr><th>Scenario</th><th>Monthly input</th><th>36 months</th></tr></thead><tbody>
+<tr><td>Directus Team self-hosted</td><td>$599, includes 10 seats</td><td>$21,564 + infrastructure</td></tr>
+<tr><td>Directus Team Cloud</td><td>$599 + $99 hosting</td><td>$25,128</td></tr>
+<tr><td>Strapi Growth, five users</td><td>$45 + 2 × $15</td><td>$2,700 + hosting</td></tr>
+<tr><td>Strapi Growth + Cloud Pro</td><td>$75 + $90</td><td>$5,940</td></tr>
+<tr><td>Sanity Growth, five paid seats</td><td>5 × $15</td><td>$2,700 + unlisted services</td></tr>
+<tr><td>Contentful Lite base</td><td>$300</td><td>$10,800</td></tr>
+<tr><td>Contentful Lite + additional Lite Space</td><td>$300 + $850</td><td>$41,400</td></tr>
+<tr><td>Decap core software</td><td>$0</td><td>$0 + Git/auth/hosting/support</td></tr>
+</tbody></table>
+<p>Directus annual Team software pricing is $499/month with an annual commitment. Limited Core has three seats and does not cover this five-user scenario. The wider grant must be confirmed, not assumed. Enterprise controls, usage growth and SSO add-ons can change all comparisons.</p>
+<p><strong>Complete budget:</strong> one-time setup/migration/training + 36 × (licence + compute/database + storage/bandwidth + backup/monitoring + identity/Git + maintenance/support) + growth and tax. Unquoted items remain unknown, not zero. See the editable cost worksheet.</p>
+<h2>5. Security, recovery and exit</h2>
+<p>Directus and Strapi have published security advisories; check the selected maintained version and all extensions before deployment. Sanity/Contentful assurance material requires contractual review, not an assumption of no incidents. Decap&#39;s security policy and recent maintenance evidence should be reviewed alongside Git/auth dependencies.</p>
+<p>Test recovery, not just export. Sanity&#39;s documented managed backup feature is restricted to certain Enterprise plans. Contentful distinguishes its platform backups from customer-level restoration. Self-hosted systems require IT-owned database/assets/configuration recovery. Git content also needs external assets and working build instructions retained.</p>
+<div class="pagebreak"></div>
+<h1>Personal tests and decision gates</h1>
+<h2>6. What Caleb should test</h2>
+<p>Use synthetic records, separate writer/approver/admin accounts and an isolated preview. Do not connect a trial to live tables or production build hooks.</p>
+<ol>
+<li>Observe a nontechnical colleague create/edit news and an image description; record errors and assistance.</li>
+<li>Verify anonymous clients cannot read drafts or hidden fields and cannot write through the proposed public API.</li>
+<li>Try publishing as a writer through the UI and API/Git; expect backend/repository denial.</li>
+<li>Test the required approval stages, self-approval restrictions and department boundaries with separate accounts.</li>
+<li>Edit a published item as a draft; verify the approved public version stays unchanged.</li>
+<li>Check preview accuracy on desktop/mobile and whether access is restricted appropriately.</li>
+<li>Identify who changed/published/deleted content, retention periods and whether logs can be altered. Confirm the actual purchased plan.</li>
+<li>Publish and unpublish; confirm the Render rebuild updates static HTML, links and sitemap. Simulate a failed build/source read and confirm operator notification.</li>
+<li>Remove an editor&#39;s access and retest active sessions/tokens. Export and restore content, assets and required configuration into a clean test environment.</li>
+</ol>
+<p>All CMS trial outcomes currently remain <strong>NOT RUN</strong>. Use the accompanying test matrix to record version/plan, evidence and PASS/FAIL/NOT RUN/NOT APPLICABLE. Mandatory-control failures block selection until a mitigation is demonstrated.</p>
+<h2>7. Business answers and final approval</h2>
+<p>Management must confirm editor count, publishers/approvers, department restrictions, SSO/MFA requirements, audit retention, permitted regions, budget and final approver. IT must identify the patching, backup, recovery and monitoring owner. Obtain a dated vendor quotation using those same requirements, including renewal, usage and exit costs.</p>
+<p>Deliver the full research and this summary for Edmund&#39;s review by Friday, 13 November. A limited test-data demo is desirable if practical. Select/migrate only after requirements, practical evidence and commercial/security terms are accepted. Preserve the current prototype until a replacement is approved.</p>
+<h2>Official pricing references</h2>
+<p>Directus: https://directus.com/pricing<br>Strapi CMS / hosting: https://strapi.io/pricing-cms · https://strapi.io/pricing-cloud<br>Sanity: https://www.sanity.io/pricing<br>Contentful: https://www.contentful.com/pricing/<br>Decap: https://decapcms.org/docs/</p>
+<p>The full report provides links beside technical, security and recovery findings. Prices are research inputs; no vendor quote, compliance acceptance or CMS trial pass is implied.</p></body></html>

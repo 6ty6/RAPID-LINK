@@ -42,8 +42,8 @@ The calculation is implemented as a pure function and covered by unit and browse
 
 ## Search and hosting
 
-- `_redirects` enables history fallback on Netlify-style static hosting. Equivalent rewrites must be configured on other hosts.
+- Generated `_redirects` preserves public files, serves `/spa.html` only for exact valid staff/invitation/calculator routes, and sends other misses to `/404.html` with status 404 on Netlify. The Render blueprint also removes the wildcard 200 fallback; verify live host status codes and custom error handling after deployment.
 - Preview robots directives are intentionally `noindex`. Replace them only for an authorised production deployment.
-- Route-specific client-side titles, descriptions and canonical links are implemented. If search/social crawlers require rendered route content, add a React/Vite-compatible prerender step before production release.
+- `npm.cmd run build` now pre-renders public content with route-specific metadata, canonical links, a sitemap and a public hydration snapshot. Staff routes and the calculator remain client-only. See `docs/pre-rendering.md`. Published content changes require a rebuild to refresh the static HTML. Local HTTP 404 handling is implemented and tested; deployed-host verification remains required. See `docs/http-404.md`.
 - No deployment or live infrastructure change was performed.
 

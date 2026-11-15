@@ -1,0 +1,3 @@
+test_name,result,evidence
+Anonymous news creation,PASS,Rejected by Row Level Security (42501)
+Anonymous vacancy creation,PASS,Rejected by Row Level Security (42501)

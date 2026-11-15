@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, Phone, X } from '../icons'
-import { navGroups } from '../content'
+import { getNavigation as getNavigationGroups, getSiteInformation } from '../content/index.js'
 import AnnouncementBar from './AnnouncementBar'
 
 const cx = (...values) => values.filter(Boolean).join(' ')
+const navGroups = getNavigationGroups()
+const { contact } = getSiteInformation()
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -67,18 +69,16 @@ export default function Header() {
     <header className="site-header">
       <div className="mobile-header-utility">
         <div className="shell mobile-header-utility-inner" aria-label="Quick contact numbers">
-          <a href="tel:+233303955183"><Phone size={16} /><span><small>Customer support</small><strong>030 395 5183</strong></span></a>
-          <a href="tel:+233533730336"><Phone size={16} /><span><small>Controller / SME</small><strong>053 373 0336</strong></span></a>
+          {contact.supportLines.map(line => <a href={line.href} key={line.id}><Phone size={16} /><span><small>{line.mobileLabel}</small><strong>{line.display}</strong></span></a>)}
         </div>
       </div>
       <div className="shell header-primary">
         <div className="header-left">
-          <Link to="/home" className="brand" aria-label="RapidLink home"><img src="/assets/rapidlink-logo.png" alt="RapidLink Microfinance Limited" /></Link>
+          <Link to="/home" className="brand" aria-label="RapidLink home"><img src="/assets/rapidlink-logo-400.png" srcSet="/assets/rapidlink-logo-400.png 400w, /assets/rapidlink-logo.png 1080w" sizes="168px" alt="RapidLink Microfinance Limited" /></Link>
         </div>
         <div className="header-right">
           <div className="header-contacts" aria-label="Support contacts">
-            <div><span>Customer support</span><a href="tel:+233303955183">030 395 5183</a></div>
-            <div><span>Controller / SME loans</span><a href="tel:+233533730336">053 373 0336</a></div>
+            {contact.supportLines.map(line => <div key={line.id}><span>{line.label}</span><a href={line.href}>{line.display}</a></div>)}
           </div>
           <div className="header-actions">
             <Link className="button button-secondary" to="/open-account">Open an Account</Link>
@@ -98,7 +98,7 @@ export default function Header() {
               onBlurCapture={closeGroupAfterFocus}
             >
               <button
-                className={cx('nav-group-trigger', group.items.some(([, href]) => location.pathname === href) && 'active')}
+                className={cx('nav-group-trigger', group.items.some(({ href }) => location.pathname === href) && 'active')}
                 type="button"
                 aria-expanded={openGroup === group.label}
                 aria-controls={groupId(group.label)}
@@ -107,7 +107,7 @@ export default function Header() {
                 <span>{group.label}</span>
                 <ChevronDown size={16} />
               </button>
-              <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
+              <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(({ label, href }) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
             </div>)}
             <NavLink to="/digital-channels">Digital Channels</NavLink>
             <NavLink to="/stories">News</NavLink>
