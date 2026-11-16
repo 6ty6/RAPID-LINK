@@ -104,7 +104,7 @@ Sanity:
 ```powershell
 Push-Location .\cms\sanity\studio
 $env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
-& '.\node_modules\.bin\sanity.cmd' exec '.\scripts\migrateExistingContent.js' --with-user-token -- --dry-run
+& '.\node_modules\.bin\sanity.cmd' exec 'scripts/migrateExistingContent.js' --with-user-token -- --dry-run
 Pop-Location
 ```
 
@@ -113,12 +113,29 @@ Then perform the transfer:
 ```powershell
 Push-Location .\cms\sanity\studio
 $env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
-& '.\node_modules\.bin\sanity.cmd' exec '.\scripts\migrateExistingContent.js' --with-user-token
+& '.\node_modules\.bin\sanity.cmd' exec 'scripts/migrateExistingContent.js' --with-user-token
 Pop-Location
 ```
 
 The commands use the current Sanity CLI login and the local, ignored
 `.env.local` file. Never commit or paste the Supabase test credentials or a
 Sanity token into the migration script.
+
+### Migration result — 16 November 2026
+
+The transfer completed and passed an authenticated raw-dataset verification:
+
+- 5 news articles: 3 published and 2 drafts;
+- 2 career records: 1 published and 1 draft; and
+- all 5 news records have Sanity image-asset references.
+
+Run the repeatable verification with:
+
+```powershell
+Push-Location .\cms\sanity\studio
+$env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
+& '.\node_modules\.bin\sanity.cmd' exec 'scripts/verifyMigratedContent.js' --with-user-token
+Pop-Location
+```
 
 The Sanity Free plan permits public datasets only. This makes it suitable for published marketing content, but unpublished material and editorial access must be assessed carefully before recommending it for production.

@@ -6,6 +6,8 @@ import { getCliClient } from 'sanity/cli'
 const studioDirectory = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 const repositoryRoot = resolve(studioDirectory, '../../..')
 const dryRun = process.argv.includes('--dry-run')
+const onlyNews = process.argv.find(argument => argument.startsWith('--only-news='))?.split('=').slice(1).join('=')
+const onlyCareer = process.argv.find(argument => argument.startsWith('--only-career='))?.split('=').slice(1).join('=')
 
 function parseEnvironment(contents) {
   const values = {}
@@ -232,10 +234,20 @@ function vacancyDocument(vacancy) {
   }
 }
 
-const source = await loadSourceContent()
+const allSource = await loadSourceContent()
+const source = {
+  news: onlyCareer ? [] : onlyNews
+    ? allSource.news.filter(article => article.slug === onlyNews)
+    : allSource.news,
+  vacancies: onlyNews ? [] : onlyCareer
+    ? allSource.vacancies.filter(vacancy => vacancyIdentity(vacancy) === onlyCareer)
+    : allSource.vacancies,
+}
+if (onlyNews && source.news.length !== 1) throw new Error(`No news article matched --only-news=${onlyNews}`)
+if (onlyCareer && source.vacancies.length !== 1) throw new Error(`No career vacancy matched --only-career=${onlyCareer}`)
 console.log(`Prepared ${source.news.length} news article(s) and ${source.vacancies.length} career vacancy record(s).`)
 console.log(`News: ${source.news.map(article => `${article.title} [${article.isPublished ? 'published' : 'draft'}]`).join('; ')}`)
-console.log(`Careers: ${source.vacancies.map(vacancy => `${vacancy.title} [${vacancy.isPublished ? 'published' : 'draft'}]`).join('; ')}`)
+console.log(`Careers: ${source.vacancies.map(vacancy => `${vacancy.title} (${vacancyIdentity(vacancy)}) [${vacancy.isPublished ? 'published' : 'draft'}]`).join('; ')}`)
 
 if (dryRun) {
   console.log('Dry run complete. No Sanity records or assets were changed.')
@@ -243,22 +255,29 @@ if (dryRun) {
 }
 
 const client = getCliClient({ apiVersion: '2026-11-14' })
+console.log('Authenticated Sanity client is ready. Starting asset and document transfer.')
 
-for (const article of source.news) {
-  const asset = await uploadArticleImage(client, article)
-  const document = newsDocument(article, asset._id)
-  const baseId = document._id.replace(/^drafts\./, '')
-  const oppositeId = article.isPublished ? `drafts.${baseId}` : baseId
-  await client.transaction().createOrReplace(document).delete(oppositeId).commit()
-  console.log(`Migrated news: ${article.title}`)
+try {
+  for (const article of source.news) {
+    console.log(`Uploading image for: ${article.title}`)
+    const asset = await uploadArticleImage(client, article)
+    const document = newsDocument(article, asset._id)
+    const baseId = document._id.replace(/^drafts\./, '')
+    const oppositeId = article.isPublished ? `drafts.${baseId}` : baseId
+    await client.transaction().createOrReplace(document).delete(oppositeId).commit()
+    console.log(`Migrated news: ${article.title}`)
+  }
+
+  for (const vacancy of source.vacancies) {
+    const document = vacancyDocument(vacancy)
+    const baseId = document._id.replace(/^drafts\./, '')
+    const oppositeId = vacancy.isPublished ? `drafts.${baseId}` : baseId
+    await client.transaction().createOrReplace(document).delete(oppositeId).commit()
+    console.log(`Migrated career vacancy: ${vacancy.title}`)
+  }
+
+  console.log('Sanity content migration completed successfully.')
+} catch (error) {
+  console.error(`Sanity content migration failed: ${error?.stack || error?.message || error}`)
+  process.exitCode = 1
 }
-
-for (const vacancy of source.vacancies) {
-  const document = vacancyDocument(vacancy)
-  const baseId = document._id.replace(/^drafts\./, '')
-  const oppositeId = vacancy.isPublished ? `drafts.${baseId}` : baseId
-  await client.transaction().createOrReplace(document).delete(oppositeId).commit()
-  console.log(`Migrated career vacancy: ${vacancy.title}`)
-}
-
-console.log('Sanity content migration completed successfully.')
