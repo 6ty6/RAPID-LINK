@@ -80,4 +80,45 @@ Supabase because these settings exist only on `cms-evaluation/sanity`.
 6. Invite a second test user and record what the Free plan's two available roles can and cannot do.
 7. Record editing usability, preview experience, audit/history limitations, migration effort, ownership and estimated operating cost.
 
+## Import the existing news and career records
+
+The migration script combines the bundled website records with all managed
+Supabase news and vacancy records. Supabase records take precedence where a
+matching news slug or vacancy already exists. The script uploads article
+images, uses stable Sanity document IDs and preserves published versus draft
+status, so rerunning it updates records instead of creating duplicates.
+
+Authenticate the Sanity CLI once. This opens the browser so the project owner
+can approve access:
+
+```powershell
+Push-Location .\cms\sanity\studio
+$env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
+& '.\node_modules\.bin\sanity.cmd' login
+Pop-Location
+```
+
+From the repository root, inspect what will be transferred without changing
+Sanity:
+
+```powershell
+Push-Location .\cms\sanity\studio
+$env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
+& '.\node_modules\.bin\sanity.cmd' exec '.\scripts\migrateExistingContent.js' --with-user-token -- --dry-run
+Pop-Location
+```
+
+Then perform the transfer:
+
+```powershell
+Push-Location .\cms\sanity\studio
+$env:NODE_OPTIONS='--require=../../../tools/node-userinfo-shim.cjs'
+& '.\node_modules\.bin\sanity.cmd' exec '.\scripts\migrateExistingContent.js' --with-user-token
+Pop-Location
+```
+
+The commands use the current Sanity CLI login and the local, ignored
+`.env.local` file. Never commit or paste the Supabase test credentials or a
+Sanity token into the migration script.
+
 The Sanity Free plan permits public datasets only. This makes it suitable for published marketing content, but unpublished material and editorial access must be assessed carefully before recommending it for production.
