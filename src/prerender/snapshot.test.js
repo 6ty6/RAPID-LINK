@@ -21,7 +21,14 @@ describe('pre-render public data', () => {
     }
     expect(() => publicSnapshot([article, article], [])).toThrow()
     expect(() => publicSnapshot([], [{ ...localContent.getVacancies()[0], is_published: false }])).toThrow()
-    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [] })
+    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [], impactCounters: [] })
+    expect(() => publicSnapshot([], [], [{ target: -1, label: 'Invalid', icon: 'customers' }])).toThrow()
+    expect(publicSnapshot([], [], [{
+      id: 'customers', target: 7000, suffix: '+', label: 'Happy Customers', icon: 'customers', displayOrder: 1,
+    }]).impactCounters[0]).toEqual({
+      id: 'customers', target: 7000, prefix: '', suffix: '+', label: 'Happy Customers',
+      icon: 'customers', displayOrder: 1, verifiedAt: '',
+    })
   })
 
   it('generates absolute page metadata and keeps previews and protected pages noindex', () => {

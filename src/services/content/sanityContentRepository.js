@@ -38,6 +38,18 @@ const vacancyQuery = `*[_type == "careerVacancy" && isPublished == true] | order
   applicationEmail
 }`
 
+const impactCounterQuery = `*[_type == "impactCounter" && isPublished == true] | order(displayOrder asc){
+  "id": _id,
+  target,
+  prefix,
+  suffix,
+  label,
+  icon,
+  displayOrder,
+  isPublished,
+  verifiedAt
+}`
+
 async function querySanity(query) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
@@ -80,5 +92,20 @@ export async function getSanityPublishedVacancies() {
     status: vacancy.status,
     is_published: Boolean(vacancy.isPublished),
     application_email: vacancy.applicationEmail,
+  }))
+}
+
+export async function getSanityImpactCounters() {
+  const rows = await querySanity(impactCounterQuery)
+  return rows.map(counter => ({
+    id: counter.id,
+    target: counter.target,
+    prefix: counter.prefix || '',
+    suffix: counter.suffix || '',
+    label: counter.label,
+    icon: counter.icon,
+    displayOrder: counter.displayOrder,
+    is_published: Boolean(counter.isPublished),
+    verifiedAt: counter.verifiedAt || '',
   }))
 }

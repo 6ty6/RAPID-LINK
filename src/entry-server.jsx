@@ -2,7 +2,7 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
 import App from './App.jsx'
-import { getNews, getVacancies, getProducts } from './content/index.js'
+import { getNews, getVacancies, getImpactCounters, getProducts } from './content/index.js'
 import { localContent } from './content/local.js'
 import { PublicContentContext } from './content/PublicContentContext.jsx'
 import { MetaContext } from './prerender/MetaContext.js'
@@ -23,11 +23,16 @@ export async function prepareContent(source = 'configured') {
       throw new Error('A Sanity project ID is required when Sanity is selected.')
     }
   }
-  const adapter = source === 'bundled' ? localContent : { getNews, getVacancies }
+  const adapter = source === 'bundled' ? {
+    getNews: localContent.getNews,
+    getVacancies: localContent.getVacancies,
+    getImpactCounters: async () => localContent.getInstitutionalProfile().impact.statistics,
+  } : { getNews, getVacancies, getImpactCounters }
   let timer
   try {
     return await Promise.race([
-      Promise.all([adapter.getNews(), adapter.getVacancies()]).then(([news, vacancies]) => publicSnapshot(news, vacancies)),
+      Promise.all([adapter.getNews(), adapter.getVacancies(), adapter.getImpactCounters()])
+        .then(([news, vacancies, impactCounters]) => publicSnapshot(news, vacancies, impactCounters)),
       new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Public content retrieval timed out.')), 20000) }),
     ])
   } finally {

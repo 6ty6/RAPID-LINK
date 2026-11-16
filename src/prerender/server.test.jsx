@@ -23,6 +23,9 @@ describe('server pre-rendering', () => {
     const careers = renderPage('/rapidlink-careers', snapshot)
     expect(careers.html).toContain(snapshot.vacancies[0].title)
     expect(careers.html).not.toContain('Loading approved')
+    const profile = renderPage('/institutional-profile', snapshot)
+    expect(profile.html).toContain('Happy Customers')
+    expect(profile.html).toContain('7,000')
   })
 
   it('only renders allow-listed public routes', async () => {

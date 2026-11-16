@@ -110,6 +110,8 @@ describe('public content repository', () => {
     expect(content.getVacanciesSnapshot()).toEqual({ records: careerVacancies, loading: false })
     expect(await content.getNews()).toEqual(newsArticles)
     expect(await content.getVacancies()).toEqual(careerVacancies)
+    expect(content.getImpactCountersSnapshot()).toEqual({ records: institutionalProfileContent.impact.statistics, loading: false })
+    expect(await content.getImpactCounters()).toEqual(institutionalProfileContent.impact.statistics)
     expect(await content.getNewsBySlug(newsArticles[0].slug)).toEqual(newsArticles[0])
     expect(await content.getNewsBySlug('missing')).toBeUndefined()
   })
@@ -128,18 +130,23 @@ describe('public content repository', () => {
   it('uses remote public results while retaining the initial local loading snapshot', async () => {
     const remoteNews = [{ ...newsArticles[0], title: 'Remote story' }]
     const remoteVacancies = [{ ...careerVacancies[0], title: 'Remote vacancy' }]
+    const remoteImpactCounters = [{ id: 'remote-counter', target: 8000, suffix: '+', label: 'Remote customers', icon: 'customers', displayOrder: 1 }]
     const publicSource = {
       getNews: vi.fn().mockResolvedValue(remoteNews),
       getVacancies: vi.fn().mockResolvedValue(remoteVacancies),
+      getImpactCounters: vi.fn().mockResolvedValue(remoteImpactCounters),
     }
     const content = createContentRepository({ local: localContent, publicSource })
     expect(content.getNewsSnapshot()).toEqual({ records: newsArticles, loading: true })
     expect(content.getVacanciesSnapshot()).toEqual({ records: careerVacancies, loading: true })
+    expect(content.getImpactCountersSnapshot()).toEqual({ records: institutionalProfileContent.impact.statistics, loading: true })
     expect(await content.getNews()).toEqual(remoteNews)
     expect(await content.getVacancies()).toEqual(remoteVacancies)
+    expect(await content.getImpactCounters()).toEqual(remoteImpactCounters)
     expect(await content.getNewsBySlug(remoteNews[0].slug)).toEqual(remoteNews[0])
     expect(publicSource.getVacancies).toHaveBeenCalledWith()
     expect(publicSource.getNews).toHaveBeenCalledWith()
+    expect(publicSource.getImpactCounters).toHaveBeenCalledWith()
   })
 
   it('honours empty remote results and propagates failures without restoring local records', async () => {

@@ -3,7 +3,7 @@ import { PublicContentContext } from '../content/PublicContentContext.jsx'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
-import { getBoard, getFaqs, getVacanciesSnapshot, getInstitutionalProfile, getVacancies, getSiteInformation, getPage } from '../content/index.js'
+import { getBoard, getFaqs, getVacanciesSnapshot, getImpactCountersSnapshot, getInstitutionalProfile, getVacancies, getImpactCounters, getSiteInformation, getPage } from '../content/index.js'
 import usePublishedNews from '../hooks/usePublishedNews'
 
 const faqs = getFaqs()
@@ -32,7 +32,7 @@ function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedT
   </>
 }
 
-function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
+function ImpactCounter({ target, prefix = '', suffix = '', label, icon: Icon }) {
   const snapshot = useContext(PublicContentContext)
   const [value, setValue] = useState(snapshot ? target : 0)
   const counterRef = useRef(null)
@@ -72,7 +72,7 @@ function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
 
   return <article ref={counterRef} className="impact-stat">
     <div className="impact-icon"><Icon size={23} /></div>
-    <div><strong>{value.toLocaleString()}{suffix}</strong><span>{label}</span></div>
+    <div><strong>{prefix}{value.toLocaleString()}{suffix}</strong><span>{label}</span></div>
   </article>
 }
 
@@ -113,6 +113,17 @@ function ProfileParagraph({ paragraph }) {
 }
 
 export function InstitutionalProfile() {
+  const snapshot = useContext(PublicContentContext)
+  const [initialCounters] = useState(() => snapshot
+    ? { records: snapshot.impactCounters || institutionalProfile.impact.statistics, loading: false }
+    : getImpactCountersSnapshot())
+  const [impactCounters, setImpactCounters] = useState(initialCounters.records)
+
+  useEffect(() => {
+    if (!initialCounters.loading && !snapshot) return
+    getImpactCounters().then(setImpactCounters).catch(() => {})
+  }, [initialCounters, snapshot])
+
   return <>
     <AboutHero title={institutionalProfile.hero.title} intro={institutionalProfile.hero.introduction} image={institutionalProfile.hero.image} position={institutionalProfile.hero.imagePosition} />
     <section className="section profile-copy-section"><div className="shell prose">
@@ -127,7 +138,7 @@ export function InstitutionalProfile() {
     <section className="impact-section" aria-labelledby="impact-title"><div className="shell impact-panel">
       <div className="impact-heading"><p className="eyebrow">{institutionalProfile.impact.eyebrow}</p><h2 id="impact-title">{institutionalProfile.impact.title}</h2></div>
       <div className="impact-grid">
-        {institutionalProfile.impact.statistics.map(statistic => <ImpactCounter {...statistic} icon={institutionalIcons[statistic.icon]} key={statistic.label} />)}
+        {impactCounters.map(statistic => <ImpactCounter {...statistic} icon={institutionalIcons[statistic.icon] || Info} key={statistic.id || statistic.label} />)}
       </div>
     </div></section>
   </>

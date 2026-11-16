@@ -9,6 +9,7 @@ const copy = value => structuredClone(value)
  *   publicSource?: import('./contracts.js').PublicContentAdapter | null}} adapters
  */
 export function createContentRepository({ local, publicSource = null }) {
+  const localImpactCounters = () => local.getInstitutionalProfile().impact.statistics
   const repository = {
     getSharedContent: () => copy(local.getSharedContent()),
     getPage: slug => copy(local.getPages().find(page => page.slug === slug)),
@@ -30,9 +31,11 @@ export function createContentRepository({ local, publicSource = null }) {
     getProductBySlug: slug => repository.getProducts().find(product => product.slug === slug),
     getNewsSnapshot: () => ({ records: copy(local.getNews()), loading: Boolean(publicSource) }),
     getVacanciesSnapshot: () => ({ records: copy(local.getVacancies()), loading: Boolean(publicSource) }),
+    getImpactCountersSnapshot: () => ({ records: copy(localImpactCounters()), loading: Boolean(publicSource?.getImpactCounters) }),
     getNews: async () => copy(await (publicSource || local).getNews()),
     getNewsBySlug: async slug => (await repository.getNews()).find(article => article.slug === slug),
     getVacancies: async () => copy(await (publicSource || local).getVacancies()),
+    getImpactCounters: async () => copy(await (publicSource?.getImpactCounters?.() || localImpactCounters())),
   }
   return repository
 }

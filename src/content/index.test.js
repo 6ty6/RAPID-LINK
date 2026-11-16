@@ -62,6 +62,10 @@ describe('configured public content adapter', () => {
         employmentType: 'Full-time', summary: 'Test vacancy', responsibilities: ['Test safely'],
         status: 'open', isPublished: true, applicationEmail: 'careers@example.test',
       }] }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ result: [{
+        id: 'counter-1', target: 7500, suffix: '+', label: 'Customers served', icon: 'customers',
+        displayOrder: 1, isPublished: true, verifiedAt: '2026-11-16',
+      }] }) })
     vi.stubGlobal('fetch', fetchMock)
     const content = await import('./index.js')
 
@@ -72,7 +76,11 @@ describe('configured public content adapter', () => {
       id: 'vacancy-1', employment_type: 'Full-time', is_published: true,
       application_email: 'careers@example.test',
     })
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect((await content.getImpactCounters())[0]).toMatchObject({
+      id: 'counter-1', target: 7500, prefix: '', suffix: '+', label: 'Customers served',
+      icon: 'customers', displayOrder: 1, is_published: true, verifiedAt: '2026-11-16',
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(3)
     for (const [url, options] of fetchMock.mock.calls) {
       const endpoint = new URL(url)
       expect(endpoint.origin).toBe('https://rapidlinktest.apicdn.sanity.io')

@@ -24,6 +24,7 @@ The two prepared document types are in `cms/sanity/schemaTypes`:
 
 - `newsArticle`
 - `careerVacancy`
+- `impactCounter`
 
 The standalone Studio is in `cms/sanity/studio` and imports these shared schema types. Its dependencies and build output remain isolated from the public website.
 
@@ -34,6 +35,23 @@ npm --prefix cms/sanity/studio run dev
 ```
 
 The first visit asks you to sign in to the Sanity account that owns project `04unhu7g`.
+
+## Manage the impact counters
+
+Open **Impact counter** in Studio and create one document per card. For the
+current approved website values, enter:
+
+| Counter description | Number | Suffix | Icon | Display order |
+| --- | ---: | --- | --- | ---: |
+| Branches Nationwide | 2 | | Branches | 1 |
+| Happy Customers | 7000 | + | Customers | 2 |
+| Years of Service | 15 | + | Years | 3 |
+| Financial Products | 5 | + | Financial products | 4 |
+
+For every record, enable **Visible on website**, add the date the figure was
+last verified, then click **Publish**. Drafts and records with visibility off
+are not returned to the website. Changing **Display order** rearranges the
+cards without a code change.
 
 ## Connect the website preview
 
@@ -58,7 +76,8 @@ Supabase because these settings exist only on `cms-evaluation/sanity`.
 2. Publish it and enable **Visible on website**; confirm it appears on Stories and the homepage where applicable.
 3. Upload an image and confirm its description is required.
 4. Create, close and unpublish a vacancy and verify each public state.
-5. Invite a second test user and record what the Free plan's two available roles can and cannot do.
-6. Record editing usability, preview experience, audit/history limitations, migration effort, ownership and estimated operating cost.
+5. Create impact counters, change their order and verify their animated values on the Institutional Profile page.
+6. Invite a second test user and record what the Free plan's two available roles can and cannot do.
+7. Record editing usability, preview experience, audit/history limitations, migration effort, ownership and estimated operating cost.
 
 The Sanity Free plan permits public datasets only. This makes it suitable for published marketing content, but unpublished material and editorial access must be assessed carefully before recommending it for production.

@@ -19,6 +19,9 @@
  * @typedef {{id: string, title: string, department: string, location: string,
  *   employment_type: string, summary: string, responsibilities: string[],
  *   status: string, is_published: boolean, application_email: string}} Vacancy
+ * @typedef {{id?: string, target: number, prefix?: string, suffix?: string,
+ *   label: string, icon: 'branches'|'customers'|'years'|'products',
+ *   displayOrder?: number, is_published?: boolean, verifiedAt?: string}} ImpactCounter
  * @typedef {{records: Array<NewsArticle>, loading: boolean}} NewsSnapshot
  * @typedef {{records: Array<Vacancy>, loading: boolean}} VacancySnapshot
  * @typedef {{getAnnouncements: () => Announcement[], getFaqs: () => Faq[],
@@ -31,7 +34,8 @@
  *   getInstitutionalProfile: () => typeof import('./institutionalProfile.js').institutionalProfileContent,
  *   getSiteInformation: () => typeof import('./site.js').siteInformation}} LocalContentAdapter
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
- *   getVacancies: () => Promise<Vacancy[]>}} PublicContentAdapter
+ *   getVacancies: () => Promise<Vacancy[]>,
+ *   getImpactCounters?: () => Promise<ImpactCounter[]>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
  *   imageAlt?: string}} PageHero

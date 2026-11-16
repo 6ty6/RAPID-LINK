@@ -36,11 +36,25 @@
  */
 
 /**
+ * @typedef {Object} ImpactCounter
+ * @property {string} [id]
+ * @property {number} target
+ * @property {string} [prefix]
+ * @property {string} [suffix]
+ * @property {string} label
+ * @property {'branches'|'customers'|'years'|'products'} icon
+ * @property {number} [displayOrder]
+ * @property {boolean} [is_published]
+ * @property {string} [verifiedAt]
+ */
+
+/**
  * @typedef {Object} ContentRepository
  * @property {() => string[]} getAnnouncements
  * @property {() => Object} getBoard
  * @property {() => NewsArticle[]} getNews
  * @property {() => Vacancy[]} getVacancies
+ * @property {() => ImpactCounter[]} getImpactCounters
  * @property {() => Record<string, Object>} getProducts
  * @property {() => Array<[string, string]>} getFaqs
  * @property {() => Object} getHomepageContent

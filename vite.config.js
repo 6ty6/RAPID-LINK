@@ -34,7 +34,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
-    exclude: ['tests/e2e/**', 'tests/prerender/**', 'node_modules/**', 'dist/**', '.prerender/**', '.worktrees/**'],
+    exclude: ['tests/e2e/**', 'tests/prerender/**', '**/node_modules/**', 'dist/**', '.prerender/**', '.worktrees/**', 'cms/sanity/studio/**'],
     css: true,
   },
 })

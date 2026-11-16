@@ -3,8 +3,8 @@ export const safeSlug = value => typeof value === 'string' && /^[a-z0-9]+(?:-[a-
 
 // Select public presentation fields explicitly. Never serialize complete API
 // rows, staff records, credentials or authentication/session responses.
-export function publicSnapshot(news, vacancies) {
-  if (!Array.isArray(news) || !Array.isArray(vacancies)) throw new Error('Invalid public content response.')
+export function publicSnapshot(news, vacancies, impactCounters = []) {
+  if (!Array.isArray(news) || !Array.isArray(vacancies) || !Array.isArray(impactCounters)) throw new Error('Invalid public content response.')
   const slugs = new Set()
   return {
     news: news.map(article => {
@@ -37,6 +37,23 @@ export function publicSnapshot(news, vacancies) {
         is_published: true, responsibilities: [...vacancy.responsibilities],
       }
     }),
+    impactCounters: impactCounters.map(counter => {
+      if (counter.is_published === false || !text(counter.label) || !Number.isInteger(counter.target) || counter.target < 0 ||
+          !['branches', 'customers', 'years', 'products'].includes(counter.icon) ||
+          (counter.prefix && typeof counter.prefix !== 'string') || (counter.suffix && typeof counter.suffix !== 'string')) {
+        throw new Error('Invalid public impact counter record.')
+      }
+      return {
+        id: counter.id || `${counter.icon}-${counter.label}`,
+        target: counter.target,
+        prefix: counter.prefix || '',
+        suffix: counter.suffix || '',
+        label: counter.label,
+        icon: counter.icon,
+        displayOrder: Number.isInteger(counter.displayOrder) ? counter.displayOrder : 0,
+        verifiedAt: counter.verifiedAt || '',
+      }
+    }).sort((left, right) => left.displayOrder - right.displayOrder),
   }
 }
 

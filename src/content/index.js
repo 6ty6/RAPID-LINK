@@ -2,7 +2,7 @@ import {
   isNewsRepositoryConfigured, getRemotePublishedNews, getRemotePublishedVacancies,
 } from '../services/content/supabaseContentRepository.js'
 import {
-  isSanityRepositoryConfigured, getSanityPublishedNews, getSanityPublishedVacancies,
+  isSanityRepositoryConfigured, getSanityPublishedNews, getSanityPublishedVacancies, getSanityImpactCounters,
 } from '../services/content/sanityContentRepository.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
@@ -11,6 +11,7 @@ const requestedSource = (import.meta.env.VITE_CONTENT_SOURCE || 'supabase').toLo
 const sanitySource = isSanityRepositoryConfigured ? {
   getNews: getSanityPublishedNews,
   getVacancies: getSanityPublishedVacancies,
+  getImpactCounters: getSanityImpactCounters,
 } : null
 const supabaseSource = isNewsRepositoryConfigured ? {
   getNews: getRemotePublishedNews,
@@ -30,5 +31,6 @@ export const {
   getPage, getDocuments, getDocumentBySlug, getSharedContent,
   getAnnouncements, getFaqs, getNavigation, getProducts, getProductBySlug,
   getNewsSnapshot, getVacanciesSnapshot, getNews, getNewsBySlug, getVacancies,
+  getImpactCountersSnapshot, getImpactCounters,
   getBoard, getHomepageContent, getInstitutionalProfile, getSiteInformation,
 } = content
