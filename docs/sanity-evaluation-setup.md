@@ -48,6 +48,10 @@ VITE_SANITY_API_VERSION=2026-11-14
 
 In Sanity Manage, open **Settings > API settings > CORS Origins** and add the exact preview origin. Do not allow credentials for public website reads.
 
+The evaluation branch's `render.yaml` already selects Sanity and permits the
+project's CDN in the website Content Security Policy. Production remains on
+Supabase because these settings exist only on `cms-evaluation/sanity`.
+
 ## Evaluation checks
 
 1. Create an unpublished news article and confirm it does not appear publicly.
