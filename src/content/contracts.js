@@ -40,7 +40,8 @@
  *   getVacancies: () => Promise<Vacancy[]>,
  *   getImpactCounters?: () => Promise<ImpactCounter[]>,
  *   getFaqs?: () => Promise<Faq[]>,
- *   getAnnouncements?: () => Promise<Announcement[]>}} PublicContentAdapter
+ *   getAnnouncements?: () => Promise<Announcement[]>,
+ *   getSiteInformation?: () => Promise<typeof import('./site.js').siteInformation>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
  *   imageAlt?: string}} PageHero

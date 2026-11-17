@@ -12,7 +12,10 @@
     "verify:faqs": "sanity exec scripts/verifyFaqs.js --with-user-token",
     "migrate:announcements": "sanity exec scripts/migrateAnnouncements.js --with-user-token",
     "migrate:announcements:dry-run": "sanity exec scripts/migrateAnnouncements.js --with-user-token -- --dry-run",
-    "verify:announcements": "sanity exec scripts/verifyAnnouncements.js --with-user-token"
+    "verify:announcements": "sanity exec scripts/verifyAnnouncements.js --with-user-token",
+    "migrate:site-settings": "sanity exec scripts/migrateSiteSettings.js --with-user-token",
+    "migrate:site-settings:dry-run": "sanity exec scripts/migrateSiteSettings.js --with-user-token -- --dry-run",
+    "verify:site-settings": "sanity exec scripts/verifySiteSettings.js --with-user-token"
   },
   "dependencies": {
     "@sanity/themer": "^0.10.7",

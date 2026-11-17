@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { CircleAlert, Phone } from '../icons'
 import { config } from '../config'
 import { PageHero } from '../components/Shared'
-import { getSiteInformation, getPage } from '../content/index.js'
-
-const { contact } = getSiteInformation()
+import { getPage } from '../content/index.js'
+import useSiteInformation from '../hooks/useSiteInformation.js'
 
 export function calculateLoanEstimate(principal, rate, duration) {
   const totalInterest = principal * (rate / 100) * duration
@@ -12,6 +11,7 @@ export function calculateLoanEstimate(principal, rate, duration) {
 }
 
 export function ApplyLoan() {
+  const { contact } = useSiteInformation()
   if (config.generalLoanPortal) {
     return <>
       <PageHero {...getPage('apply-loan-connected').hero} />

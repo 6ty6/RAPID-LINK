@@ -74,6 +74,14 @@ const announcementQuery = `*[
   isPublished
 }`
 
+const siteSettingsQuery = `*[_type == "siteSettings" && _id == "rapidlink-site-settings"]{
+  email,
+  supportLines[]{"id": _key, label, mobileLabel, display, href},
+  loanSupportLines[]{display, href},
+  branches[]{"id": _key, title, contactTitle, address, fullAddress, digitalAddress, mapName, phones},
+  socialProfiles[]{name, href, icon}
+}`
+
 async function querySanity(query) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
@@ -160,4 +168,20 @@ export async function getSanityPublishedAnnouncements() {
     expiryDate: announcement.expiryDate || '',
     is_published: Boolean(announcement.isPublished),
   }))
+}
+
+export async function getSanitySiteInformation() {
+  const rows = await querySanity(siteSettingsQuery)
+  const settings = rows[0]
+  if (!settings) throw new Error('Sanity contact and social settings have not been created.')
+
+  return {
+    contact: {
+      email: settings.email,
+      supportLines: Array.isArray(settings.supportLines) ? settings.supportLines : [],
+      loanSupportLines: Array.isArray(settings.loanSupportLines) ? settings.loanSupportLines : [],
+    },
+    branches: Array.isArray(settings.branches) ? settings.branches : [],
+    socialProfiles: Array.isArray(settings.socialProfiles) ? settings.socialProfiles : [],
+  }
 }

@@ -37,6 +37,10 @@ export function createContentRepository({ local, publicSource = null }) {
       records: copy(local.getAnnouncements()),
       loading: Boolean(publicSource?.getAnnouncements),
     }),
+    getSiteInformationSnapshot: () => ({
+      record: copy(local.getSiteInformation()),
+      loading: Boolean(publicSource?.getSiteInformation),
+    }),
     getNews: async () => copy(await (publicSource || local).getNews()),
     getNewsBySlug: async slug => (await repository.getNews()).find(article => article.slug === slug),
     getVacancies: async () => copy(await (publicSource || local).getVacancies()),
@@ -45,6 +49,16 @@ export function createContentRepository({ local, publicSource = null }) {
     getPublishedAnnouncements: async () => copy(await (
       publicSource?.getAnnouncements?.() || local.getAnnouncements()
     )),
+    getPublishedSiteInformation: async () => {
+      const localRecord = local.getSiteInformation()
+      if (!publicSource?.getSiteInformation) return copy(localRecord)
+      const remoteRecord = await publicSource.getSiteInformation()
+      return copy({
+        ...localRecord,
+        ...remoteRecord,
+        contact: { ...localRecord.contact, ...remoteRecord.contact },
+      })
+    },
   }
   return repository
 }

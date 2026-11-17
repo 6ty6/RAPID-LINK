@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, Menu, Phone, X } from '../icons'
-import { getNavigation as getNavigationGroups, getSiteInformation } from '../content/index.js'
+import { getNavigation as getNavigationGroups } from '../content/index.js'
+import useSiteInformation from '../hooks/useSiteInformation.js'
 import AnnouncementBar from './AnnouncementBar'
 
 const cx = (...values) => values.filter(Boolean).join(' ')
 const navGroups = getNavigationGroups()
-const { contact } = getSiteInformation()
 
 export default function Header() {
+  const { contact } = useSiteInformation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')

@@ -5,6 +5,7 @@ import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info,
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
 import { getBoard, getFaqsSnapshot, getPublishedFaqs, getVacanciesSnapshot, getImpactCountersSnapshot, getInstitutionalProfile, getVacancies, getImpactCounters, getSiteInformation, getPage } from '../content/index.js'
 import usePublishedNews from '../hooks/usePublishedNews'
+import useSiteInformation from '../hooks/useSiteInformation.js'
 
 const board = getBoard()
 const institutionalProfile = getInstitutionalProfile()
@@ -375,16 +376,17 @@ export function Careers() {
   </>
 }
 
-function Branch({ title, address, digital, phones }) {
+function Branch({ title, address, digital, phones, email }) {
   return <article>
     <p className="eyebrow">{title}</p><h2>{address}</h2><p>Digital address: {digital}</p>
     {phones.map(phone => <a className="contact-link" key={phone} href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>)}
-    <a className="contact-link" href={`mailto:${siteInformation.contact.email}`}>{siteInformation.contact.email}</a>
+    <a className="contact-link" href={`mailto:${email}`}>{email}</a>
   </article>
 }
 
 export function Contact() {
-  const branches = siteInformation.branches.map(branch => ({
+  const managedSiteInformation = useSiteInformation()
+  const branches = managedSiteInformation.branches.map(branch => ({
     ...branch,
     query: `${branch.mapName}, ${branch.fullAddress}`,
   }))
@@ -393,7 +395,7 @@ export function Contact() {
   return <>
     <PageHero {...getPage('contact').hero} />
     <section className="section"><div className="shell two-cards">
-      {branches.map(branch => <Branch key={branch.id} title={branch.contactTitle} address={branch.address} digital={branch.digitalAddress} phones={branch.phones} />)}
+      {branches.map(branch => <Branch key={branch.id} title={branch.contactTitle} address={branch.address} digital={branch.digitalAddress} phones={branch.phones} email={managedSiteInformation.contact.email} />)}
     </div></section>
     <section className="section contact-map-section" aria-labelledby="branch-map-title">
       <div className="shell contact-map-panel">

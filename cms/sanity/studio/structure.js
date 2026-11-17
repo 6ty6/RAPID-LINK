@@ -15,6 +15,13 @@ const contentSection = (S, title, type, pluralTitle) => S.listItem()
 export const structure = S => S.list()
   .title('RapidLink content')
   .items([
+    S.listItem()
+      .title('Contact & social settings')
+      .child(S.document()
+        .schemaType('siteSettings')
+        .documentId('rapidlink-site-settings')
+        .title('Contact & social settings')),
+    S.divider(),
     contentSection(S, 'News', 'newsArticle', 'articles'),
     contentSection(S, 'Careers', 'careerVacancy', 'vacancies'),
     contentSection(S, 'FAQs', 'faq', 'questions'),

@@ -13,7 +13,15 @@ export default defineConfig({
   dataset: 'production',
   theme: rapidLinkTheme,
   plugins: [structureTool({ structure })],
-  schema: { types: schemaTypes },
+  schema: {
+    types: schemaTypes,
+    templates: templates => templates.filter(template => template.schemaType !== 'siteSettings'),
+  },
+  document: {
+    actions: (actions, context) => context.schemaType === 'siteSettings'
+      ? actions.filter(action => !['delete', 'duplicate'].includes(action.action))
+      : actions,
+  },
   studio: {
     components: { navbar: RapidLinkNavbar },
   },
