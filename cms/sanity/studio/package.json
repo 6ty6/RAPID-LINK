@@ -9,7 +9,10 @@
     "deploy": "sanity deploy",
     "migrate:faqs": "sanity exec scripts/migrateFaqs.js --with-user-token",
     "migrate:faqs:dry-run": "sanity exec scripts/migrateFaqs.js --with-user-token -- --dry-run",
-    "verify:faqs": "sanity exec scripts/verifyFaqs.js --with-user-token"
+    "verify:faqs": "sanity exec scripts/verifyFaqs.js --with-user-token",
+    "migrate:announcements": "sanity exec scripts/migrateAnnouncements.js --with-user-token",
+    "migrate:announcements:dry-run": "sanity exec scripts/migrateAnnouncements.js --with-user-token -- --dry-run",
+    "verify:announcements": "sanity exec scripts/verifyAnnouncements.js --with-user-token"
   },
   "dependencies": {
     "@sanity/themer": "^0.10.7",
