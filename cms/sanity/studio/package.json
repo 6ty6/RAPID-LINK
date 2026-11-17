@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "sanity dev",
     "build": "sanity build",
-    "deploy": "sanity deploy"
+    "deploy": "sanity deploy",
+    "migrate:faqs": "sanity exec scripts/migrateFaqs.js --with-user-token",
+    "migrate:faqs:dry-run": "sanity exec scripts/migrateFaqs.js --with-user-token -- --dry-run",
+    "verify:faqs": "sanity exec scripts/verifyFaqs.js --with-user-token"
   },
   "dependencies": {
     "react": "^19.2.2",

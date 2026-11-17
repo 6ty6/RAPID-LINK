@@ -32,10 +32,12 @@ export function createContentRepository({ local, publicSource = null }) {
     getNewsSnapshot: () => ({ records: copy(local.getNews()), loading: Boolean(publicSource) }),
     getVacanciesSnapshot: () => ({ records: copy(local.getVacancies()), loading: Boolean(publicSource) }),
     getImpactCountersSnapshot: () => ({ records: copy(localImpactCounters()), loading: Boolean(publicSource?.getImpactCounters) }),
+    getFaqsSnapshot: () => ({ records: copy(local.getFaqs()), loading: Boolean(publicSource?.getFaqs) }),
     getNews: async () => copy(await (publicSource || local).getNews()),
     getNewsBySlug: async slug => (await repository.getNews()).find(article => article.slug === slug),
     getVacancies: async () => copy(await (publicSource || local).getVacancies()),
     getImpactCounters: async () => copy(await (publicSource?.getImpactCounters?.() || localImpactCounters())),
+    getPublishedFaqs: async () => copy(await (publicSource?.getFaqs?.() || local.getFaqs())),
   }
   return repository
 }

@@ -6,7 +6,7 @@ This branch evaluates Sanity without changing RapidLink's production content sou
 
 - The website reads Sanity's public CDN with native `fetch`, so no Sanity SDK is added to the production bundle.
 - No secret token is stored in the frontend.
-- Only news and vacancies are included in the first evaluation.
+- News, vacancies, impact counters and FAQs are included in the evaluation.
 - Studio dependencies are not installed until a free Sanity project exists.
 
 ## Create the free project
@@ -20,13 +20,19 @@ Do not add billing details, production customer data, Supabase credentials or re
 
 ## Studio schema
 
-The two prepared document types are in `cms/sanity/schemaTypes`:
+The prepared document types are in `cms/sanity/schemaTypes`:
 
 - `newsArticle`
 - `careerVacancy`
 - `impactCounter`
+- `faq`
 
 The standalone Studio is in `cms/sanity/studio` and imports these shared schema types. Its dependencies and build output remain isolated from the public website.
+
+The Studio menu is grouped into **News**, **Careers**, **FAQs** and **Impact
+numbers**. Each group includes an all-content view plus separate views for
+content that is visible on the website and content that is hidden or still a
+draft.
 
 Run it locally from the repository root with:
 
@@ -35,6 +41,25 @@ npm --prefix cms/sanity/studio run dev
 ```
 
 The first visit asks you to sign in to the Sanity account that owns project `04unhu7g`.
+
+## Import the existing FAQs
+
+The FAQ migration copies all seven existing website questions into Sanity,
+preserves their order, assigns editorial categories and publishes them. It uses
+stable document IDs, so rerunning it updates the same questions rather than
+creating duplicates.
+
+Run these commands from the repository root after signing in to the Sanity CLI:
+
+```text
+npm.cmd --prefix cms/sanity/studio run migrate:faqs:dry-run
+npm.cmd --prefix cms/sanity/studio run migrate:faqs
+npm.cmd --prefix cms/sanity/studio run verify:faqs
+```
+
+For a new or edited FAQ to appear publicly, enable **Visible on website** and
+then publish the Sanity document. Saving only a draft does not update the
+website.
 
 ## Manage the impact counters
 

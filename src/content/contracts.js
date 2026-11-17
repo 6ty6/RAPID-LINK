@@ -6,7 +6,8 @@
  * this stage does not invent records, prices, approval dates or opening hours.
  *
  * @typedef {{id: string, message: string}} Announcement
- * @typedef {{id: string, question: string, answer: string}} Faq
+ * @typedef {{id: string, question: string, answer: string, category?: string,
+ *   displayOrder?: number, is_published?: boolean}} Faq
  * @typedef {{label: string, href: string}} NavigationLink
  * @typedef {{label: string, href: string, items: NavigationLink[]}} NavigationGroup
  * @typedef {{slug: string, category: string, title: string, intro: string,
@@ -24,6 +25,7 @@
  *   displayOrder?: number, is_published?: boolean, verifiedAt?: string}} ImpactCounter
  * @typedef {{records: Array<NewsArticle>, loading: boolean}} NewsSnapshot
  * @typedef {{records: Array<Vacancy>, loading: boolean}} VacancySnapshot
+ * @typedef {{records: Array<Faq>, loading: boolean}} FaqSnapshot
  * @typedef {{getAnnouncements: () => Announcement[], getFaqs: () => Faq[],
  *   getSharedContent: () => typeof import('./shared.js').sharedContent,
  *   getPages: () => Page[], getDocuments: () => PublicDocument[],
@@ -35,7 +37,8 @@
  *   getSiteInformation: () => typeof import('./site.js').siteInformation}} LocalContentAdapter
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
  *   getVacancies: () => Promise<Vacancy[]>,
- *   getImpactCounters?: () => Promise<ImpactCounter[]>}} PublicContentAdapter
+ *   getImpactCounters?: () => Promise<ImpactCounter[]>,
+ *   getFaqs?: () => Promise<Faq[]>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
  *   imageAlt?: string}} PageHero

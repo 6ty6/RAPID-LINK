@@ -50,6 +50,15 @@ const impactCounterQuery = `*[_type == "impactCounter" && isPublished == true] |
   verifiedAt
 }`
 
+const faqQuery = `*[_type == "faq" && isPublished == true] | order(displayOrder asc, _createdAt asc){
+  "id": _id,
+  question,
+  answer,
+  category,
+  displayOrder,
+  isPublished
+}`
+
 async function querySanity(query) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
@@ -107,5 +116,17 @@ export async function getSanityImpactCounters() {
     displayOrder: counter.displayOrder,
     is_published: Boolean(counter.isPublished),
     verifiedAt: counter.verifiedAt || '',
+  }))
+}
+
+export async function getSanityPublishedFaqs() {
+  const rows = await querySanity(faqQuery)
+  return rows.map(faq => ({
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+    category: faq.category || 'General',
+    displayOrder: Number.isInteger(faq.displayOrder) ? faq.displayOrder : 0,
+    is_published: Boolean(faq.isPublished),
   }))
 }

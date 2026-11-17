@@ -21,7 +21,7 @@ describe('pre-render public data', () => {
     }
     expect(() => publicSnapshot([article, article], [])).toThrow()
     expect(() => publicSnapshot([], [{ ...localContent.getVacancies()[0], is_published: false }])).toThrow()
-    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [], impactCounters: [] })
+    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [], impactCounters: [], faqs: [] })
     expect(() => publicSnapshot([], [], [{ target: -1, label: 'Invalid', icon: 'customers' }])).toThrow()
     expect(publicSnapshot([], [], [{
       id: 'customers', target: 7000, suffix: '+', label: 'Happy Customers', icon: 'customers', displayOrder: 1,
@@ -29,6 +29,13 @@ describe('pre-render public data', () => {
       id: 'customers', target: 7000, prefix: '', suffix: '+', label: 'Happy Customers',
       icon: 'customers', displayOrder: 1, verifiedAt: '',
     })
+    expect(publicSnapshot([], [], [], [{
+      id: 'faq-1', question: 'What is RapidLink?', answer: 'A financial institution.', displayOrder: 1,
+    }]).faqs[0]).toEqual({
+      id: 'faq-1', question: 'What is RapidLink?', answer: 'A financial institution.',
+      category: 'General', displayOrder: 1,
+    })
+    expect(() => publicSnapshot([], [], [], [{ question: '', answer: 'Missing question' }])).toThrow()
   })
 
   it('generates absolute page metadata and keeps previews and protected pages noindex', () => {

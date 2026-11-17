@@ -3,10 +3,9 @@ import { PublicContentContext } from '../content/PublicContentContext.jsx'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
-import { getBoard, getFaqs, getVacanciesSnapshot, getImpactCountersSnapshot, getInstitutionalProfile, getVacancies, getImpactCounters, getSiteInformation, getPage } from '../content/index.js'
+import { getBoard, getFaqsSnapshot, getPublishedFaqs, getVacanciesSnapshot, getImpactCountersSnapshot, getInstitutionalProfile, getVacancies, getImpactCounters, getSiteInformation, getPage } from '../content/index.js'
 import usePublishedNews from '../hooks/usePublishedNews'
 
-const faqs = getFaqs()
 const board = getBoard()
 const institutionalProfile = getInstitutionalProfile()
 const siteInformation = getSiteInformation()
@@ -208,9 +207,31 @@ export function DigitalChannels() {
 }
 
 export function FAQs() {
+  const snapshot = useContext(PublicContentContext)
+  const [initial] = useState(() => snapshot
+    ? { records: snapshot.faqs || [], loading: false }
+    : getFaqsSnapshot())
+  const [faqs, setFaqs] = useState(initial.records)
+  const [loading, setLoading] = useState(initial.loading)
+  const [loadError, setLoadError] = useState(false)
+
+  useEffect(() => {
+    if (!initial.loading || snapshot) return undefined
+    let active = true
+    getPublishedFaqs()
+      .then(records => { if (active) { setFaqs(records); setLoadError(false) } })
+      .catch(() => { if (active) setLoadError(true) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [initial.loading, snapshot])
+
   return <>
     <PageHero {...getPage('faqs').hero} />
-    <section className="section"><div className="shell narrow accordion">{faqs.map(({ id, question, answer }) => <details key={id}>
+    <section className="section"><div className="shell narrow accordion">
+      {loading && <p className="panel" role="status">Loading frequently asked questions…</p>}
+      {loadError && !faqs.length && <p className="panel form-error" role="alert">Frequently asked questions are temporarily unavailable.</p>}
+      {!loading && !loadError && !faqs.length && <p className="panel">No frequently asked questions are currently published.</p>}
+      {faqs.map(({ id, question, answer }) => <details key={id}>
       <summary>{question}<ChevronDown aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div></section>
   </>
