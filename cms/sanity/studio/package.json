@@ -12,6 +12,7 @@
     "verify:faqs": "sanity exec scripts/verifyFaqs.js --with-user-token"
   },
   "dependencies": {
+    "@sanity/themer": "^0.10.7",
     "react": "^19.2.2",
     "react-dom": "^19.2.2",
     "sanity": "^6.23.0",

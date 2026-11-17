@@ -19,4 +19,5 @@ export const structure = S => S.list()
     contentSection(S, 'Careers', 'careerVacancy', 'vacancies'),
     contentSection(S, 'FAQs', 'faq', 'questions'),
     contentSection(S, 'Impact numbers', 'impactCounter', 'counters'),
+    contentSection(S, 'Announcements', 'announcement', 'announcements'),
   ])
