@@ -5,7 +5,8 @@
  * Remaining page/entity contracts below are reserved for later extraction;
  * this stage does not invent records, prices, approval dates or opening hours.
  *
- * @typedef {{id: string, message: string}} Announcement
+ * @typedef {{id: string, message: string, priority?: string, displayOrder?: number,
+ *   startDate?: string, expiryDate?: string, is_published?: boolean}} Announcement
  * @typedef {{id: string, question: string, answer: string, category?: string,
  *   displayOrder?: number, is_published?: boolean}} Faq
  * @typedef {{label: string, href: string}} NavigationLink
@@ -38,7 +39,8 @@
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
  *   getVacancies: () => Promise<Vacancy[]>,
  *   getImpactCounters?: () => Promise<ImpactCounter[]>,
- *   getFaqs?: () => Promise<Faq[]>}} PublicContentAdapter
+ *   getFaqs?: () => Promise<Faq[]>,
+ *   getAnnouncements?: () => Promise<Announcement[]>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
  *   imageAlt?: string}} PageHero

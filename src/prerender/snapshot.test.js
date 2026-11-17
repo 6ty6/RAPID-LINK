@@ -21,7 +21,7 @@ describe('pre-render public data', () => {
     }
     expect(() => publicSnapshot([article, article], [])).toThrow()
     expect(() => publicSnapshot([], [{ ...localContent.getVacancies()[0], is_published: false }])).toThrow()
-    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [], impactCounters: [], faqs: [] })
+    expect(publicSnapshot([], [])).toEqual({ news: [], vacancies: [], impactCounters: [], faqs: [], announcements: [] })
     expect(() => publicSnapshot([], [], [{ target: -1, label: 'Invalid', icon: 'customers' }])).toThrow()
     expect(publicSnapshot([], [], [{
       id: 'customers', target: 7000, suffix: '+', label: 'Happy Customers', icon: 'customers', displayOrder: 1,
@@ -36,6 +36,13 @@ describe('pre-render public data', () => {
       category: 'General', displayOrder: 1,
     })
     expect(() => publicSnapshot([], [], [], [{ question: '', answer: 'Missing question' }])).toThrow()
+    expect(publicSnapshot([], [], [], [], [{
+      id: 'notice-1', message: 'Service information', displayOrder: 1, is_published: true,
+    }]).announcements[0]).toEqual({
+      id: 'notice-1', message: 'Service information', priority: 'normal',
+      displayOrder: 1, startDate: '', expiryDate: '',
+    })
+    expect(() => publicSnapshot([], [], [], [], [{ message: '', is_published: true }])).toThrow()
   })
 
   it('generates absolute page metadata and keeps previews and protected pages noindex', () => {

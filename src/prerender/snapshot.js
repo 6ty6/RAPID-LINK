@@ -3,8 +3,8 @@ export const safeSlug = value => typeof value === 'string' && /^[a-z0-9]+(?:-[a-
 
 // Select public presentation fields explicitly. Never serialize complete API
 // rows, staff records, credentials or authentication/session responses.
-export function publicSnapshot(news, vacancies, impactCounters = [], faqs = []) {
-  if (!Array.isArray(news) || !Array.isArray(vacancies) || !Array.isArray(impactCounters) || !Array.isArray(faqs)) throw new Error('Invalid public content response.')
+export function publicSnapshot(news, vacancies, impactCounters = [], faqs = [], announcements = []) {
+  if (![news, vacancies, impactCounters, faqs, announcements].every(Array.isArray)) throw new Error('Invalid public content response.')
   const slugs = new Set()
   return {
     news: news.map(article => {
@@ -62,6 +62,17 @@ export function publicSnapshot(news, vacancies, impactCounters = [], faqs = []) 
         answer: faq.answer,
         category: faq.category || 'General',
         displayOrder: Number.isInteger(faq.displayOrder) ? faq.displayOrder : index + 1,
+      }
+    }).sort((left, right) => left.displayOrder - right.displayOrder),
+    announcements: announcements.map((announcement, index) => {
+      if (announcement.is_published === false || !text(announcement.message)) throw new Error('Invalid public announcement record.')
+      return {
+        id: text(announcement.id) ? announcement.id : `announcement-${index + 1}`,
+        message: announcement.message,
+        priority: announcement.priority || 'normal',
+        displayOrder: Number.isInteger(announcement.displayOrder) ? announcement.displayOrder : index + 1,
+        startDate: announcement.startDate || '',
+        expiryDate: announcement.expiryDate || '',
       }
     }).sort((left, right) => left.displayOrder - right.displayOrder),
   }

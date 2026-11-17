@@ -59,6 +59,21 @@ const faqQuery = `*[_type == "faq" && isPublished == true] | order(displayOrder 
   isPublished
 }`
 
+const announcementQuery = `*[
+  _type == "announcement" &&
+  isPublished == true &&
+  (!defined(startDate) || dateTime(startDate) <= dateTime(now())) &&
+  (!defined(expiryDate) || dateTime(expiryDate) > dateTime(now()))
+] | order(displayOrder asc, _createdAt asc) {
+  "id": _id,
+  message,
+  priority,
+  displayOrder,
+  startDate,
+  expiryDate,
+  isPublished
+}`
+
 async function querySanity(query) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
@@ -128,5 +143,21 @@ export async function getSanityPublishedFaqs() {
     category: faq.category || 'General',
     displayOrder: Number.isInteger(faq.displayOrder) ? faq.displayOrder : 0,
     is_published: Boolean(faq.isPublished),
+  }))
+}
+
+export async function getSanityPublishedAnnouncements() {
+  const rows = await querySanity(announcementQuery)
+
+  return rows.map(announcement => ({
+    id: announcement.id,
+    message: announcement.message,
+    priority: announcement.priority || 'normal',
+    displayOrder: Number.isInteger(announcement.displayOrder)
+      ? announcement.displayOrder
+      : 0,
+    startDate: announcement.startDate || '',
+    expiryDate: announcement.expiryDate || '',
+    is_published: Boolean(announcement.isPublished),
   }))
 }

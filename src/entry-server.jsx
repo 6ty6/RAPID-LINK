@@ -2,7 +2,7 @@ import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom'
 import App from './App.jsx'
-import { getNews, getVacancies, getImpactCounters, getPublishedFaqs, getProducts } from './content/index.js'
+import { getNews, getVacancies, getImpactCounters, getPublishedFaqs, getPublishedAnnouncements, getProducts } from './content/index.js'
 import { localContent } from './content/local.js'
 import { PublicContentContext } from './content/PublicContentContext.jsx'
 import { MetaContext } from './prerender/MetaContext.js'
@@ -28,12 +28,13 @@ export async function prepareContent(source = 'configured') {
     getVacancies: localContent.getVacancies,
     getImpactCounters: async () => localContent.getInstitutionalProfile().impact.statistics,
     getFaqs: async () => localContent.getFaqs(),
-  } : { getNews, getVacancies, getImpactCounters, getFaqs: getPublishedFaqs }
+    getAnnouncements: async () => localContent.getAnnouncements(),
+  } : { getNews, getVacancies, getImpactCounters, getFaqs: getPublishedFaqs, getAnnouncements: getPublishedAnnouncements }
   let timer
   try {
     return await Promise.race([
-      Promise.all([adapter.getNews(), adapter.getVacancies(), adapter.getImpactCounters(), adapter.getFaqs()])
-        .then(([news, vacancies, impactCounters, faqs]) => publicSnapshot(news, vacancies, impactCounters, faqs)),
+      Promise.all([adapter.getNews(), adapter.getVacancies(), adapter.getImpactCounters(), adapter.getFaqs(), adapter.getAnnouncements()])
+        .then(([news, vacancies, impactCounters, faqs, announcements]) => publicSnapshot(news, vacancies, impactCounters, faqs, announcements)),
       new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Public content retrieval timed out.')), 20000) }),
     ])
   } finally {
