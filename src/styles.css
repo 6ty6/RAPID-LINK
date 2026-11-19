@@ -859,3 +859,7 @@ footer a { margin:7px 0; display:block; color:#e3ebef; }
 .hero-flyer .dots button:after { display:none; }
 .hero-flyer .dots button span { display:block; width:12px; height:12px; border-radius:999px; background:#65758b; }
 .hero-flyer .dots button.active span { width:30px; background:#c94c00; }
+
+.career-search-row { display:flex; justify-content:flex-end; margin:0 0 24px; }
+.career-departments { margin-bottom:28px; }
+@media (max-width:760px) { .career-search-row .news-search { width:100%; } }

@@ -312,20 +312,19 @@ export function Careers() {
     }
   }, [selectedVacancy])
 
-  const departments = ['All departments', ...new Set(vacancies.map(vacancy => vacancy.department))]
+  const departments = ['All departments', 'Sales and Business Development', 'Credit', 'Operations', 'Human Resources', 'Compliance', 'Company Secretariat']
+  const normalizeDepartment = value => value.trim().toLowerCase().replace(/&/g, 'and').replace(/^hr$/, 'human resources')
   const visibleVacancies = vacancies.filter(vacancy => {
     const searchText = `${vacancy.title} ${vacancy.department} ${vacancy.location}`.toLowerCase()
-    return searchText.includes(query.toLowerCase()) && (department === 'All departments' || vacancy.department === department)
+    return searchText.includes(query.toLowerCase()) && (department === 'All departments' || normalizeDepartment(vacancy.department) === normalizeDepartment(department))
   })
 
   return <>
     <AboutHero eyebrow="Careers" title="Work with RapidLink" intro="Be part of an institution focused on financial inclusion in Ghana." image="/assets/about-careers.jpeg" />
     <section className="section careers-section"><div className="shell">
       <div className="careers-heading"><div><p className="eyebrow">Current opportunities</p><h2>Find your place on our team</h2><p>Explore available positions and discover where your experience can make an impact.</p></div><div className="careers-count"><strong>{visibleVacancies.length}</strong><span>{visibleVacancies.length === 1 ? 'position' : 'positions'}</span></div></div>
-      <div className="career-filters">
-        <label><span className="visually-hidden">Search vacancies</span><Search size={20} /><input type="search" placeholder="Search by role or location" value={query} onChange={event => setQuery(event.target.value)} /></label>
-        <label><span className="visually-hidden">Filter by department</span><select value={department} onChange={event => setDepartment(event.target.value)}>{departments.map(item => <option key={item}>{item}</option>)}</select></label>
-      </div>
+      <div className="career-search-row"><label className="news-search"><span className="visually-hidden">Search vacancies</span><Search size={20} /><input type="search" placeholder="Search by role or location" value={query} onChange={event => setQuery(event.target.value)} /></label></div>
+      <div className="news-filter-row career-departments" role="group" aria-label="Filter vacancies by department">{departments.map(item => <button type="button" key={item} className={department === item ? 'is-active' : ''} aria-pressed={department === item} onClick={() => setDepartment(item)}>{item === 'All departments' ? 'All Departments' : item}</button>)}</div>
       {loading ? <div className="career-empty panel" role="status"><h3>Loading opportunities…</h3></div> : loadError && !vacancies.length ? <div className="career-empty panel" role="alert"><Briefcase size={30} /><h3>Opportunities are temporarily unavailable</h3><p>Please contact <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a> for approved vacancy information.</p></div> : visibleVacancies.length ? <div className="vacancy-grid">{visibleVacancies.map(vacancy => <article className="vacancy-card" key={vacancy.id}>
         <div className="vacancy-card-top"><div className="vacancy-icon"><Briefcase size={23} /></div><span className={`vacancy-status is-${vacancy.status}`}>{vacancy.status === 'open' ? 'Open' : 'Closed'}</span></div>
         <p className="vacancy-department">{vacancy.department}</p><h3>{vacancy.title}</h3>
