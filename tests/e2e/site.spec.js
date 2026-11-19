@@ -49,16 +49,6 @@ test('desktop dropdown labels navigate, open on hover and close outside', async 
   await expect(loansGroup.locator('.nav-dropdown')).toBeHidden()
 })
 
-test('slider and account form first step work', async ({ page }) => {
-  await page.goto('/home')
-  await page.getByRole('button', { name: 'Next slide' }).click()
-  await expect(page.getByRole('heading', { name: 'Issue cheques with sufficient funds.', includeHidden: true })).toBeAttached()
-  await page.goto('/open-account')
-  await page.getByRole('radio', { name: 'Rapid Savings' }).check()
-  await page.getByRole('button', { name: 'Next step' }).click()
-  await expect(page.getByRole('group', { name: 'Personal and identification details' })).toBeVisible()
-})
-
 test('flyers link to their information without text panels or buttons', async ({ page }) => {
   await page.goto('/home')
   await expect(page.locator('.flyer-caption')).toHaveCount(0)

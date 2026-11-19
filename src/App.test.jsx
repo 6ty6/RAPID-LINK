@@ -184,14 +184,12 @@ describe('RapidLink site', () => {
     expect(screen.getByRole('link', { name: 'MoneyQube nano loans' })).toHaveAttribute('href', 'https://lendqubegh.loan')
   })
 
-  it('validates the first account-opening step before advancing', async () => {
-    const user = userEvent.setup()
-    renderAt('/open-account')
-    await user.click(screen.getByRole('button', { name: 'Next step' }))
-    expect(screen.getByRole('group', { name: 'Choose a product' })).toBeInTheDocument()
-    await user.click(screen.getByRole('radio', { name: 'Rapid Savings' }))
-    await user.click(screen.getByRole('button', { name: 'Next step' }))
-    expect(screen.getByRole('group', { name: 'Personal and identification details' })).toBeInTheDocument()
+  it('explains that online account opening is unavailable and offers assistance', () => {
+    const { container } = renderAt('/open-account')
+    expect(screen.getByRole('heading', { name: 'Online account opening is on its way.' })).toBeInTheDocument()
+    expect(screen.getByText(/Applications cannot be submitted through this website yet/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Find a branch' })).toHaveAttribute('href', '/contact#branch-map-title')
+    expect(container.querySelector('form')).toBeNull()
   })
 
   it('calculates a loan estimate with the approved monthly flat rate and fees', async () => {
