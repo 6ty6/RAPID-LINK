@@ -7,6 +7,7 @@ import {
 import { pages } from './pages.js'
 import { documents } from './documents.js'
 import { sharedContent } from './shared.js'
+import { loanCalculatorSettings } from './loanCalculator.js'
 
 // Adapt the existing website data without asserting new approvals or rates.
 // These local IDs are migration identifiers, not CMS UUIDs.
@@ -28,4 +29,5 @@ export const localContent = {
   getHomepageContent: getBundledHomepageContent,
   getInstitutionalProfile: getBundledInstitutionalProfile,
   getSiteInformation: getBundledSiteInformation,
+  getLoanCalculatorSettings: () => loanCalculatorSettings,
 }

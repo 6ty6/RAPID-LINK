@@ -35,13 +35,15 @@
  *   getBoard: () => typeof import('./board.js').boardContent,
  *   getHomepageContent: () => typeof import('./home.js').homepageContent,
  *   getInstitutionalProfile: () => typeof import('./institutionalProfile.js').institutionalProfileContent,
- *   getSiteInformation: () => typeof import('./site.js').siteInformation}} LocalContentAdapter
+ *   getSiteInformation: () => typeof import('./site.js').siteInformation,
+ *   getLoanCalculatorSettings: () => typeof import('./loanCalculator.js').loanCalculatorSettings}} LocalContentAdapter
  * @typedef {{getNews: () => Promise<NewsArticle[]>,
  *   getVacancies: () => Promise<Vacancy[]>,
  *   getImpactCounters?: () => Promise<ImpactCounter[]>,
  *   getFaqs?: () => Promise<Faq[]>,
  *   getAnnouncements?: () => Promise<Announcement[]>,
- *   getSiteInformation?: () => Promise<typeof import('./site.js').siteInformation>}} PublicContentAdapter
+ *   getSiteInformation?: () => Promise<typeof import('./site.js').siteInformation>,
+ *   getLoanCalculatorSettings?: () => Promise<typeof import('./loanCalculator.js').loanCalculatorSettings>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,
  *   imageAlt?: string}} PageHero

@@ -6,6 +6,7 @@ import { boardContent } from './board.js'
 import { homepageContent } from './home.js'
 import { institutionalProfileContent } from './institutionalProfile.js'
 import { siteInformation } from './site.js'
+import { loanCalculatorSettings } from './loanCalculator.js'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -96,12 +97,15 @@ describe('public content repository', () => {
     expect(content.getHomepageContent()).toEqual(homepageContent)
     expect(content.getInstitutionalProfile()).toEqual(institutionalProfileContent)
     expect(content.getSiteInformation()).toEqual(siteInformation)
+    expect(content.getLoanCalculatorSettings()).toEqual(loanCalculatorSettings)
     content.getBoard().members[0].name = 'Unexpected change'
     content.getHomepageContent().hero.slides[0].title = 'Unexpected change'
     content.getSiteInformation().contact.supportLines[0].display = 'Unexpected change'
+    content.getLoanCalculatorSettings().weeklyPaymentsByMonth[6] = 99
     expect(content.getBoard()).toEqual(boardContent)
     expect(content.getHomepageContent()).toEqual(homepageContent)
     expect(content.getSiteInformation()).toEqual(siteInformation)
+    expect(content.getLoanCalculatorSettings()).toEqual(loanCalculatorSettings)
   })
 
   it('returns the bundled public content when no remote adapter is configured', async () => {
@@ -166,5 +170,30 @@ describe('public content repository', () => {
     publicSource.getVacancies.mockRejectedValue(new Error('Offline'))
     await expect(content.getNews()).rejects.toThrow('Offline')
     await expect(content.getVacancies()).rejects.toThrow('Offline')
+  })
+
+  it('loads calculator settings from a public CMS adapter while preserving safe fallback fields', async () => {
+    const remoteSettings = {
+      monthlyFlatRate: 6,
+      heroIntro: 'Remote calculator introduction approved for the website.',
+      weeklyPaymentsByMonth: { 6: 25 },
+    }
+    const publicSource = {
+      getNews: vi.fn().mockResolvedValue([]),
+      getVacancies: vi.fn().mockResolvedValue([]),
+      getLoanCalculatorSettings: vi.fn().mockResolvedValue(remoteSettings),
+    }
+    const content = createContentRepository({ local: localContent, publicSource })
+
+    expect(content.getLoanCalculatorSettingsSnapshot()).toEqual({
+      record: loanCalculatorSettings,
+      loading: true,
+    })
+    await expect(content.getPublishedLoanCalculatorSettings()).resolves.toMatchObject({
+      ...loanCalculatorSettings,
+      ...remoteSettings,
+      weeklyPaymentsByMonth: loanCalculatorSettings.weeklyPaymentsByMonth,
+    })
+    expect(publicSource.getLoanCalculatorSettings).toHaveBeenCalledWith()
   })
 })

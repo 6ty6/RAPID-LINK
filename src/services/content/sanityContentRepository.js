@@ -82,10 +82,39 @@ const siteSettingsQuery = `*[_type == "siteSettings" && _id == "rapidlink-site-s
   socialProfiles[]{name, href, icon}
 }`
 
-async function querySanity(query) {
+const loanCalculatorSettingsQuery = `*[
+  _type == "loanCalculatorSettings" &&
+  _id == "rapidlink-loan-calculator-settings" &&
+  isActive == true &&
+  effectiveDate <= $today
+]{
+  minimumPrincipal,
+  maximumPrincipal,
+  minimumMonths,
+  maximumMonths,
+  monthlyFlatRate,
+  nominalAnnualRate,
+  processingFeeRate,
+  insuranceFeeRate,
+  managementFeeRate,
+  earlySettlementRate,
+  excludeFutureInterest,
+  repaymentFrequencies,
+  weeklySchedule[]{months, payments},
+  heroIntro,
+  disclaimer,
+  assumptionNotice,
+  approvalStatus,
+  effectiveDate
+}`
+
+async function querySanity(query, params = {}) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
   endpoint.searchParams.set('query', query)
+  for (const [key, value] of Object.entries(params)) {
+    endpoint.searchParams.set(`$${key}`, JSON.stringify(value))
+  }
   endpoint.searchParams.set('perspective', 'published')
 
   const response = await fetch(endpoint, { method: 'GET', headers: { Accept: 'application/json' } })
@@ -183,5 +212,25 @@ export async function getSanitySiteInformation() {
     },
     branches: Array.isArray(settings.branches) ? settings.branches : [],
     socialProfiles: Array.isArray(settings.socialProfiles) ? settings.socialProfiles : [],
+  }
+}
+
+export async function getSanityLoanCalculatorSettings() {
+  const today = new Date().toISOString().slice(0, 10)
+  const rows = await querySanity(loanCalculatorSettingsQuery, { today })
+  const settings = rows[0]
+  if (!settings) throw new Error('No active Sanity loan-calculator settings are currently effective.')
+
+  const weeklyPaymentsByMonth = Object.fromEntries(
+    (Array.isArray(settings.weeklySchedule) ? settings.weeklySchedule : [])
+      .map(row => [row.months, row.payments]),
+  )
+
+  return {
+    ...settings,
+    repaymentFrequencies: Array.isArray(settings.repaymentFrequencies)
+      ? settings.repaymentFrequencies
+      : [],
+    weeklyPaymentsByMonth,
   }
 }

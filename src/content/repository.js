@@ -28,6 +28,7 @@ export function createContentRepository({ local, publicSource = null }) {
     getHomepageContent: () => copy(local.getHomepageContent()),
     getInstitutionalProfile: () => copy(local.getInstitutionalProfile()),
     getSiteInformation: () => copy(local.getSiteInformation()),
+    getLoanCalculatorSettings: () => copy(local.getLoanCalculatorSettings()),
     getProductBySlug: slug => repository.getProducts().find(product => product.slug === slug),
     getNewsSnapshot: () => ({ records: copy(local.getNews()), loading: Boolean(publicSource) }),
     getVacanciesSnapshot: () => ({ records: copy(local.getVacancies()), loading: Boolean(publicSource) }),
@@ -40,6 +41,10 @@ export function createContentRepository({ local, publicSource = null }) {
     getSiteInformationSnapshot: () => ({
       record: copy(local.getSiteInformation()),
       loading: Boolean(publicSource?.getSiteInformation),
+    }),
+    getLoanCalculatorSettingsSnapshot: () => ({
+      record: copy(local.getLoanCalculatorSettings()),
+      loading: Boolean(publicSource?.getLoanCalculatorSettings),
     }),
     getNews: async () => copy(await (publicSource || local).getNews()),
     getNewsBySlug: async slug => (await repository.getNews()).find(article => article.slug === slug),
@@ -57,6 +62,19 @@ export function createContentRepository({ local, publicSource = null }) {
         ...localRecord,
         ...remoteRecord,
         contact: { ...localRecord.contact, ...remoteRecord.contact },
+      })
+    },
+    getPublishedLoanCalculatorSettings: async () => {
+      const localRecord = local.getLoanCalculatorSettings()
+      if (!publicSource?.getLoanCalculatorSettings) return copy(localRecord)
+      const remoteRecord = await publicSource.getLoanCalculatorSettings()
+      return copy({
+        ...localRecord,
+        ...remoteRecord,
+        weeklyPaymentsByMonth: {
+          ...localRecord.weeklyPaymentsByMonth,
+          ...remoteRecord.weeklyPaymentsByMonth,
+        },
       })
     },
   }

@@ -15,10 +15,10 @@ export default defineConfig({
   plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,
-    templates: templates => templates.filter(template => template.schemaType !== 'siteSettings'),
+    templates: templates => templates.filter(template => !['siteSettings', 'loanCalculatorSettings'].includes(template.schemaType)),
   },
   document: {
-    actions: (actions, context) => context.schemaType === 'siteSettings'
+    actions: (actions, context) => ['siteSettings', 'loanCalculatorSettings'].includes(context.schemaType)
       ? actions.filter(action => !['delete', 'duplicate'].includes(action.action))
       : actions,
   },

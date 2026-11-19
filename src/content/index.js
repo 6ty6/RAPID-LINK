@@ -4,6 +4,7 @@ import {
 import {
   isSanityRepositoryConfigured, getSanityPublishedNews, getSanityPublishedVacancies, getSanityImpactCounters,
   getSanityPublishedFaqs, getSanityPublishedAnnouncements, getSanitySiteInformation,
+  getSanityLoanCalculatorSettings,
 } from '../services/content/sanityContentRepository.js'
 import { localContent } from './local.js'
 import { createContentRepository } from './repository.js'
@@ -16,6 +17,7 @@ const sanitySource = isSanityRepositoryConfigured ? {
   getFaqs: getSanityPublishedFaqs,
   getAnnouncements: getSanityPublishedAnnouncements,
   getSiteInformation: getSanitySiteInformation,
+  getLoanCalculatorSettings: getSanityLoanCalculatorSettings,
 } : null
 const supabaseSource = isNewsRepositoryConfigured ? {
   getNews: getRemotePublishedNews,
@@ -39,4 +41,5 @@ export const {
   getImpactCountersSnapshot, getImpactCounters,
   getBoard, getHomepageContent, getInstitutionalProfile, getSiteInformation,
   getSiteInformationSnapshot, getPublishedSiteInformation,
+  getLoanCalculatorSettings, getLoanCalculatorSettingsSnapshot, getPublishedLoanCalculatorSettings,
 } = content

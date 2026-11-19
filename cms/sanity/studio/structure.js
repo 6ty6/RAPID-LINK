@@ -21,6 +21,12 @@ export const structure = S => S.list()
         .schemaType('siteSettings')
         .documentId('rapidlink-site-settings')
         .title('Contact & social settings')),
+    S.listItem()
+      .title('Loan calculator')
+      .child(S.document()
+        .schemaType('loanCalculatorSettings')
+        .documentId('rapidlink-loan-calculator-settings')
+        .title('Loan calculator settings')),
     S.divider(),
     contentSection(S, 'News', 'newsArticle', 'articles'),
     contentSection(S, 'Careers', 'careerVacancy', 'vacancies'),

@@ -164,3 +164,43 @@ Pop-Location
 ```
 
 The Sanity Free plan permits public datasets only. This makes it suitable for published marketing content, but unpublished material and editorial access must be assessed carefully before recommending it for production.
+
+## Loan calculator settings
+
+The Studio contains one protected **Loan calculator** item near the top of the
+navigation. Editors do not create separate calculator records. The singleton
+uses six numbered tabs so related fields stay together:
+
+1. Loan limits
+2. Interest & fees
+3. Repayment schedule
+4. Early settlement
+5. Customer wording
+6. Approval & dates
+
+The calculation formula, validation and currency formatting remain protected
+in website code. Sanity supplies only the published settings and customer copy.
+If the singleton is inactive, unavailable or not yet effective, the website
+keeps using the reviewed local fallback.
+
+Preview the initial record without changing Sanity:
+
+```powershell
+Push-Location .\cms\sanity\studio
+npm.cmd run migrate:loan-calculator:dry-run
+Pop-Location
+```
+
+After Credit/Compliance has reviewed the figures, create or replace the hosted
+singleton and verify it:
+
+```powershell
+Push-Location .\cms\sanity\studio
+npm.cmd run migrate:loan-calculator
+npm.cmd run verify:loan-calculator
+Pop-Location
+```
+
+The initial record remains labelled **Provisional** and explains that the
+weekly schedule is awaiting operational/Flexibank verification. Do not change
+the status to **Approved** without recording the approver and effective date.

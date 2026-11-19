@@ -4,6 +4,7 @@ import { impactCounter } from './impactCounter'
 import { newsArticle } from './newsArticle'
 import { announcement } from './announcement'
 import { siteSettings } from './siteSettings'
+import { loanCalculatorSettings } from './loanCalculatorSettings'
 export const schemaTypes = [
   newsArticle,
   careerVacancy,
@@ -11,4 +12,5 @@ export const schemaTypes = [
   impactCounter,
   announcement,
   siteSettings,
+  loanCalculatorSettings,
 ]
