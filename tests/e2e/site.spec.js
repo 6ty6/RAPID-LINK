@@ -59,10 +59,26 @@ test('slider and account form first step work', async ({ page }) => {
   await expect(page.getByRole('group', { name: 'Personal and identification details' })).toBeVisible()
 })
 
-test('mobile slider starts with its text while desktop keeps the image-first delay', async ({ page }, testInfo) => {
+test('flyer stays above its copy and opens a keyboard-dismissible full view', async ({ page }) => {
   await page.goto('/home')
+  await page.locator('.hero-content').hover()
+  await expect(page.getByRole('button', { name: 'Pause slideshow', exact: true })).toHaveCount(0)
+  const dots = page.locator('.hero-controls .dots button span')
+  await expect(dots).toHaveCount(3)
+  for (const dot of await dots.all()) await expect(dot).toBeVisible()
+  await page.getByRole('button', { name: /Show slide 2:/ }).click()
+  await expect(page.getByRole('button', { name: /Show slide 2:/ })).toHaveAttribute('aria-current', 'true')
+  await page.getByRole('button', { name: /Show slide 1:/ }).click()
   const sliderCopy = page.locator('.hero-content')
-  await expect(sliderCopy).toHaveAttribute('aria-hidden', testInfo.project.name === 'mobile' ? 'false' : 'true')
+  await expect(sliderCopy).toBeVisible()
+  const flyer = await page.locator('.hero-media.is-active img').boundingBox()
+  const copy = await sliderCopy.boundingBox()
+  expect(copy.y).toBeGreaterThanOrEqual(flyer.y + flyer.height)
+  await page.getByRole('button', { name: 'View full flyer', exact: true }).click()
+  await expect(page.getByRole('dialog', { name: 'Full flyer' })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByRole('dialog', { name: 'Full flyer' })).not.toBeVisible()
+  await expect(page.getByRole('button', { name: 'View full flyer', exact: true })).toBeFocused()
 })
 
 test('homepage tools and connected news lead to the intended pages', async ({ page }) => {

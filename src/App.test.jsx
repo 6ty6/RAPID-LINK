@@ -241,15 +241,15 @@ describe('RapidLink site', () => {
     expect(screen.getByRole('heading', { name: 'Issue cheques with sufficient funds.', hidden: true })).toBeInTheDocument()
   })
 
-  it('shows the flyer for three seconds, then the copy for eight seconds', () => {
+  it('keeps the separated flyer copy visible and advances after eleven seconds', () => {
     vi.useFakeTimers()
     renderAt('/home')
     // Route navigation focuses the hero heading, which pauses the carousel.
     act(() => document.activeElement.blur())
     const heading = screen.getByRole('heading', { name: 'Build steadily. Move confidently.', hidden: true })
-    expect(heading.closest('.hero-content')).toHaveAttribute('aria-hidden', 'true')
+    expect(heading.closest('.hero-content')).toBeVisible()
     act(() => vi.advanceTimersByTime(3000))
-    expect(heading.closest('.hero-content')).toHaveAttribute('aria-hidden', 'false')
+    expect(heading.closest('.hero-content')).toBeVisible()
     act(() => vi.advanceTimersByTime(8000))
     expect(screen.getByRole('heading', { name: 'Issue cheques with sufficient funds.', hidden: true })).toBeInTheDocument()
     vi.useRealTimers()

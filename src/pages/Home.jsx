@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
 import { getHomepageContent, getProductBySlug } from '../content/index.js'
@@ -19,81 +19,58 @@ const mobileSliderQuery = '(max-width: 760px)'
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0)
-  const [loadedSlides, setLoadedSlides] = useState(() => new Set([0]))
   const [interactionPaused, setInteractionPaused] = useState(false)
-  const [isMobileSlider, setIsMobileSlider] = useState(false)
-  const [showCopy, setShowCopy] = useState(false)
+  const [flyerOpen, setFlyerOpen] = useState(false)
+  const [manualPaused, setManualPaused] = useState(false)
+  const flyerDialog = useRef(null)
   const slide = slides[current]
-  const isPaused = interactionPaused
-  const move = (step) => {
-    const next = (current + step + slides.length) % slides.length
-    setShowCopy(isMobileSlider)
-    setLoadedSlides(value => new Set(value).add(next))
-    setCurrent(next)
-  }
-  const showSlide = (index) => {
-    setShowCopy(isMobileSlider)
-    setLoadedSlides(value => new Set(value).add(index))
-    setCurrent(index)
-  }
-
-  useEffect(() => {
-    if (!window.matchMedia) return undefined
-    const mediaQuery = window.matchMedia(mobileSliderQuery)
-    const updateSliderTiming = event => {
-      setIsMobileSlider(event.matches)
-      setShowCopy(event.matches)
-    }
-    updateSliderTiming(mediaQuery)
-    mediaQuery.addEventListener('change', updateSliderTiming)
-    return () => mediaQuery.removeEventListener('change', updateSliderTiming)
-  }, [])
+  const isPaused = interactionPaused || flyerOpen
+  const move = step => setCurrent(value => (value + step + slides.length) % slides.length)
 
   useEffect(() => {
     if (isPaused) return undefined
-    const timer = window.setTimeout(() => {
-      if (isMobileSlider || showCopy) move(1)
-      else setShowCopy(true)
-    }, isMobileSlider ? 11000 : showCopy ? 8000 : 3000)
+    const timer = window.setTimeout(() => move(1), 11000)
     return () => window.clearTimeout(timer)
-  }, [isPaused, isMobileSlider, showCopy, current])
+  }, [isPaused, current])
 
-  const leaveFocus = event => {
-    if (!event.currentTarget.contains(event.relatedTarget)) setInteractionPaused(false)
+  useEffect(() => {
+    if (!flyerOpen) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [flyerOpen])
+
+  function openFlyer() {
+    flyerDialog.current.showModal()
+    setFlyerOpen(true)
   }
 
-  return <section
-    className="hero"
-    aria-roledescription="carousel"
-    aria-label={homepage.hero.accessibleLabel}
-    onMouseEnter={() => setInteractionPaused(true)}
-    onMouseLeave={() => setInteractionPaused(false)}
+  return <section className="hero hero-flyer" aria-roledescription="carousel" aria-label={homepage.hero.accessibleLabel}
+    onMouseEnter={() => setInteractionPaused(true)} onMouseLeave={() => setInteractionPaused(false)}
     onFocusCapture={() => setInteractionPaused(true)}
-    onBlurCapture={leaveFocus}
-  >
-    {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-      {loadedSlides.has(index) && <picture>
-        {item.mobileImage && <source media={mobileSliderQuery} srcSet={item.mobileImage} />}
-        <img
-          src={item.image}
-          alt=""
-          loading={index === 0 ? 'eager' : 'lazy'}
-          fetchpriority={index === 0 ? 'high' : 'low'}
-          decoding="async"
-        />
-      </picture>}
-    </div>)}
-    <div className={`shell hero-content slide-content-fade ${showCopy ? 'is-visible' : ''}`} aria-hidden={!showCopy} aria-live={isPaused ? 'polite' : 'off'} key={slide.title}>
-      <p className="eyebrow animated-copy">{slide.eyebrow}</p>
-      <h1 className="animated-title">{slide.title.split(' ').map((word, index) => <span className="animated-word" style={{ '--word-index': index }} key={`${word}-${index}`}>{word}</span>)}</h1>
-      <p className="animated-copy copy-delay-one">{slide.text}</p>
-      <Link className="button animated-copy copy-delay-two" to={slide.link}>{slide.action}<ArrowRight size={18} /></Link>
+    onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setInteractionPaused(false) }}>
+    <div className="flyer-stage">
+      {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
+        <picture><img src={item.image} alt={`RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture>
+      </div>)}
+      <button className="flyer-arrow flyer-previous" onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
+      <button className="flyer-arrow flyer-next" onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
     </div>
+    <div className="flyer-caption"><div className="shell hero-content" key={slide.title} aria-live={isPaused ? 'polite' : 'off'}>
+      <p className="eyebrow">{slide.eyebrow}</p>
+      <h1>{slide.title}</h1>
+      <p>{slide.text}</p>
+      <div className="button-row"><Link className="button flyer-action" to={slide.link}>{slide.action}</Link><button className="button flyer-view" onClick={openFlyer}>View full flyer</button></div>
+    </div></div>
     <div className="hero-controls">
-      <button onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
-      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => showSlide(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined} />)}</div>
-      <button onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
+      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined}><span aria-hidden="true" /></button>)}</div>
     </div>
+    <dialog ref={flyerDialog} className="flyer-dialog" aria-labelledby="flyer-dialog-title" onClose={() => setFlyerOpen(false)} onClick={event => { if (event.target === event.currentTarget) flyerDialog.current.close() }}>
+      <div className="flyer-dialog-toolbar"><h2 id="flyer-dialog-title">Full flyer</h2><button className="button button-secondary" onClick={() => flyerDialog.current.close()} autoFocus>Close flyer</button></div>
+      <p>Scroll to read the flyer, or open the original image to zoom in.</p>
+      <a href={slide.image} target="_blank" rel="noopener noreferrer">Open original image in a new tab</a>
+      <div className="flyer-dialog-image"><img src={slide.image} alt={`RapidLink promotional flyer: ${slide.title}`} /></div>
+    </dialog>
   </section>
 }
 

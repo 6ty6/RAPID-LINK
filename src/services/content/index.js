@@ -1,12 +1,4 @@
 import * as content from '../../content/index.js'
-import {
-  isSanityRepositoryConfigured,
-  getSanityPublishedNews,
-  getSanityPublishedVacancies,
-  getSanityImpactCounters,
-  getSanityPublishedFaqs,
-  getSanityPublishedAnnouncements,
-} from '../services/content/sanityContentRepository.js'
 
 // Compatibility for the interface introduced on the other computer. All reads
 // delegate to the same repository; new public consumers use content/index.js.

@@ -93,14 +93,22 @@ export function LoanCalculator() {
     }
   }, [duration, frequency, terms])
 
+  const exceedsMaximum = principal !== '' && Number(principal) > terms.maximumPrincipal
+  const maximumMessage = 'You have exceeded the maximum loan amount of GHC ' + terms.maximumPrincipal.toLocaleString('en-GH') + '. Please enter a lower amount.'
+
   function handleSubmit(event) {
     event.preventDefault()
     const amount = Number(principal)
     const months = Number(duration)
     const completedPayments = Number(paymentsMade)
 
-    if (!Number.isFinite(amount) || amount < terms.minimumPrincipal || amount > terms.maximumPrincipal) {
-      setError('Enter a loan amount from GH₵1,000 to GH₵20,000.')
+    if (amount > terms.maximumPrincipal) {
+      setError(maximumMessage)
+      return
+    }
+
+    if (!Number.isFinite(amount) || amount < terms.minimumPrincipal) {
+      setError(`Enter a loan amount from GHC ${terms.minimumPrincipal.toLocaleString('en-GH')} to GHC ${terms.maximumPrincipal.toLocaleString('en-GH')}.`)
       return
     }
 
@@ -128,7 +136,9 @@ export function LoanCalculator() {
         <p className="eyebrow">Plan your repayment</p>
         <h2>Calculate an estimate</h2>
         <div className="calculator-field"><label htmlFor="principal-amount">Principal Amount</label>
-          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="100" placeholder="1,000 – 20,000" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null) }} required /></span>
+          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="100" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
+          <small id="principal-limit">Maximum loan amount: GHC {terms.maximumPrincipal.toLocaleString('en-GH')}.</small>
+          {exceedsMaximum && <p className="form-error" role="alert">{maximumMessage}</p>}
         </div>
         <div className="calculator-field"><label htmlFor="interest-rate">Monthly flat interest rate</label>
           <span className="input-with-suffix"><input id="interest-rate" type="number" value={terms.monthlyFlatRate} readOnly aria-readonly="true" /><span aria-hidden="true">%</span></span>
@@ -145,12 +155,12 @@ export function LoanCalculator() {
           </select>
           <small>{repaymentCount} equal {frequencyLabel} {repaymentCount === 1 ? 'payment' : 'payments'}.</small>
         </div>
-        <div className="calculator-field"><label htmlFor="payments-made">Payments already made <span className="optional-label">(optional)</span></label>
-          <input id="payments-made" type="number" min="0" max={repaymentCount} step="1" value={paymentsMade} onChange={event => { setPaymentsMade(event.target.value); setResult(null) }} />
-          <small>Used only to estimate early settlement. Enter 0 for a new loan.</small>
+        <div className="calculator-field"><label htmlFor="payments-made">Number of instalments already paid <span className="optional-label">(optional)</span></label>
+          <input id="payments-made" type="number" min="0" max={repaymentCount} step="1" aria-describedby="payments-made-help" value={paymentsMade} onChange={event => { setPaymentsMade(event.target.value); setResult(null) }} />
+          <small id="payments-made-help">Planning a new loan? Leave this at 0. To estimate the cost of clearing an existing loan early, enter how many {frequencyLabel} instalments you have already paid, not the amount of money paid. Your selected schedule has {repaymentCount} {repaymentCount === 1 ? 'instalment' : 'instalments'}, so enter a whole number from 0 to {repaymentCount}. This does not check your actual loan account; contact the loans team for a settlement quote.</small>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="button" type="submit">Calculate</button>
+        <button className="button" type="submit" disabled={exceedsMaximum}>Calculate</button>
       </form>
       <div className="calculator-results" aria-live="polite">
         <p className="eyebrow">Your estimate</p>
