@@ -194,16 +194,16 @@ describe('RapidLink site', () => {
     expect(screen.getByRole('group', { name: 'Personal and identification details' })).toBeInTheDocument()
   })
 
-  it('calculates a loan estimate with the retained six-percent formula', async () => {
+  it('calculates a loan estimate with the approved monthly flat rate and fees', async () => {
     const user = userEvent.setup()
     renderAt('/loan-calculator')
-    expect(screen.getByLabelText('Annual Interest Rate')).toHaveValue(6)
-    expect(screen.getByLabelText('Annual Interest Rate')).toHaveAttribute('readonly')
+    expect(screen.getByLabelText('Monthly flat interest rate')).toHaveValue(6)
+    expect(screen.getByLabelText('Monthly flat interest rate')).toHaveAttribute('readonly')
     await user.type(screen.getByLabelText('Principal Amount'), '1000')
-    await user.type(screen.getByLabelText('Loan Duration (Months)'), '2')
+    await user.selectOptions(screen.getByLabelText('Loan Duration (Months)'), '2')
     await user.click(screen.getByRole('button', { name: 'Calculate' }))
-    expect(screen.getByText('GHC 120.00')).toBeInTheDocument()
-    expect(screen.getByText('GHC 1120.00')).toBeInTheDocument()
+    expect(screen.getByText('GH₵ 120.00')).toBeInTheDocument()
+    expect(screen.getByText('GH₵ 1187.50')).toBeInTheDocument()
   })
 
   it('exposes homepage loan tools, connected news and reordered navigation', () => {
