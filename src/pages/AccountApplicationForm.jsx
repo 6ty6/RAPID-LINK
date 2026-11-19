@@ -1,13 +1,19 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Check, CircleAlert } from '../icons'
 import { PageHero } from '../components/Shared'
+import ApplicationSecurityCheck from '../components/ApplicationSecurityCheck'
+
+const apiBase = (import.meta.env.VITE_ACCOUNT_API_BASE_URL || '').trim()
+const siteKey = (import.meta.env.VITE_ACCOUNT_TURNSTILE_SITE_KEY || '').trim()
+const privacyNotice = (import.meta.env.VITE_ACCOUNT_PRIVACY_NOTICE_URL || '').trim()
+const submissionEnabled = import.meta.env.VITE_ACCOUNT_SUBMISSIONS_ENABLED === 'true' && /^https:\/\//.test(apiBase) && Boolean(siteKey) && /^https:\/\//.test(privacyNotice)
 
 const formSteps = ['Product', 'Personal details', 'Residence & work', 'Documents & consent']
 const initialForm = {
   product_type: '', title: '', gender: '', first_name: '', last_name: '', initial_deposit: '', tin: '', dob: '', pob: '', marital_status: '', telephone: '', spouse_name: '', pep: false,
   id_form: 'Ghana Card', id_number: '', id_issue_authority: '', id_expiry_date: '', id_issue_date: '', id_issue_place: '', nationality: '', social_security_no: '',
   region: '', suburb: '', residential_digital_address: '', postal_address: '', nearest_landmarks: '', occupation: '', source_of_fund: '', employer_contact_person: '', employer_contact_no: '', work_nearest_landmark: '', net_income: '',
-  nok_first_name: '', nok_surname: '', nok_relationship: '', nok_phone_number: '', accept_terms: false,
+  nok_first_name: '', nok_surname: '', nok_relationship: '', nok_phone_number: '', accept_terms: false, accept_email_delivery: false,
 }
 
 function FormStep({ title, children }) {
@@ -135,8 +141,8 @@ function DocumentFields({ data, update, files, setFiles, signature, setSignature
   const documents = [['id_front', 'Valid ID—front'], ['id_back', 'Valid ID—back'], ['passport_picture', 'Passport photograph']]
   const handleFile = (event, name) => {
     const file = event.target.files[0]
-    if (file && file.size > 1.5 * 1024 * 1024) {
-      event.target.setCustomValidity('File must be 1.5 MB or smaller.')
+    if (file && (file.size > 1.5 * 1024 * 1024 || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type))) {
+      event.target.setCustomValidity('Choose a PNG, JPEG or WebP image, 1.5 MB or smaller.')
       event.target.reportValidity()
     } else {
       event.target.setCustomValidity('')
@@ -145,12 +151,13 @@ function DocumentFields({ data, update, files, setFiles, signature, setSignature
   }
 
   return <>
-    <div className="callout"><CircleAlert /><p>Upload clear images, up to 1.5 MB each. Files remain in page memory and are not sent from this preview.</p></div>
-    <div className="form-grid">{documents.map(([name, label]) => <label key={name}>{label}<input type="file" accept="image/*" required onChange={event => handleFile(event, name)} /></label>)}</div>
+    <div className="callout"><CircleAlert /><p>{submissionEnabled ? 'Upload PNG, JPEG or WebP images, up to 1.5 MB each. Submitting sends all application details, documents and your signature to RapidLink by email.' : 'Upload clear images, up to 1.5 MB each. Files remain in page memory and are not sent from this preview.'}</p></div>
+    <div className="form-grid">{documents.map(([name, label]) => <label key={name}>{label}<input type="file" accept="image/jpeg,image/png,image/webp" required onChange={event => handleFile(event, name)} /></label>)}</div>
     <SignaturePad onChange={setSignature} />
     <Input label="Typed signature (accessible alternative)" name="signature" value={signature.startsWith('data:') ? '' : signature} onChange={event => setSignature(event.target.value)} />
     <div className="terms"><h3>Account creation terms</h3><p>RapidLink may refuse an application and may contact you using the details supplied. Instructions may be refused when they do not comply with the mandate, sufficient funds are unavailable, authenticity is doubtful, instructions are unclear, legal obligations may be breached, or misuse is suspected.</p><p>Transaction anomalies must be reported in writing within 21 days. Accounts inactive for two years may be classified as dormant. RapidLink may amend or supplement its terms.</p></div>
     <label className="checkbox"><input type="checkbox" name="accept_terms" checked={data.accept_terms} onChange={update} required /> I have read and accept the account-creation terms.</label>
+    {submissionEnabled && <label className="checkbox"><input type="checkbox" name="accept_email_delivery" checked={data.accept_email_delivery} onChange={update} required /> I have read the privacy notice and agree to send all my application details, documents and signature to RapidLink by email.</label>}
   </>
 }
 
@@ -160,6 +167,11 @@ export default function AccountApplicationForm() {
   const [files, setFiles] = useState({})
   const [signature, setSignature] = useState('')
   const [status, setStatus] = useState('')
+  const [sending, setSending] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [captcha, setCaptcha] = useState('')
+  const [captchaAttempt, setCaptchaAttempt] = useState(0)
+  const submissionLock = useRef(false)
   const formRef = useRef()
 
   const update = event => {
@@ -171,31 +183,55 @@ export default function AccountApplicationForm() {
     if (!formRef.current.reportValidity()) return
     if (step < 3) setStep(step + 1)
   }
-  const submit = event => {
+  const submit = async event => {
     event.preventDefault()
-    if (!formRef.current.reportValidity()) return
-    if (!signature) {
-      setStatus('Add a signature before reviewing submission.')
-      return
+    if (submissionLock.current || submitted || !formRef.current.reportValidity()) return
+    if (!signature) { setStatus('Add a signature before submitting.'); return }
+    if (!submissionEnabled) { setStatus('Submission is not connected. Your information remains only in this page and has not been sent.'); return }
+    if (!captcha) { setStatus('Complete the security check before submitting.'); return }
+    const payload = new FormData()
+    payload.append('application', JSON.stringify(data))
+    payload.append('signature', signature)
+    payload.append('captcha', captcha)
+    for (const name of ['id_front', 'id_back', 'passport_picture']) {
+      if (!files[name]) { setStatus('Upload all three required documents.'); return }
+      payload.append(name, files[name])
     }
-    setStatus('Submission is not connected. Your information remains only in this page and has not been sent.')
+    submissionLock.current = true
+    setSending(true)
+    setStatus('Sending your application. Please keep this page open.')
+    try {
+      const response = await fetch(new URL('/api/account-applications', apiBase), { method: 'POST', body: payload, credentials: 'omit', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(60000) })
+      const receipt = await response.json()
+      if (!response.ok || receipt.status !== 'accepted-by-mail-server' || !/^[a-f0-9-]{36}$/.test(receipt.reference || '')) throw Error('unconfirmed')
+      setSubmitted(true)
+      setStatus('Your application was accepted by the email service for delivery to RapidLink. Reference: ' + receipt.reference + '. This is not confirmation that an account has been opened.')
+    } catch {
+      setStatus('Delivery could not be confirmed. Your details remain on this page. Please contact RapidLink before retrying to avoid a duplicate application.')
+    } finally {
+      submissionLock.current = false
+      setSending(false)
+      setCaptcha('')
+      setCaptchaAttempt(value => value + 1)
+    }
   }
 
   return <>
-    <PageHero eyebrow="Open an account" title="Start your account application" intro="Complete the four steps below. Your sensitive details are kept in page memory and are not stored by this preview." />
+    <PageHero eyebrow="Open an account" title="Start your account application" intro={submissionEnabled ? 'Complete the four steps below. Review the privacy notice before sending your application to RapidLink.' : 'Complete the four steps below. Your sensitive details are kept in page memory and are not stored by this preview.'} />
     <section className="section"><div className="shell form-shell">
       <ol className="stepper">{formSteps.map((label, index) => <li className={index === step ? 'active' : index < step ? 'done' : ''} key={label}><span>{index < step ? <Check /> : index + 1}</span>{label}</li>)}</ol>
-      <form ref={formRef} onSubmit={submit} className="account-form">
+      <form ref={formRef} onSubmit={submit} className="account-form" aria-busy={sending}><fieldset disabled={sending || submitted} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
         {step === 0 && <FormStep title="Choose a product"><RadioGroup name="product_type" value={data.product_type} onChange={update} options={[['rapid_savings', 'Rapid Savings'], ['rapid_fixed_deposit', 'Rapid Fixed Deposit'], ['premium_account', 'Premium account'], ['investment_account', 'Investment account'], ['edugrow_account', 'Edu-Grow account']]} /></FormStep>}
         {step === 1 && <FormStep title="Personal and identification details"><PersonalFields data={data} update={update} /></FormStep>}
         {step === 2 && <FormStep title="Residence, work and next of kin"><ResidenceFields data={data} update={update} /></FormStep>}
         {step === 3 && <FormStep title="Documents, signature and consent"><DocumentFields data={data} update={update} files={files} setFiles={setFiles} signature={signature} setSignature={setSignature} /></FormStep>}
+        {step === 3 && submissionEnabled && <><p>All details, documents and your signature will be emailed to RapidLink IT. <a href={privacyNotice} target="_blank" rel="noopener noreferrer">Read the privacy notice</a>.</p>{!submitted && <ApplicationSecurityCheck key={captchaAttempt} siteKey={siteKey} onToken={setCaptcha} />}</>}
         {status && <div className="status" role="status">{status}</div>}
         <div className="form-actions">
-          {step > 0 && <button type="button" className="button button-secondary" onClick={() => setStep(step - 1)}>Previous</button>}
-          {step < 3 ? <button className="button" onClick={next}>Next step</button> : <button className="button" type="submit">Review submission status</button>}
+          {step > 0 && <button type="button" disabled={sending || submitted} className="button button-secondary" onClick={() => setStep(step - 1)}>Previous</button>}
+          {step < 3 ? <button className="button" onClick={next}>Next step</button> : <button className="button" type="submit" disabled={sending || submitted || (submissionEnabled && !captcha)}>{sending ? 'Sending?' : submitted ? 'Application sent' : submissionEnabled ? 'Submit application' : 'Review submission status'}</button>}
         </div>
-      </form>
+      </fieldset></form>
     </div></section>
   </>
 }

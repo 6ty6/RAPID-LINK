@@ -10,7 +10,7 @@ This may contain only a verified public destination; it is not a secret. Until s
 
 The public `/open-account` route currently shows a coming-soon page with contact and branch links. It collects no applicant information. The form is retained separately in `src/pages/AccountApplicationForm.jsx` and is not imported by the public route. Enabling environment variables alone does not restore the form: a reviewed route change and deployment are required after the backend and approvals are ready.
 
-The retained React form intentionally does not submit. Its values, documents and signature remain in page memory. Submission service development is separate from this public availability page.
+The React form does not submit by default. A separately configured email-only backend now exists under `services/account-mailer/`; its deployment and approval requirements are documented in that folder's README. When explicitly enabled, it sends all fields, documents and signature to the fixed IT mailbox using server-side SMTP. No production credentials, deployment or email delivery have been configured or verified. Without all activation settings, the form retains its explicit non-submission status.
 
 Live integration requires written confirmation of:
 
