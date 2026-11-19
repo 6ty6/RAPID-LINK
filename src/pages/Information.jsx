@@ -312,10 +312,16 @@ export function Careers() {
     }
   }, [selectedVacancy])
 
-  const departments = ['All departments', 'Sales and Business Development', 'Credit', 'Operations', 'Human Resources', 'Compliance', 'Company Secretariat']
-  const normalizeDepartment = value => value.trim().toLowerCase().replace(/&/g, 'and').replace(/^hr$/, 'human resources')
+  const departments = ['All departments', 'Credit', 'Finance', 'Human Resources', 'Marketing/Sales', 'Operations', 'Strategy Support']
+  const normalizeDepartment = value => {
+    const name = (value || '').trim().toLowerCase().replace(/\s+/g, ' ')
+    if (name === 'hr') return 'human resources'
+    if (['sales and business development', 'sales & business development', 'marketing/sales', 'marketing / sales', 'marketing and sales', 'marketing & sales'].includes(name)) return 'marketing/sales'
+    return name
+  }
+  const departmentLabel = value => departments.find(item => normalizeDepartment(item) === normalizeDepartment(value)) || value
   const visibleVacancies = vacancies.filter(vacancy => {
-    const searchText = `${vacancy.title} ${vacancy.department} ${vacancy.location}`.toLowerCase()
+    const searchText = `${vacancy.title} ${vacancy.department} ${departmentLabel(vacancy.department)} ${vacancy.location}`.toLowerCase()
     return searchText.includes(query.toLowerCase()) && (department === 'All departments' || normalizeDepartment(vacancy.department) === normalizeDepartment(department))
   })
 
@@ -327,7 +333,7 @@ export function Careers() {
       <div className="news-filter-row career-departments" role="group" aria-label="Filter vacancies by department">{departments.map(item => <button type="button" key={item} className={department === item ? 'is-active' : ''} aria-pressed={department === item} onClick={() => setDepartment(item)}>{item === 'All departments' ? 'All Departments' : item}</button>)}</div>
       {loading ? <div className="career-empty panel" role="status"><h3>Loading opportunities…</h3></div> : loadError && !vacancies.length ? <div className="career-empty panel" role="alert"><Briefcase size={30} /><h3>Opportunities are temporarily unavailable</h3><p>Please contact <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a> for approved vacancy information.</p></div> : visibleVacancies.length ? <div className="vacancy-grid">{visibleVacancies.map(vacancy => <article className="vacancy-card" key={vacancy.id}>
         <div className="vacancy-card-top"><div className="vacancy-icon"><Briefcase size={23} /></div><span className={`vacancy-status is-${vacancy.status}`}>{vacancy.status === 'open' ? 'Open' : 'Closed'}</span></div>
-        <p className="vacancy-department">{vacancy.department}</p><h3>{vacancy.title}</h3>
+        <p className="vacancy-department">{departmentLabel(vacancy.department)}</p><h3>{vacancy.title}</h3>
         <div className="vacancy-meta"><span><MapPin size={17} />{vacancy.location}</span><span><Briefcase size={17} />{vacancy.employment_type}</span></div>
         <p className="vacancy-summary">{vacancy.summary}</p>
         <div className="vacancy-actions"><button className="button button-secondary" type="button" onClick={() => setSelectedVacancy(vacancy)}>View details</button>{vacancy.status === 'open' ? <a className="button" href={`mailto:${vacancy.application_email}?subject=${encodeURIComponent(`Application: ${vacancy.title}`)}`}>Apply now <ArrowRight size={17} /></a> : <span className="vacancy-closed-label">Applications closed</span>}</div>
@@ -335,7 +341,7 @@ export function Careers() {
     </div></section>
     {selectedVacancy && <div className="board-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setSelectedVacancy(null)}><section className="board-dialog vacancy-dialog" role="dialog" aria-modal="true" aria-labelledby="vacancy-dialog-title">
       <button ref={closeButtonRef} className="board-dialog-close" type="button" onClick={() => setSelectedVacancy(null)} aria-label="Close vacancy details"><X size={22} /></button>
-      <p className="eyebrow">{selectedVacancy.department}</p><h2 id="vacancy-dialog-title">{selectedVacancy.title}</h2>
+      <p className="eyebrow">{departmentLabel(selectedVacancy.department)}</p><h2 id="vacancy-dialog-title">{selectedVacancy.title}</h2>
       <div className="vacancy-meta"><span><MapPin size={17} />{selectedVacancy.location}</span><span><Briefcase size={17} />{selectedVacancy.employment_type}</span></div>
       <p className="vacancy-dialog-summary">{selectedVacancy.summary}</p><h3>Key responsibilities</h3><ul>{selectedVacancy.responsibilities.map(item => <li key={item}>{item}</li>)}</ul>
       {selectedVacancy.status === 'open' && <a className="button" href={`mailto:${selectedVacancy.application_email}?subject=${encodeURIComponent(`Application: ${selectedVacancy.title}`)}`}>Apply for this position <ArrowRight size={17} /></a>}
