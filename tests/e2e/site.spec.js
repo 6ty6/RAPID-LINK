@@ -61,7 +61,14 @@ test('slider and account form first step work', async ({ page }) => {
 
 test('flyer stays above its copy and opens a keyboard-dismissible full view', async ({ page }) => {
   await page.goto('/home')
-  await page.getByRole('button', { name: 'Pause slideshow', exact: true }).click()
+  await page.locator('.hero-content').hover()
+  await expect(page.getByRole('button', { name: 'Pause slideshow', exact: true })).toHaveCount(0)
+  const dots = page.locator('.hero-controls .dots button span')
+  await expect(dots).toHaveCount(3)
+  for (const dot of await dots.all()) await expect(dot).toBeVisible()
+  await page.getByRole('button', { name: /Show slide 2:/ }).click()
+  await expect(page.getByRole('button', { name: /Show slide 2:/ })).toHaveAttribute('aria-current', 'true')
+  await page.getByRole('button', { name: /Show slide 1:/ }).click()
   const sliderCopy = page.locator('.hero-content')
   await expect(sliderCopy).toBeVisible()
   const flyer = await page.locator('.hero-media.is-active img').boundingBox()

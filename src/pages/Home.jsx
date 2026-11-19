@@ -20,7 +20,7 @@ function HeroSlider() {
   const [manualPaused, setManualPaused] = useState(false)
   const flyerDialog = useRef(null)
   const slide = slides[current]
-  const isPaused = interactionPaused || flyerOpen || manualPaused
+  const isPaused = interactionPaused || flyerOpen
   const move = step => setCurrent(value => (value + step + slides.length) % slides.length)
 
   useEffect(() => {
@@ -59,8 +59,7 @@ function HeroSlider() {
       <div className="button-row"><Link className="button flyer-action" to={slide.link}>{slide.action}</Link><button className="button flyer-view" onClick={openFlyer}>View full flyer</button></div>
     </div></div>
     <div className="hero-controls">
-      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined} />)}</div>
-      <button className="flyer-pause" onClick={() => setManualPaused(value => !value)} aria-label={manualPaused ? 'Play slideshow' : 'Pause slideshow'}>{manualPaused ? 'Play' : 'Pause'}</button>
+      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined}><span aria-hidden="true" /></button>)}</div>
     </div>
     <dialog ref={flyerDialog} className="flyer-dialog" aria-labelledby="flyer-dialog-title" onClose={() => setFlyerOpen(false)} onClick={event => { if (event.target === event.currentTarget) flyerDialog.current.close() }}>
       <div className="flyer-dialog-toolbar"><h2 id="flyer-dialog-title">Full flyer</h2><button className="button button-secondary" onClick={() => flyerDialog.current.close()} autoFocus>Close flyer</button></div>
