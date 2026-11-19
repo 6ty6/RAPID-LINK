@@ -861,5 +861,7 @@ footer a { margin:7px 0; display:block; color:#e3ebef; }
 .hero-flyer .dots button.active span { width:30px; background:#c94c00; }
 
 .career-search-row { display:flex; justify-content:flex-end; margin:0 0 24px; }
-.career-departments { margin-bottom:28px; }
+.career-departments { margin-bottom:28px; display:flex; flex-wrap:wrap; gap:10px; overflow:visible; padding:2px; }
+.career-departments button { min-height:42px; max-width:100%; padding:8px 14px; font-size:.9rem; white-space:normal; text-align:center; }
+.career-departments button:not(.is-active):hover { color:var(--navy); background:var(--soft); border-color:#a7b6c4; }
 @media (max-width:760px) { .career-search-row .news-search { width:100%; } }
