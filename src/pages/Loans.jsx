@@ -141,9 +141,9 @@ export function LoanCalculator() {
           </select>
           <small>{repaymentCount} equal {frequencyLabel} {repaymentCount === 1 ? 'payment' : 'payments'}.</small>
         </div>
-        <div className="calculator-field"><label htmlFor="payments-made">Payments already made <span className="optional-label">(optional)</span></label>
-          <input id="payments-made" type="number" min="0" max={repaymentCount} step="1" value={paymentsMade} onChange={event => { setPaymentsMade(event.target.value); setResult(null) }} />
-          <small>Used only to estimate early settlement. Enter 0 for a new loan.</small>
+        <div className="calculator-field"><label htmlFor="payments-made">Number of instalments already paid <span className="optional-label">(optional)</span></label>
+          <input id="payments-made" type="number" min="0" max={repaymentCount} step="1" aria-describedby="payments-made-help" value={paymentsMade} onChange={event => { setPaymentsMade(event.target.value); setResult(null) }} />
+          <small id="payments-made-help">Planning a new loan? Leave this at 0. To estimate the cost of clearing an existing loan early, enter how many {frequencyLabel} instalments you have already paid, not the amount of money paid. Your selected schedule has {repaymentCount} {repaymentCount === 1 ? 'instalment' : 'instalments'}, so enter a whole number from 0 to {repaymentCount}. This does not check your actual loan account; contact the loans team for a settlement quote.</small>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
         <button className="button" type="submit">Calculate</button>
