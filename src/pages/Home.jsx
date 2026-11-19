@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
 import { products } from '../content'
@@ -8,74 +8,66 @@ import usePublishedNews from '../hooks/usePublishedNews'
 const slides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/rapid-savings', action: 'Explore savings' },
   { eyebrow: 'Customer notice', title: 'Issue cheques with sufficient funds.', text: 'Repeated dud cheques may attract financial penalties, a cheque ban and credit restrictions.', image: '/assets/hero-notice.jpg', link: '/stories/bank-of-ghana-dud-cheque-sanctions', action: 'Read the full notice' },
-  { eyebrow: 'Salary-backed credit', title: 'Controller loans for CAGD staff.', text: 'Published loan terms extend up to 60 months. Eligibility and current rates apply.', image: '/assets/hero-controller.png', link: '/deduct-at-source-loan', action: 'View loan information' },
+  { eyebrow: 'Salary-backed credit', title: 'Controller loans for CAGD staff.', text: 'Published loan terms extend up to 60 months. Eligibility and current rates apply.', image: '/assets/controller-loan-flyer.png', link: '/deduct-at-source-loan', action: 'View loan information' },
 ]
 
-const mobileSliderQuery = '(max-width: 760px)'
+
 
 function HeroSlider() {
   const [current, setCurrent] = useState(0)
   const [interactionPaused, setInteractionPaused] = useState(false)
-  const [isMobileSlider, setIsMobileSlider] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
-  const [showCopy, setShowCopy] = useState(() => Boolean(window.matchMedia?.(mobileSliderQuery).matches))
+  const [flyerOpen, setFlyerOpen] = useState(false)
+  const [manualPaused, setManualPaused] = useState(false)
+  const flyerDialog = useRef(null)
   const slide = slides[current]
-  const isPaused = interactionPaused
-  const move = (step) => {
-    setShowCopy(isMobileSlider)
-    setCurrent(value => (value + step + slides.length) % slides.length)
-  }
-  const showSlide = (index) => {
-    setShowCopy(isMobileSlider)
-    setCurrent(index)
-  }
-
-  useEffect(() => {
-    if (!window.matchMedia) return undefined
-    const mediaQuery = window.matchMedia(mobileSliderQuery)
-    const updateSliderTiming = event => {
-      setIsMobileSlider(event.matches)
-      setShowCopy(event.matches)
-    }
-    mediaQuery.addEventListener('change', updateSliderTiming)
-    return () => mediaQuery.removeEventListener('change', updateSliderTiming)
-  }, [])
+  const isPaused = interactionPaused || flyerOpen || manualPaused
+  const move = step => setCurrent(value => (value + step + slides.length) % slides.length)
 
   useEffect(() => {
     if (isPaused) return undefined
-    const timer = window.setTimeout(() => {
-      if (isMobileSlider || showCopy) move(1)
-      else setShowCopy(true)
-    }, isMobileSlider ? 11000 : showCopy ? 8000 : 3000)
+    const timer = window.setTimeout(() => move(1), 11000)
     return () => window.clearTimeout(timer)
-  }, [isPaused, isMobileSlider, showCopy, current])
+  }, [isPaused, current])
 
-  const leaveFocus = event => {
-    if (!event.currentTarget.contains(event.relatedTarget)) setInteractionPaused(false)
+  useEffect(() => {
+    if (!flyerOpen) return undefined
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow }
+  }, [flyerOpen])
+
+  function openFlyer() {
+    flyerDialog.current.showModal()
+    setFlyerOpen(true)
   }
 
-  return <section
-    className="hero"
-    aria-roledescription="carousel"
-    aria-label="Featured information"
-    onMouseEnter={() => setInteractionPaused(true)}
-    onMouseLeave={() => setInteractionPaused(false)}
+  return <section className="hero hero-flyer" aria-roledescription="carousel" aria-label={'Featured information'}
+    onMouseEnter={() => setInteractionPaused(true)} onMouseLeave={() => setInteractionPaused(false)}
     onFocusCapture={() => setInteractionPaused(true)}
-    onBlurCapture={leaveFocus}
-  >
-    {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-      <img src={item.image} alt="" />
-    </div>)}
-    <div className={`shell hero-content slide-content-fade ${showCopy ? 'is-visible' : ''}`} aria-hidden={!showCopy} aria-live={isPaused ? 'polite' : 'off'} key={slide.title}>
-      <p className="eyebrow animated-copy">{slide.eyebrow}</p>
-      <h1 className="animated-title">{slide.title.split(' ').map((word, index) => <span className="animated-word" style={{ '--word-index': index }} key={`${word}-${index}`}>{word}</span>)}</h1>
-      <p className="animated-copy copy-delay-one">{slide.text}</p>
-      <Link className="button animated-copy copy-delay-two" to={slide.link}>{slide.action}<ArrowRight size={18} /></Link>
+    onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setInteractionPaused(false) }}>
+    <div className="flyer-stage">
+      {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
+        <picture><img src={item.image} alt={`RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture>
+      </div>)}
+      <button className="flyer-arrow flyer-previous" onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
+      <button className="flyer-arrow flyer-next" onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
     </div>
+    <div className="flyer-caption"><div className="shell hero-content" key={slide.title} aria-live={isPaused ? 'polite' : 'off'}>
+      <p className="eyebrow">{slide.eyebrow}</p>
+      <h1>{slide.title}</h1>
+      <p>{slide.text}</p>
+      <div className="button-row"><Link className="button flyer-action" to={slide.link}>{slide.action}</Link><button className="button flyer-view" onClick={openFlyer}>View full flyer</button></div>
+    </div></div>
     <div className="hero-controls">
-      <button onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
-      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => showSlide(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined} />)}</div>
-      <button onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
+      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined} />)}</div>
+      <button className="flyer-pause" onClick={() => setManualPaused(value => !value)} aria-label={manualPaused ? 'Play slideshow' : 'Pause slideshow'}>{manualPaused ? 'Play' : 'Pause'}</button>
     </div>
+    <dialog ref={flyerDialog} className="flyer-dialog" aria-labelledby="flyer-dialog-title" onClose={() => setFlyerOpen(false)} onClick={event => { if (event.target === event.currentTarget) flyerDialog.current.close() }}>
+      <div className="flyer-dialog-toolbar"><h2 id="flyer-dialog-title">Full flyer</h2><button className="button button-secondary" onClick={() => flyerDialog.current.close()} autoFocus>Close flyer</button></div>
+      <p>Scroll to read the flyer, or open the original image to zoom in.</p>
+      <a href={slide.image} target="_blank" rel="noopener noreferrer">Open original image in a new tab</a>
+      <div className="flyer-dialog-image"><img src={slide.image} alt={`RapidLink promotional flyer: ${slide.title}`} /></div>
+    </dialog>
   </section>
 }
 
