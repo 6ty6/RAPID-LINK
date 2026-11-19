@@ -59,26 +59,21 @@ test('slider and account form first step work', async ({ page }) => {
   await expect(page.getByRole('group', { name: 'Personal and identification details' })).toBeVisible()
 })
 
-test('flyer stays above its copy and opens a keyboard-dismissible full view', async ({ page }) => {
+test('flyers link to their information without text panels or buttons', async ({ page }) => {
   await page.goto('/home')
-  await page.locator('.hero-content').hover()
-  await expect(page.getByRole('button', { name: 'Pause slideshow', exact: true })).toHaveCount(0)
-  const dots = page.locator('.hero-controls .dots button span')
-  await expect(dots).toHaveCount(3)
-  for (const dot of await dots.all()) await expect(dot).toBeVisible()
-  await page.getByRole('button', { name: /Show slide 2:/ }).click()
-  await expect(page.getByRole('button', { name: /Show slide 2:/ })).toHaveAttribute('aria-current', 'true')
-  await page.getByRole('button', { name: /Show slide 1:/ }).click()
-  const sliderCopy = page.locator('.hero-content')
-  await expect(sliderCopy).toBeVisible()
-  const flyer = await page.locator('.hero-media.is-active img').boundingBox()
-  const copy = await sliderCopy.boundingBox()
-  expect(copy.y).toBeGreaterThanOrEqual(flyer.y + flyer.height)
-  await page.getByRole('button', { name: 'View full flyer', exact: true }).click()
-  await expect(page.getByRole('dialog', { name: 'Full flyer' })).toBeVisible()
-  await page.keyboard.press('Escape')
-  await expect(page.getByRole('dialog', { name: 'Full flyer' })).not.toBeVisible()
-  await expect(page.getByRole('button', { name: 'View full flyer', exact: true })).toBeFocused()
+  await expect(page.locator('.flyer-caption')).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'View full flyer', exact: true })).toHaveCount(0)
+  const destinations = ['/apply-loan', '/stories/bank-of-ghana-dud-cheque-sanctions', '/deduct-at-source-loan']
+  for (let index = 0; index < destinations.length; index++) {
+    await page.getByRole('button', { name: new RegExp('Show slide ' + (index + 1) + ':') }).click()
+    const link = page.locator('.hero-media.is-active .flyer-link')
+    await expect(link).toHaveAttribute('href', destinations[index])
+    await expect(link.locator('.flyer-link-hint')).toBeVisible()
+    await link.focus()
+    await expect(link).toBeFocused()
+  }
+  await page.locator('.hero-media.is-active .flyer-link').click()
+  await expect(page).toHaveURL(/deduct-at-source-loan$/)
 })
 
 test('homepage tools and connected news lead to the intended pages', async ({ page }) => {
@@ -157,4 +152,18 @@ test('loan calculator and controller rate guide retain their functionality', asy
   await page.goBack()
   await expect(page.getByRole('heading', { level: 1, name: 'Loan Calculator' })).toBeVisible()
   expect(pageErrors).toEqual([])
+})
+
+ test('controller rates open directly without leaving the loan page', async ({ page }) => {
+  await page.goto('/deduct-at-source-loan')
+  const trigger = page.getByRole('button', { name: 'View Loan Rates Guide', exact: true })
+  await trigger.click()
+  const viewer = page.getByRole('dialog', { name: 'RapidLink Controller Loan Rates Guide' })
+  await expect(viewer).toBeVisible()
+  await expect(page).toHaveURL(/deduct-at-source-loan$/)
+  await expect(viewer.getByRole('link', { name: 'Download', exact: true })).toHaveAttribute('href', '/downloads/rate-chart.pdf')
+  await expect(viewer.locator('canvas').first()).toBeVisible({ timeout: 20000 })
+  await page.keyboard.press('Escape')
+  await expect(viewer).toHaveCount(0)
+  await expect(trigger).toBeFocused()
 })

@@ -88,6 +88,7 @@ function PdfPreview({ url }) {
 
 export function ProductPage() {
   const { '*': key } = useParams()
+  const [ratesOpen, setRatesOpen] = useState(false)
   const product = products[key]
   if (!product) return <NotFound />
   const action = product.loan
@@ -111,12 +112,13 @@ export function ProductPage() {
           <article className="product-info-card"><h3>Benefits</h3><CheckList items={product.benefits} /></article>
           <article className="product-info-card"><h3>What you’ll need</h3><CheckList items={product.requirements} /></article>
         </div>
-        <div className="product-action">{action}{key === 'deduct-at-source-loan' && <Link className="button button-secondary" to="/rate-chart">View Loan Rates Guide</Link>}<p>{product.loan ? 'Continue to our application guidance.' : 'Begin your account application.'}</p></div>
+        <div className="product-action">{action}{key === 'deduct-at-source-loan' && <button className="button button-secondary" type="button" onClick={() => setRatesOpen(true)}>View Loan Rates Guide</button>}<p>{product.loan ? 'Continue to our application guidance.' : 'Begin your account application.'}</p></div>
       </div>
     </div></section> : <section className="section"><div className="shell content-grid">
       <article><h2>Benefits</h2><CheckList items={product.benefits} /></article>
       <aside className="requirements"><h2>What you’ll need</h2><CheckList items={product.requirements} />{action}</aside>
     </div></section>}
+    {ratesOpen && <RateGuideDialog onClose={() => setRatesOpen(false)} />}
   </>
 }
 
@@ -140,30 +142,31 @@ export function Rates() {
   </>
 }
 
+function RateGuideDialog({ onClose }) {
+  const [previousFocus] = useState(() => document.activeElement)
+  const dialogRef = useRef(null)
+  useEffect(() => {
+    const dialog = dialogRef.current
+    dialog.showModal()
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus() }
+  }, [])
+  return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby="rate-guide-title" onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
+    <header><h2 id="rate-guide-title">RapidLink Controller Loan Rates Guide</h2><div><a className="button button-secondary" href="/downloads/rate-chart.pdf" download>Download</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
+    <PdfPreview url="/downloads/rate-chart-preview.txt" />
+  </dialog>
+}
+
 export function RateChart() {
   const [isOpen, setIsOpen] = useState(false)
-  const documentUrl = '/downloads/rate-chart.pdf'
-  const previewUrl = '/downloads/rate-chart-preview.txt'
-
-  useEffect(() => {
-    if (!isOpen) return undefined
-    const closeOnEscape = event => event.key === 'Escape' && setIsOpen(false)
-    document.addEventListener('keydown', closeOnEscape)
-    return () => document.removeEventListener('keydown', closeOnEscape)
-  }, [isOpen])
-
   return <>
-    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink’s controller (government) loan rates guide." image="/assets/rates-hero-v2.png" />
+    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink's controller (government) loan rates guide." image="/assets/rates-hero-v2.png" />
     <section className="section"><div className="shell narrow panel centered rate-guide">
       <h2>Controller Loan Rates Guide</h2>
       <p>Click below to view the controller (government) loan rates guide.</p>
       <button className="button" type="button" onClick={() => setIsOpen(true)}>View document</button>
     </div></section>
-    {isOpen && <div className="document-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setIsOpen(false)}>
-      <section className="document-dialog" role="dialog" aria-modal="true" aria-labelledby="rate-guide-title">
-        <header><h2 id="rate-guide-title">RapidLink Controller Loan Rates Guide</h2><div><a className="button button-secondary" href={documentUrl} download>Download</a><button className="modal-close" type="button" onClick={() => setIsOpen(false)} aria-label="Close rates guide">×</button></div></header>
-        <PdfPreview url={previewUrl} />
-      </section>
-    </div>}
+    {isOpen && <RateGuideDialog onClose={() => setIsOpen(false)} />}
   </>
 }

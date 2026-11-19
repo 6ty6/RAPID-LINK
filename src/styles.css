@@ -865,3 +865,17 @@ footer a { margin:7px 0; display:block; color:#e3ebef; }
 .career-departments button { min-height:42px; max-width:100%; padding:8px 14px; font-size:.9rem; white-space:normal; text-align:center; }
 .career-departments button:not(.is-active):hover { color:var(--navy); background:var(--soft); border-color:#a7b6c4; }
 @media (max-width:760px) { .career-search-row .news-search { width:100%; } }
+
+/* Clickable promotional artwork: preserve the full image and its text. */
+.hero-flyer .flyer-stage { padding-top:32px; }
+.flyer-link { position:relative; display:block; cursor:pointer; color:white; transition:transform .2s ease,box-shadow .2s ease; }
+.flyer-link:hover { transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,.32); }
+.flyer-link:focus-visible { outline:3px solid var(--orange); outline-offset:5px; }
+.flyer-link:active { transform:translateY(1px); }
+.flyer-link-hint { position:absolute; right:5px; top:-29px; display:grid; place-items:center; color:white; }
+.flyer-link-hint svg { transform:rotate(-45deg); }
+@media (max-width:760px) { .hero-flyer .flyer-stage { padding:32px 0 0; } .flyer-link-hint { right:12px; } }
+@media (prefers-reduced-motion:reduce) { .flyer-link { transition:none; } .flyer-link:hover,.flyer-link:active { transform:none; } }
+
+.document-native { width:min(1100px,94vw); max-height:92dvh; padding:0; border:0; margin:auto; overflow:auto; }
+.document-native::backdrop { background:rgba(4,15,29,.78); }
