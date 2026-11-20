@@ -8,6 +8,7 @@ import { ApplyLoan, LoanCalculator } from './pages/Loans'
 import { ProductPage, RateChart, Rates } from './pages/Products'
 import CareerManagement from './pages/CareerManagement'
 import AcceptInvite from './pages/AcceptInvite'
+import HelpAssistant from './components/HelpAssistant'
 import {
   Careers,
   Contact,
@@ -47,5 +48,6 @@ export default function App() {
       </Routes>
     </main>
     <Footer />
+    <HelpAssistant />
   </>
 }
