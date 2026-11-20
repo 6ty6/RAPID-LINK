@@ -3,42 +3,13 @@ import { CircleAlert, Phone } from '../icons'
 import { config } from '../config'
 import { PageHero } from '../components/Shared'
 import { loanCalculatorSettings } from '../content/loanCalculator.js'
+import { getRepaymentCount, calculateLoanEstimate } from '../content/loanMath.js'
+import { useCalculatorSettings } from '../cms/useCalculatorSettings'
+import { usePublicCms } from '../cms/public'
 
 export const LOAN_CALCULATOR_TERMS = loanCalculatorSettings
 
-export function getRepaymentCount(duration, frequency, terms = LOAN_CALCULATOR_TERMS) {
-  return frequency === 'weekly'
-    ? terms.weeklyPaymentsByMonth[duration]
-    : duration
-}
-
-export function calculateLoanEstimate(principal, duration, frequency = 'monthly', paymentsMade = 0, terms = LOAN_CALCULATOR_TERMS) {
-  const repaymentCount = getRepaymentCount(duration, frequency, terms)
-  const totalInterest = principal * (terms.monthlyFlatRate / 100) * duration
-  const processingFee = principal * (terms.processingFeeRate / 100)
-  const insuranceFee = principal * (terms.insuranceFeeRate / 100)
-  const managementFee = principal * (terms.managementFeeRate / 100)
-  const totalFees = processingFee + insuranceFee + managementFee
-  const totalRepayment = principal + totalInterest + totalFees
-  const installmentAmount = totalRepayment / repaymentCount
-  const remainingPrincipal = principal * Math.max(repaymentCount - paymentsMade, 0) / repaymentCount
-  const earlySettlementFee = remainingPrincipal * (terms.earlySettlementRate / 100)
-
-  return {
-    principal,
-    totalInterest,
-    processingFee,
-    insuranceFee,
-    managementFee,
-    totalFees,
-    totalRepayment,
-    repaymentCount,
-    installmentAmount,
-    remainingPrincipal,
-    earlySettlementFee,
-    earlySettlementTotal: remainingPrincipal + earlySettlementFee,
-  }
-}
+export { getRepaymentCount, calculateLoanEstimate } from '../content/loanMath.js'
 
 export function ApplyLoan() {
   if (config.generalLoanPortal) {
@@ -61,7 +32,9 @@ export function ApplyLoan() {
 }
 
 export function LoanCalculator() {
-  const terms = LOAN_CALCULATOR_TERMS
+  const cms = usePublicCms()
+  const settingsUnavailable = cms.enabled && (cms.loading || cms.error)
+  const terms = useCalculatorSettings()
   const [principal, setPrincipal] = useState('')
   const [duration, setDuration] = useState(String(terms.minimumMonths))
   const [frequency, setFrequency] = useState(terms.repaymentFrequencies[0])
@@ -73,6 +46,7 @@ export function LoanCalculator() {
     { length: terms.maximumMonths - terms.minimumMonths + 1 },
     (_, index) => terms.minimumMonths + index,
   )
+  useEffect(() => { setResult(null); setError(''); setPaymentsMade('0') }, [terms, settingsUnavailable])
   const totalFeeRate = terms.processingFeeRate + terms.insuranceFeeRate + terms.managementFeeRate
 
   useEffect(() => {
@@ -94,6 +68,7 @@ export function LoanCalculator() {
 
   function handleSubmit(event) {
     event.preventDefault()
+    if (settingsUnavailable) return
     const amount = Number(principal)
     const months = Number(duration)
     const completedPayments = Number(paymentsMade)
@@ -131,8 +106,9 @@ export function LoanCalculator() {
       <form className="panel calculator-form" onSubmit={handleSubmit}>
         <p className="eyebrow">Plan your repayment</p>
         <h2>Calculate an estimate</h2>
+        {settingsUnavailable && <p role="status">{cms.loading ? 'Loading current calculator settings…' : 'Calculator pricing is temporarily unavailable. Please contact our team for assistance.'}</p>}
         <div className="calculator-field"><label htmlFor="principal-amount">Principal Amount</label>
-          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="100" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
+          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="0.01" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
           <small id="principal-limit">Maximum loan amount: GHC {terms.maximumPrincipal.toLocaleString('en-GH')}.</small>
           {exceedsMaximum && <p className="form-error" role="alert">{maximumMessage}</p>}
         </div>
@@ -156,7 +132,7 @@ export function LoanCalculator() {
           <small id="payments-made-help">Planning a new loan? Leave this at 0. To estimate the cost of clearing an existing loan early, enter how many {frequencyLabel} instalments you have already paid, not the amount of money paid. Your selected schedule has {repaymentCount} {repaymentCount === 1 ? 'instalment' : 'instalments'}, so enter a whole number from 0 to {repaymentCount}. This does not check your actual loan account; contact the loans team for a settlement quote.</small>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="button" type="submit" disabled={exceedsMaximum}>Calculate</button>
+        <button className="button" type="submit" disabled={exceedsMaximum || settingsUnavailable}>Calculate</button>
       </form>
       <div className="calculator-results" aria-live="polite">
         <p className="eyebrow">Your estimate</p>

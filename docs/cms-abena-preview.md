@@ -17,11 +17,22 @@ npm.cmd run cms:dev
 - Staff CMS: http://127.0.0.1:5182/cms
 - Local content API: http://127.0.0.1:8791/api/cms/public
 
-The demo uses only local data and synthetic staff identities. Its CMS adapter is enabled in the demo process. Abena is hidden on `/cms` and other staff/invitation routes. Existing content can be imported through Workspace tools → Import & export, as drafts. It is not automatically published, so managed website sections can be empty until reviewed content is released. The calculator stays unchanged.
+The demo uses only local data and synthetic staff identities. Its CMS adapter is enabled in the demo process. Abena is hidden on `/cms` and other staff/invitation routes. Existing content can be imported through Workspace tools → Import & export, as drafts. It is not automatically published, so managed website sections can be empty until reviewed content is released. The original approved calculator settings remain the default until a replacement is approved and published.
 
 Open only **http://127.0.0.1:5182/**. The integration-preview toolbar connects **View website** and **Manage content** in the same tab. Your staff session stays in memory while switching; the CMS checks it again when you return. Unsaved drafts prompt before leaving the editor. Returning to the website fetches published content again, so you can see a release without opening another browser page. The backend process still runs internally; you do not need to open its URL. This toolbar is shown only when the custom CMS adapter is enabled, and is not present on `main`.
 
-The CMS overview includes **Loan calculator**, also available under **Workspace tools → Loan calculator**. It displays the actual approved settings from the calculator's shared configuration and opens the public calculator in the same tab. Pricing settings are read-only; no rate, limit or formula changes were made by adding this entry.
+The CMS overview includes **Loan calculator**, also available under **Workspace tools → Loan calculator**. Administrators and staff in the assigned Credit/Finance department can create or edit its single settings record. Other staff can inspect the active settings and test the calculator. The shared flat-interest, fee and settlement formulas remain in code; the original approved pricing constants have not been changed.
+
+## Edit calculator fields
+
+1. Choose **Demo Credit writer → Loan calculator → Create calculator settings draft** (or **Edit calculator settings** for an existing record).
+2. Edit loan amount/duration limits, monthly flat interest, processing/insurance/management/settlement percentages, the approved weekly payment schedule, introduction, disclosure and effective date. The nominal annual rate is derived as monthly rate × 12; this does not calculate or assert APR. Repayment frequencies and the underlying formula are unchanged.
+3. Enter the Credit approval reference and **three distinct expected repayment examples** from approved schedules. Each example specifies amount, duration, monthly/weekly frequency, instalments paid, expected total repayment, expected instalment and expected early settlement. Expected currency results are checked to two decimal places. These checks demonstrate mathematical agreement; a real business approver must verify the reference and independent schedules. Synthetic automated test examples are not business evidence.
+4. Save the draft and submit for review. Invalid bounds, missing weekly counts, negative/out-of-range percentages and mismatching examples prevent review/publication. The existing public version stays active while you edit.
+5. Sign out and choose **Demo administrator** as a different approver, open the settings without saving over the writer's draft, approve and publish. Real staff require the matching departmental scope or an administrator. The creator/last editor cannot approve their own version. Publication is immediate and cannot precede the specified effective date; automatic scheduled publication is not implemented.
+6. Return to the website calculator. New settings update displayed rates, limits, schedules and calculations. Any displayed estimate is cleared when settings change. During loading or a service failure, calculation is disabled. Unpublishing a replacement restores the original approved code settings; revision history can restore a prior version as a new draft requiring approval again.
+
+The approval reference and verification examples remain private staff records and are removed from the anonymous API response. The public site receives only the approved calculator fields it needs. No new pricing values have been published to the user's local preview or production as part of this implementation.
 
 ## Test an answer in Abena
 
@@ -44,4 +55,6 @@ No Render service, hosted database, production environment or live authenticatio
 
 ## Verification
 
-`npm.cmd run cms:test:e2e` includes desktop/mobile checks that a draft is unavailable in Abena, a separately approved publication answers the question, and withdrawal removes that answer. `npm.cmd test` covers CMS-aware reply matching and the original fallback behaviour; `npm.cmd run cms:test` covers backend permissions. Run `npm.cmd run build` before a hosted preview.
+`npm.cmd run cms:test:e2e` uses **separate test ports 5192/8792 and `.cms-data/browser-tests`** so synthetic pricing tests do not edit the local demonstration data on 5182/8791. It includes draft/publish/withdrawal checks for Abena and calculator settings on desktop and mobile. `npm.cmd test` covers reply matching, calculator validation and the original approved calculations; `npm.cmd run cms:test` covers permissions and private-field filtering. Run `npm.cmd run build` before a hosted preview.
+
+Latest local validation: 51 website/unit tests, 16 backend tests and 14 desktop/mobile browser tests passed; production build passed. The local demonstration has a higher request budget for automated tests; hosted production limits are unchanged. These results are not proof of business pricing approval or hosted-environment security.

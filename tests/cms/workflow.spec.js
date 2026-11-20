@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { changedCalculatorData } from '../fixtures/calculator.mjs'
 async function openSection(page, name) {
   const toggle = page.getByRole('button', {name:'Browse sections',exact:true})
   if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
@@ -20,7 +21,7 @@ test('writer drafts, separate approver publishes, public page updates and withdr
   await expect(page.getByRole('status').filter({hasText:'Draft saved'})).toBeVisible()
   await page.getByRole('button', { name: 'Submit for review', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Approve', exact: true })).toHaveCount(0)
-  let records = (await (await request.get('http://127.0.0.1:8791/api/cms/public')).json()).records
+  let records = (await (await request.get('http://127.0.0.1:8792/api/cms/public')).json()).records
   expect(records.some(record => record.title === title)).toBeFalsy()
   await page.getByRole('button', { name: 'Sign out', exact: true }).click()
   await page.getByRole('button', { name: 'Demo approver', exact: false }).click()
@@ -59,13 +60,13 @@ test('staff workspace fits the viewport and private admin functions are absent f
 })
 
 test('administrator imports existing content as drafts without publishing it', async ({ page, request }) => {
-  const before=(await (await request.get('http://127.0.0.1:8791/api/cms/public')).json()).records
+  const before=(await (await request.get('http://127.0.0.1:8792/api/cms/public')).json()).records
   await page.goto('/cms')
   await page.getByRole('button',{name:'Demo administrator',exact:false}).click()
   await openSection(page, 'Import & export')
   await page.getByRole('button',{name:'Import existing content as drafts',exact:true}).click()
   await expect(page.getByRole('status').filter({hasText:'Nothing was published.'})).toBeVisible()
-  const after=(await (await request.get('http://127.0.0.1:8791/api/cms/public')).json()).records
+  const after=(await (await request.get('http://127.0.0.1:8792/api/cms/public')).json()).records
   expect(after).toEqual(before)
   await openSection(page, /^News/)
   await page.getByRole('button',{name:/Bank of Ghana revises sanctions/}).click()
@@ -130,7 +131,7 @@ test('one workspace switches website and CMS in the same tab, preserves sign-in 
   await expect(page.getByLabel('Title *',{exact:true})).toHaveValue('Unsaved preview test')
   page.once('dialog',dialog=>dialog.accept())
   await switcher.getByRole('link',{name:'View website',exact:true}).click()
-  await expect(page).toHaveURL('http://127.0.0.1:5182/')
+  await expect(page).toHaveURL('http://127.0.0.1:5192/')
   await expect(page.getByRole('button',{name:'Open Abena',exact:true})).toBeVisible()
   await switcher.getByRole('link',{name:'Manage content',exact:true}).click()
   await expect(page.getByRole('heading',{name:'What would you like to update?',exact:true})).toBeVisible()
@@ -153,4 +154,52 @@ test('CMS calculator entry shows current settings and opens the working calculat
   await expect(page.getByRole('button',{name:'Sign out',exact:true})).toBeVisible()
   await openSection(page,/^Loan calculator$/)
   await expect(page.getByRole('heading',{name:'Current calculator settings',exact:true})).toBeVisible()
+})
+
+test('Credit can edit calculator fields but the website changes only after validated independent publication', async ({page}) => {
+  await page.goto('/cms')
+  await page.getByRole('button',{name:'Demo Credit writer',exact:false}).click()
+  await page.getByRole('button',{name:'Review loan calculator',exact:true}).click()
+  await page.getByRole('button',{name:/^(Create calculator settings draft|Edit calculator settings)$/}).click()
+  await page.getByLabel('Maximum loan amount *',{exact:true}).fill('15000')
+  await page.getByLabel('Monthly flat interest rate (%) *',{exact:true}).fill('7')
+  await page.getByLabel('Credit approval reference *',{exact:true}).fill('Synthetic browser test only; not business approval')
+  const examples=page.getByRole('group',{name:'Verified repayment examples',exact:true})
+  while(await examples.getByRole('button',{name:/^Remove verified repayment examples item/}).count())await examples.getByRole('button',{name:/^Remove verified repayment examples item/}).last().click()
+  const labels={principal:'Example principal *',duration:'Example duration in months *',frequency:'Example frequency *',paymentsMade:'Example instalments paid *',expectedTotal:'Expected total repayment *',expectedInstalment:'Expected instalment *',expectedSettlement:'Expected early settlement *'}
+  for(const [index,sample]of changedCalculatorData().verificationCases.entries()) {
+    await examples.getByRole('button',{name:'Add verified repayment examples item',exact:true}).click()
+    for(const [key,value]of Object.entries(sample)) {
+      const input=examples.getByLabel(labels[key],{exact:true}).nth(index)
+      if(key==='frequency')await input.selectOption(value);else await input.fill(String(value))
+    }
+  }
+  await page.getByRole('button',{name:'Save draft',exact:true}).click()
+  await expect(page.getByRole('status').filter({hasText:'Draft saved'})).toBeVisible()
+  const publicPage=await page.context().newPage()
+  await publicPage.goto('/loan-calculator')
+  await expect(publicPage.getByLabel('Monthly flat interest rate',{exact:true})).toHaveValue('6')
+  await expect(publicPage.getByLabel('Principal Amount',{exact:true})).toHaveAttribute('max','20000')
+  await page.getByRole('button',{name:'Submit for review',exact:true}).click()
+  await expect(page.getByRole('button',{name:'Approve',exact:true})).toHaveCount(0)
+  await page.getByRole('button',{name:'Sign out',exact:true}).click()
+  await page.getByRole('button',{name:'Demo administrator',exact:false}).click()
+  await page.getByRole('button',{name:'Review loan calculator',exact:true}).click()
+  await page.getByRole('button',{name:'Edit calculator settings',exact:true}).click()
+  await page.getByRole('button',{name:'Approve',exact:true}).click()
+  await page.getByRole('button',{name:'Publish approved version',exact:true}).click()
+  await expect(page.getByRole('status').filter({hasText:'Published public version updated'})).toBeVisible()
+  await publicPage.reload()
+  await expect(publicPage.getByLabel('Monthly flat interest rate',{exact:true})).toHaveValue('7')
+  await expect(publicPage.getByLabel('Principal Amount',{exact:true})).toHaveAttribute('max','15000')
+  await publicPage.getByLabel('Principal Amount',{exact:true}).fill('20000')
+  await expect(publicPage.getByRole('button',{name:'Calculate',exact:true})).toBeDisabled()
+  await publicPage.getByLabel('Principal Amount',{exact:true}).fill('1000')
+  await publicPage.getByRole('button',{name:'Calculate',exact:true}).click()
+  await expect(publicPage.locator('.calculator-total dd')).toContainText('1137.50')
+  await page.getByRole('button',{name:'Unpublish',exact:true}).click()
+  await expect(page.getByRole('status').filter({hasText:'Public version withdrawn'})).toBeVisible()
+  await publicPage.reload()
+  await expect(publicPage.getByLabel('Monthly flat interest rate',{exact:true})).toHaveValue('6')
+  await publicPage.close()
 })

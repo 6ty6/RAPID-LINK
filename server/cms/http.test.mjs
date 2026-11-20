@@ -7,6 +7,7 @@ import sharp from 'sharp'
 import { CmsStore } from './store.mjs'
 import { createServer, loadConfig, demoStaff, verifyUser } from './server.mjs'
 import { backupCms, verifyBackup } from './backup.mjs'
+import { verifiedCalculatorData } from '../../tests/fixtures/calculator.mjs'
 
 test('production rejects demo auth, self registrations and sessions without verified MFA', async () => {
   assert.throws(() => loadConfig({CMS_DEMO:'true',NODE_ENV:'production'}), /cannot run/)
@@ -22,6 +23,22 @@ test('production rejects demo auth, self registrations and sessions without veri
     globalThis.fetch=async ()=>new Response('{}',{status:401})
     await assert.rejects(verifyUser(token('aal2'),config),/no longer valid/)
   } finally {globalThis.fetch=originalFetch}
+})
+
+test('public calculator releases omit internal approval references and verification examples',async()=>{
+  const dir=mkdtempSync(join(tmpdir(),'rapidlink-calculator-api-'))
+  const config=loadConfig({CMS_DEMO:'true',CMS_DATA_DIR:dir}),store=new CmsStore(':memory:',demoStaff)
+  const server=createServer({store,config})
+  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve))
+  try {
+    const credit=demoStaff[3].user_id,admin=demoStaff[0].user_id
+    let entry=store.save(credit,{kind:'calculator',slug:'loan-calculator-settings',title:'Synthetic calculator',department:'Credit',version:0,data:verifiedCalculatorData()})
+    entry=store.action(credit,entry.id,'submit',entry.version);entry=store.action(admin,entry.id,'approve',entry.version);store.action(admin,entry.id,'publish',entry.version)
+    const response=await fetch(`http://127.0.0.1:${server.address().port}/api/cms/public`)
+    const record=(await response.json()).records[0]
+    assert.equal(record.data.monthlyFlatRate,6);assert.equal(record.data.approvalReference,undefined);assert.equal(record.data.verificationCases,undefined)
+    assert.equal(store.export(admin).releases[0].data.verificationCases.length,3)
+  } finally {await new Promise(resolve=>server.close(resolve));store.close();rmSync(dir,{recursive:true,force:true})}
 })
 
 test('HTTP authorisation, workflow, CORS, public image privacy and sanitisation', async () => {

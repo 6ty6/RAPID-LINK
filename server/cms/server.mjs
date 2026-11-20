@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url'
 import sharp from 'sharp'
 import { CmsStore, CmsError } from './store.mjs'
 import { models, departments } from '../../src/cms/models.js'
+import { calculatorPublicKeys } from '../../src/content/calculatorConfig.js'
 
 export const demoStaff = [
   { user_id: '11111111-1111-4111-8111-111111111111', name: 'Demo administrator', role: 'admin', department: 'Marketing/Sales' },
@@ -80,12 +81,12 @@ export function createServer({ store, config, authenticate = token => verifyUser
         response.writeHead(204); return response.end()
       }
       if (request.method === 'GET' && path === '/api/cms/config') return send(200, { demo: config.demo, authUrl: config.demo ? '' : config.authUrl, publishableKey: config.demo ? '' : config.key, requireMfa: config.requireMfa, demoStaff: config.demo ? demoStaff : [] })
-      if (request.method === 'GET' && path === '/api/cms/public') return send(200, { records: store.publicEntries() })
+      if (request.method === 'GET' && path === '/api/cms/public') return send(200, { records: store.publicEntries().map(record => record.kind === 'calculator' ? { ...record, data: Object.fromEntries(calculatorPublicKeys.map(key=>[key,record.data[key]])) } : record) })
       const mediaMatch = path.match(/^\/api\/cms\/media\/([a-f0-9-]{36})$/)
       if (request.method === 'GET' && mediaMatch && store.canReadMedia(null, mediaMatch[1])) return image(mediaMatch[1])
       if (request.headers.origin !== config.origin) throw new CmsError('Origin not allowed.', 403)
       if (Date.now() - minute > 60000) { minute = Date.now(); count = 0 }
-      if (++count > 240) { response.setHeader('Retry-After', '60'); throw new CmsError('Please wait before trying again.', 429) }
+      if (++count > (config.demo ? 1200 : 240)) { response.setHeader('Retry-After', '60'); throw new CmsError('Please wait before trying again.', 429) }
       const token = (request.headers.authorization || '').replace(/^Bearer /, '')
       const userId = await authenticate(token)
       const member = store.who(userId)

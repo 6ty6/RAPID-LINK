@@ -23,7 +23,7 @@ Features:
 - Existing public copy can be imported as drafts without overwriting matching kind/slug records. Nothing is published automatically. Existing board and vacancy prototypes are retained as draft sources, following Caleb's instruction; import is not confirmation that a vacancy is current.
 - JSON export, complete SQLite/media backup, checksum verification and tested restoration into a separate directory.
 
-No customer applications, IDs, signatures, transactions, complaint cases, subscriber records, private annual reports or financial statements belong here. The calculator and its approved parameters are unchanged.
+No customer applications, IDs, signatures, transactions, complaint cases, subscriber records, private annual reports or financial statements belong here. On the integration branch, calculator parameters can be edited through a separate Credit/Finance approval workflow, documented in `docs/cms-abena-preview.md`. Original approved defaults and the calculation formula remain unchanged.
 
 ## Run the local demonstration
 
@@ -50,7 +50,7 @@ The demo starts empty apart from its staff accounts. The public preview therefor
 
 The normal build defaults to `VITE_CUSTOM_CMS_ENABLED=false`; it keeps the existing content sources. Set `VITE_CMS_API_BASE_URL` to the approved HTTPS service origin when deploying the staff workspace. After migration and review, enable `VITE_CUSTOM_CMS_ENABLED=true` and rebuild to switch public content to the custom API.
 
-Connected consumers are news listings/articles, careers, FAQs, announcements, homepage flyers, products, board profiles, digital channel cards, branch cards/directions, footer email/phone/copy, page heroes/sections and `/public-documents`. A published page with a new slug can be displayed at `/<slug>`. Existing PageHero-based routes can receive matching page metadata and additional sections. Existing specialised layouts, institutional body copy, navigation, header contact shortcuts, fixed-deposit rate tables and calculator code remain interface/local configuration; this is not a visual page builder.
+Connected consumers are news listings/articles, careers, FAQs, announcements, homepage flyers, products, board profiles, digital channel cards, branch cards/directions, footer email/phone/copy, page heroes/sections, approved calculator settings and `/public-documents`. A published page with a new slug can be displayed at `/<slug>`. Existing PageHero-based routes can receive matching page metadata and additional sections. Existing specialised layouts, institutional body copy, navigation, header contact shortcuts, fixed-deposit rate tables and the calculator formula remain interface/local code; this is not a visual page builder.
 
 The API provides only published snapshots. The browser refreshes them every 30 seconds and when returning to the tab. If the service fails, managed collections clear and an unavailable notice appears; it does not fall back to stale static news or vacancies. Search prerendering/hosting must fetch the published API at build time before a production migration if complete crawler HTML is required; this implementation does not add a prerender job.
 
@@ -104,6 +104,6 @@ npm.cmd run build
 
 The CMS backend tests cover permissions, separate approval, draft privacy, optimistic concurrency, revisions, image sanitisation and publication visibility, production authentication checks with a simulated provider, persistence, backup verification and recovery. Browser tests cover writer/approver/public workflows and responsive layout on desktop and mobile. Existing website unit tests cover default behaviour with the custom adapter disabled.
 
-Verified on the integration branch: 14 backend tests, 47 website/unit tests and 8 desktop/mobile browser tests passed; the production build passed. The build retains the existing large PDF bundle warning. No test results here constitute a live production security audit.
+The integration tests cover default website behaviour, protected calculator settings, repayment-example validation, private approval data, independent approval, published settings, and desktop/mobile workflows. The build retains the existing large PDF bundle warning. No test results here constitute a live production security audit.
 
 Live deployment, persistent disk provisioning, real staff invitations/MFA, real-world backup scheduling and a production content migration remain deployment/integration work. They have not been performed automatically. Abena's CMS connection is implemented only on the combined preview branch.

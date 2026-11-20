@@ -71,9 +71,10 @@ export class CmsStore {
       const existing = payload.id ? this.entry(userId, payload.id) : null
       if (!Object.hasOwn(models, payload.kind) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(payload.slug || '') || payload.slug.length > 120 || typeof payload.title !== 'string' || !payload.title.trim() || payload.title.length > 200 || !departments.includes(payload.department)) fail('Check the title, URL slug, content type and department.')
       this.scope(actor, payload)
+      if (payload.kind === 'calculator' && (!['Credit','Finance'].includes(payload.department) || (actor.role !== 'admin' && !['Credit','Finance'].includes(actor.department)))) fail('Calculator settings require an administrator or assigned Credit/Finance staff.', 403)
       if (existing) { this.expectVersion(existing, payload.version); if (existing.kind !== payload.kind || existing.department !== payload.department) fail('Content type and department cannot be changed after creation.') }
       else if (payload.version !== 0) fail('New content must start at version zero.', 409)
-      if (models[payload.kind].singleton && this.db.prepare('SELECT id FROM entries WHERE kind=? AND id<>?').get(payload.kind, existing?.id || '')) fail('There is already a site-settings record.')
+      if (models[payload.kind].singleton && this.db.prepare('SELECT id FROM entries WHERE kind=? AND id<>?').get(payload.kind, existing?.id || '')) fail('There is already a record for this settings type.')
       if (this.db.prepare('SELECT id FROM entries WHERE kind=? AND slug=? AND id<>?').get(payload.kind, payload.slug, existing?.id || '')) fail('That URL slug is already used for this content type.', 409)
       validate(payload.kind, payload.data)
       payload = { ...payload, data: { ...emptyData(payload.kind), ...payload.data } }
@@ -107,6 +108,7 @@ export class CmsStore {
       } else if (action === 'publish') {
         this.reviewer(actor)
         if (entry.status !== 'approved' || !entry.approved_by) fail('This exact version must be approved before publication.', 403)
+        if (entry.kind === 'calculator' && entry.data.effectiveDate > now().slice(0,10)) fail('Publish calculator settings on or after their effective date. Scheduled publication is not enabled.')
         validate(entry.kind, entry.data, true); this.validateMedia(actor, entry.data)
         this.db.prepare('INSERT INTO releases VALUES (?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET slug=excluded.slug,title=excluded.title,data=excluded.data,version=excluded.version,published_at=excluded.published_at').run(entry.id, entry.kind, entry.slug, entry.title, JSON.stringify(entry.data), entry.version + 1, now())
         entry.status = 'published'

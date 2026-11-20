@@ -1,3 +1,4 @@
+import { calculatorDraftDefaults, validateCalculatorConfig } from '../content/calculatorConfig.js'
 export const departments = ['Credit', 'Finance', 'Human Resources', 'Marketing/Sales', 'Operations', 'Strategy Support']
 export const roles = ['writer', 'approver', 'admin']
 const field = (key, label, type = 'text', required = false, extra = {}) => ({ key, label, type, required, ...extra })
@@ -7,6 +8,16 @@ const list = (key, label) => field(key, label, 'list')
 const image = [field('image', 'Image', 'image'), text('imageAlt', 'Image description')]
 const link = (key, label) => field(key, label, 'link')
 export const models = {
+  calculator: { label: 'Loan calculator settings', department: 'Credit', singleton: true, fields: [
+    field('minimumPrincipal','Minimum loan amount','number',true), field('maximumPrincipal','Maximum loan amount','number',true),
+    field('minimumMonths','Minimum duration (months)','number',true), field('maximumMonths','Maximum duration (months)','number',true),
+    field('monthlyFlatRate','Monthly flat interest rate (%)','number',true), field('processingFeeRate','Processing fee (%)','number',true),
+    field('insuranceFeeRate','Insurance fee (%)','number',true), field('managementFeeRate','Management fee (%)','number',true), field('earlySettlementRate','Early settlement fee (%)','number',true),
+    field('weeklySchedule','Approved weekly schedule','objects',true,{fields:[field('month','Duration in months','number',true),field('payments','Number of weekly payments','number',true)]}),
+    area('heroIntro','Calculator introduction',true), area('disclaimer','Estimate disclosure',true), field('effectiveDate','Effective date','date',true),
+    area('approvalReference','Credit approval reference',true),
+    field('verificationCases','Verified repayment examples','objects',true,{fields:[field('principal','Example principal','number',true),field('duration','Example duration in months','number',true),field('frequency','Example frequency','select',true,{options:['monthly','weekly']}),field('paymentsMade','Example instalments paid','number',true),field('expectedTotal','Expected total repayment','number',true),field('expectedInstalment','Expected instalment','number',true),field('expectedSettlement','Expected early settlement','number',true)]}),
+  ] },
   news: { label: 'News', department: 'Marketing/Sales', fields: [text('category', 'Category', true), field('publishedAt', 'Publication date', 'date', true), area('summary', 'Summary', true), ...image, field('featured', 'Featured story', 'boolean'), field('sections', 'Article sections', 'objects', true, { fields: [text('heading', 'Section heading'), list('paragraphs', 'Paragraphs')] }), link('externalLink', 'Related external link'), text('externalLabel', 'External link label')] },
   vacancy: { label: 'Careers', department: 'Human Resources', fields: [text('department', 'Hiring department', true), text('location', 'Location', true), text('employment_type', 'Employment type', true), area('summary', 'Role summary', true), list('responsibilities', 'Responsibilities'), field('status', 'Vacancy status', 'select', true, { options: ['open', 'closed'] }), field('application_email', 'Application email', 'email', true)] },
   page: { label: 'Pages', department: 'Marketing/Sales', fields: [text('eyebrow', 'Section label'), area('intro', 'Introduction'), ...image, field('sections', 'Page sections', 'objects', false, { fields: [text('heading', 'Heading'), list('paragraphs', 'Paragraphs')] }), text('seoTitle', 'Search title'), area('seoDescription', 'Search description')] },
@@ -23,6 +34,7 @@ export const models = {
 }
 
 export function emptyData(kind) {
+  if (kind === 'calculator') return calculatorDraftDefaults()
   return Object.fromEntries(models[kind].fields.map(f => [f.key, f.type === 'boolean' ? false : f.type === 'number' ? 0 : ['list', 'objects'].includes(f.type) ? [] : f.options?.[0] || '']))
 }
 
@@ -61,6 +73,7 @@ export function validateData(kind, data, strict = false) {
     }
   }
   check(model.fields, data)
+  if (kind === 'calculator') validateCalculatorConfig(data, {strict})
   if (BufferSafeSize(data) > 150000) throw Error('Content is too large.')
   if (strict && kind === 'document' && !data.file) throw Error('An approved document URL is required before publication.')
   if (strict && data.image && !data.imageAlt?.trim()) throw Error('Add an image description.')

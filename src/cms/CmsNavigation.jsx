@@ -9,6 +9,7 @@ export const contentGroups = [
   { title: 'Customer help', description: 'Maintain useful answers and contact information.', icon: Info, kinds: ['faq', 'abena', 'settings'] },
 ]
 export const contentDescriptions = {
+  calculator: 'Update approved pricing settings. Annual rate is derived as the monthly rate × 12. Enter at least three distinct expected repayment examples from approved schedules; they are checked before review. Internal approval references and example checks are not sent to the public website.',
   news: 'Write and review company news before it reaches the newsroom.', vacancy: 'Manage job descriptions, departments and application details.',
   page: 'Edit page introductions, sections and search descriptions.', product: 'Maintain approved product descriptions and requirements.',
   slide: 'Choose homepage flyers, their order and destinations.', announcement: 'Manage the short notices shown across the website.',

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { CmsStore } from './store.mjs'
 import { demoStaff } from './server.mjs'
+import { verifiedCalculatorData, changedCalculatorData } from '../../tests/fixtures/calculator.mjs'
 const [admin, writer, approver, credit] = demoStaff.map(user => user.user_id)
 const input = () => ({ kind: 'faq', slug: 'test-question', title: 'Synthetic test question', department: 'Marketing/Sales', version: 0, data: { answer: 'Synthetic answer for testing only.', category: 'Test', order: 0 } })
 function store() { return new CmsStore(':memory:', demoStaff) }
@@ -13,6 +14,34 @@ function publish(db, draft) {
   item = db.action(approver, item.id, 'approve', item.version)
   return db.action(approver, item.id, 'publish', item.version)
 }
+
+test('calculator editing is restricted and uses validated separate approval without leaking a changed draft',()=>{
+  const db=store()
+  const payload={kind:'calculator',slug:'loan-calculator-settings',title:'Calculator settings',department:'Credit',version:0,data:verifiedCalculatorData()}
+  try {
+    assert.throws(()=>db.save(writer,{...payload,department:'Marketing/Sales'}),/Credit\/Finance/)
+    let item=db.save(credit,payload)
+    assert.throws(()=>db.save(credit,{...payload,slug:'another-calculator'}),/already a record/)
+    item=db.action(credit,item.id,'submit',item.version)
+    assert.throws(()=>db.action(approver,item.id,'approve',item.version))
+    item=db.action(admin,item.id,'approve',item.version)
+    item=db.action(admin,item.id,'publish',item.version)
+    const draft=db.save(credit,{...item,data:{...changedCalculatorData(),verificationCases:[]}})
+    assert.equal(db.publicEntries('calculator')[0].data.monthlyFlatRate,6)
+    assert.throws(()=>db.action(credit,draft.id,'submit',draft.version),/Verified repayment examples|verified repayment examples/)
+    let changed=db.save(credit,{...draft,data:changedCalculatorData()})
+    changed=db.action(credit,changed.id,'submit',changed.version)
+    changed=db.action(admin,changed.id,'approve',changed.version)
+    changed=db.action(admin,changed.id,'publish',changed.version)
+    assert.equal(db.publicEntries('calculator')[0].data.monthlyFlatRate,7)
+    assert.equal(db.publicEntries('calculator')[0].data.maximumPrincipal,15000)
+    assert.ok(db.history(credit,changed.id).length>=8)
+    let future=db.save(credit,{...changed,data:{...changedCalculatorData(),effectiveDate:'2999-01-01'}})
+    future=db.action(credit,future.id,'submit',future.version);future=db.action(admin,future.id,'approve',future.version)
+    assert.throws(()=>db.action(admin,future.id,'publish',future.version),/effective date/)
+    assert.equal(db.publicEntries('calculator')[0].data.monthlyFlatRate,7)
+  } finally {db.close()}
+})
 
 test('unapproved users cannot read or write staff records', () => {
   const db = store()
