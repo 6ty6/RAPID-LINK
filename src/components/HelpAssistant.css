@@ -1,4 +1,4 @@
-.rapidlink-help { position:fixed; right:22px; bottom:16px; z-index:70; font-family:'DM Sans',system-ui,sans-serif; color:var(--navy); }
+.rapidlink-help { position:fixed; right:22px; bottom:16px; z-index:200; font-family:'DM Sans',system-ui,sans-serif; color:var(--navy); }
 .help-character-dock { position:relative; width:94px; margin-left:auto; }
 .help-launcher { position:relative; width:94px; padding:0; border:0; background:transparent; color:var(--navy); cursor:pointer; display:flex; flex-direction:column; align-items:center; -webkit-tap-highlight-color:transparent; border-radius:24px; }
 .help-launcher:focus-visible,.help-restore:focus-visible,.help-topics button:focus-visible,.help-back:focus-visible,.help-icon-button:focus-visible,.help-dismiss:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
@@ -19,14 +19,14 @@
 .help-launcher-caption { background:var(--navy); color:white; padding:5px 10px; border-radius:999px; font-size:.7rem; font-weight:700; margin-top:-8px; white-space:nowrap; }
 .help-dismiss { position:absolute; z-index:2; left:-32px; bottom:4px; width:30px; height:30px; border:1px solid #dbe4ef; background:white; color:#556c83; border-radius:50%; display:grid; place-items:center; cursor:pointer; }
 .help-dismiss:hover { background:#edf1ff; }
-.help-restore { position:fixed; right:22px; bottom:22px; z-index:70; padding:10px 18px; min-height:44px; border:1px solid #d0dbed; border-radius:999px; background:white; box-shadow:0 5px 20px #102b461a; color:var(--navy); cursor:pointer; font-weight:700; }
-.help-panel { position:absolute; width:364px; max-width:calc(100vw - 32px); right:0; bottom:162px; max-height:calc(100dvh - 192px); overflow:auto; border:1px solid #d7e1ee; border-radius:22px; background:white; box-shadow:0 20px 70px #102b4630; animation:help-panel-in .2s ease both; }
-.help-panel-header { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px; color:white; background:linear-gradient(120deg,#102b46,#1d456e); }
+.help-restore { position:fixed; right:22px; bottom:22px; z-index:200; padding:10px 18px; min-height:44px; border:1px solid #d0dbed; border-radius:999px; background:white; box-shadow:0 5px 20px #102b461a; color:var(--navy); cursor:pointer; font-weight:700; }
+.help-panel { position:absolute; width:364px; max-width:calc(100vw - 32px); right:0; bottom:162px; max-height:calc(100dvh - 192px); display:flex; flex-direction:column; overflow:hidden; border:1px solid #d7e1ee; border-radius:22px; background:white; box-shadow:0 20px 70px #102b4630; animation:help-panel-in .2s ease both; }
+.help-panel-header { flex:0 0 auto; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:22px; color:white; background:linear-gradient(120deg,#102b46,#1d456e); }
 .help-panel-header span { display:block; color:#ffb575; font-size:.65rem; letter-spacing:.15em; font-weight:700; }
 .help-panel-header h2 { color:white; margin:5px 0 0; font-size:1.3rem; }
 .help-icon-button { flex:none; border:1px solid #ffffff50; border-radius:50%; width:36px; height:36px; padding:0; color:white; background:transparent; display:grid; place-items:center; cursor:pointer; }
 .help-icon-button:hover { background:#ffffff15; }
-.help-panel-body { padding:20px; }
+.help-panel-body { min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:20px; }
 .help-greeting { margin:0 0 7px; font-size:1rem; font-weight:700; }
 .help-description { margin:0 0 18px; color:#627184; font-size:.85rem; line-height:1.55; }
 .help-topics { display:grid; gap:8px; }
@@ -34,7 +34,7 @@
 .help-topics button>svg { color:#315c99; flex-shrink:0; }
 .help-topics button>span:last-child { margin-left:auto; font-size:1.2rem; color:#7b8ba3; }
 .help-topics button:hover { border-color:#b9caff; background:#eef2ff; }
-.help-panel-footer { padding:14px 20px; border-top:1px solid #e6ecf4; background:#f7f9fc; color:#627184; font-size:.75rem; line-height:1.5; }
+.help-panel-footer { flex:0 0 auto; padding:14px 20px; border-top:1px solid #e6ecf4; background:#f7f9fc; color:#627184; font-size:.75rem; line-height:1.5; }
 .help-back { display:flex; align-items:center; gap:4px; padding:5px 0; border:0; color:#345c9c; background:transparent; cursor:pointer; font-size:.85rem; }
 .help-answer h3 { font-size:1.12rem; margin:15px 0 10px; }
 .help-answer>p { color:#53677c; font-size:.9rem; line-height:1.65; }

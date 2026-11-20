@@ -69,3 +69,23 @@ test('outside clicks close Abena while inside clicks stay open and hide does not
   await expect(panel).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Open Abena', exact: true })).toBeVisible()
 })
+
+test('Abena header and close control stay above navigation in a short viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 520 })
+  await page.goto('/home')
+  const menuToggle = page.locator('.menu-toggle')
+  if (await menuToggle.isVisible()) await menuToggle.click()
+  await page.getByRole('button', { name: 'Open Abena', exact: true }).click()
+  const panel = page.getByRole('dialog', { name: 'Abena', exact: true })
+  const close = panel.getByRole('button', { name: 'Close Abena', exact: true })
+  await expect(close).toBeInViewport()
+  const unobstructed = await close.evaluate(button => {
+    const box = button.getBoundingClientRect()
+    return button.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2))
+  })
+  expect(unobstructed).toBe(true)
+  await panel.locator('.help-panel-body').evaluate(body => { body.scrollTop = body.scrollHeight })
+  await expect(close).toBeInViewport()
+  await close.click()
+  await expect(panel).toHaveCount(0)
+})
