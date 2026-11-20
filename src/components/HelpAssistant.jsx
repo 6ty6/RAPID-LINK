@@ -2,7 +2,8 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Phone, X } from '../icons'
 import './HelpAssistant.css'
-import { getConversationalReply, whatsappChatbotUrl } from '../content/helpReplies'
+import { usePublicCms } from '../cms/public'
+import { getManagedHelpReply, managedContacts } from '../cms/abenaReplies'
 
 const suggestions = [
   ['Find a branch', 'Where are your branches?'],
@@ -34,6 +35,8 @@ function Character({ mood }) {
 }
 
 export default function HelpAssistant() {
+  const cms = usePublicCms()
+  const contacts = managedContacts(cms.enabled ? cms.records : [])
   const { pathname, hash } = useLocation()
   const staffPage = ['/cms', '/content-management', '/career-management', '/accept-invite'].includes(pathname.replace(/\/$/, ''))
   const [hidden, setHidden] = useState(() => { try { return sessionStorage.getItem('rapidlink-help-hidden') === '1' } catch { return false } })
@@ -105,7 +108,7 @@ export default function HelpAssistant() {
   function send(text) {
     const value = text.trim()
     if (!value || value.length > 300 || pendingLock.current) return
-    const reply = getConversationalReply(value, { lastTopic: lastTopic.current, turn: turn.current++ })
+    const reply = getManagedHelpReply(value, cms, { lastTopic: lastTopic.current, turn: turn.current++ })
     if (!['help', 'greeting', 'thanks', 'unavailable', 'privacy', 'identity', 'goodbye'].includes(reply.id)) lastTopic.current = reply.id
     if (['unavailable', 'privacy'].includes(reply.id)) lastTopic.current = 'contact'
     const messageId = ++sequence.current
@@ -157,7 +160,7 @@ export default function HelpAssistant() {
         </form>
         <div className="help-chat-tools"><span>Replies stay on this page</span><button onClick={newChat}>New chat</button></div>
       </div>
-      <footer className="help-panel-footer"><div className="help-support-links"><a href={whatsappChatbotUrl} target="_blank" rel="noopener noreferrer">WhatsApp chatbot</a><a href="tel:+233303955183"><Phone size={13} />Speak to our team</a></div></footer>
+      <footer className="help-panel-footer"><div className="help-support-links"><a href={contacts.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp chatbot</a><a href={contacts.phone}><Phone size={13} />Speak to our team</a></div></footer>
     </section>}
     <div className="help-character-dock">
       {!open && <button className="help-dismiss" onClick={hide} aria-label="Hide Abena"><X size={14} /></button>}

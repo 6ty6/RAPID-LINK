@@ -1,6 +1,6 @@
 # RapidLink custom public CMS
 
-Local implementation, 20 November 2026. Branch: `feature/custom-public-cms`.
+Local implementation, 20 November 2026. CMS source branch: `feature/custom-public-cms`. Combined website/Abena test branch: `integration/cms-abena-preview` (see `docs/cms-abena-preview.md`).
 
 ## What is built
 
@@ -8,7 +8,7 @@ The React website now has a separate staff workspace at `/cms`. It uses a small 
 
 Staff land on an overview with four content groups: Website & Homepage, News & Careers, Company Information and Customer Help. Workflow totals show drafts, items awaiting review and approved items ready to publish. Select a category to browse its records; opening a record replaces the list with a focused editor, with a back button and Write → Review → Publish guidance. On mobile, **Browse sections** opens the grouped navigation. Image library, activity log and administrative tools are kept separate from everyday content editing.
 
-The implementation is isolated in `.worktrees/custom-public-cms`. It has not been merged into `main`, deployed, or connected to a hosted staff directory. The existing Abena feature remains on its own branch.
+The implementation is isolated in `.worktrees/custom-public-cms`, currently checked out on the combined integration branch. The CMS has not been merged into `main`, deployed, or connected to a hosted staff directory. Abena has been released separately to `main`; the integration branch combines her with the custom CMS for testing.
 
 Features:
 
@@ -56,7 +56,7 @@ The API provides only published snapshots. The browser refreshes them every 30 s
 
 The controller rates viewer reads the published document slug `controller-loan-rates-guide` in custom mode. Other approved public documents appear at `/public-documents`. Documents use existing approved file URLs; uploading arbitrary PDFs is not implemented. No missing form or KYC checklist is invented.
 
-The Abena answer editor and published records API are implemented. **The assistant on `feature/animated-help-assistant` has not been merged or wired to consume these records.** Updating an Abena CMS record will not change her current replies until that branch integration is completed. No AI or WhatsApp conversation API is introduced.
+On `integration/cms-abena-preview`, Abena reads published prepared answers and FAQs through the public adapter, with published branch/product/contact guidance. Drafts are excluded. Matching uses complete example questions with normalised case and basic punctuation; this remains prepared local matching, with no AI or WhatsApp conversation API. The production `main` branch still has the original prepared replies and is not switched to the custom CMS.
 
 The old `/content-management` portal still manages its legacy Supabase tables. It does not write to the new CMS. Choose one content source for production; do not tell staff to maintain both.
 
@@ -104,6 +104,6 @@ npm.cmd run build
 
 The CMS backend tests cover permissions, separate approval, draft privacy, optimistic concurrency, revisions, image sanitisation and publication visibility, production authentication checks with a simulated provider, persistence, backup verification and recovery. Browser tests cover writer/approver/public workflows and responsive layout on desktop and mobile. Existing website unit tests cover default behaviour with the custom adapter disabled.
 
-Verified locally: 14 backend tests, 36 website/unit tests and 6 desktop/mobile browser tests passed; the production build passed. The build retains the existing large PDF bundle warning. No test results here constitute a live production security audit.
+Verified on the integration branch: 14 backend tests, 47 website/unit tests and 8 desktop/mobile browser tests passed; the production build passed. The build retains the existing large PDF bundle warning. No test results here constitute a live production security audit.
 
-Live deployment, persistent disk provisioning, real staff invitations/MFA, real-world backup scheduling, Abena branch integration and a production content migration remain deployment/integration work. They have not been performed automatically.
+Live deployment, persistent disk provisioning, real staff invitations/MFA, real-world backup scheduling and a production content migration remain deployment/integration work. They have not been performed automatically. Abena's CMS connection is implemented only on the combined preview branch.

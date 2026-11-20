@@ -25,7 +25,7 @@ import {
 } from './pages/Information'
 
 export default function App() {
-  const staffArea = useLocation().pathname === '/cms'
+  const staffArea = useLocation().pathname.replace(/\/$/, '') === '/cms'
   return <PublicCmsProvider>
     <RouteEffects />
     {!staffArea && <Header />}
