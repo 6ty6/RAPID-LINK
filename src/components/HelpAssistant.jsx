@@ -1,16 +1,18 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Building2, ChevronLeft, Info, Landmark, Phone, X } from '../icons'
+import { Phone, X } from '../icons'
 import './HelpAssistant.css'
+import { getConversationalReply, whatsappChatbotUrl } from '../content/helpReplies'
 
-const topics = [
-  { id: 'about', title: 'Meet RapidLink', icon: Landmark, text: 'Learn about RapidLink Microfinance, our purpose and the services we offer.', links: [['About RapidLink', '/institutional-profile']] },
-  { id: 'branches', title: 'Find a branch', icon: Building2, text: 'Find our Head Office at Asylum Down and our Madina branch, with directions and contact details.', links: [['Branch locations', '/contact#branch-map-title']] },
-  { id: 'loans', title: 'Loans & applications', icon: Landmark, text: 'Explore our loan information and application guidance. Eligibility and approval are assessed by the loans team; this assistant cannot approve a loan.', links: [['Loan application guidance', '/apply-loan'], ['Controller loan information', '/deduct-at-source-loan']] },
-  { id: 'account', title: 'Open an account', icon: Landmark, text: 'Online account opening is coming soon. Applications cannot be submitted through the website yet. Contact our team for help with your next steps.', links: [['Account-opening update', '/open-account'], ['Contact our team', '/contact']] },
-  { id: 'contact', title: 'Speak to our team', icon: Phone, text: 'For assistance, call 030 395 5183 or email info@rapidlinkfinance.com. Please do not send passwords, PINs or one-time codes.', links: [['Call RapidLink', 'tel:+233303955183'], ['Email our team', 'mailto:info@rapidlinkfinance.com']] },
-  { id: 'faqs', title: 'Common questions', icon: Info, text: 'Browse our frequently asked questions for public information about products and services.', links: [['Read the FAQs', '/faqs']] },
+const suggestions = [
+  ['Find a branch', 'Where are your branches?'],
+  ['Loans & applications', 'Tell me about your loans'],
+  ['Open an account', 'How can I open an account?'],
+  ['Meet RapidLink', 'Tell me about RapidLink'],
+  ['Common questions', 'Show me your FAQs'],
+  ['Speak to our team', 'I would like to speak to someone'],
 ]
+const welcome = { id: 'welcome', role: 'assistant', text: "Hello, I'm Abena. A warm welcome to RapidLink! How may I help you today?", links: [] }
 
 function Character({ mood }) {
   const pose = ['excited', 'attentive', 'wave'].includes(mood) ? 'happy' : ['sulking', 'sulky'].includes(mood) ? 'sulky' : ['settling', 'resting'].includes(mood) ? 'resting' : 'playing'
@@ -36,13 +38,22 @@ export default function HelpAssistant() {
   const staffPage = ['/content-management', '/career-management', '/accept-invite'].includes(pathname.replace(/\/$/, ''))
   const [hidden, setHidden] = useState(() => { try { return sessionStorage.getItem('rapidlink-help-hidden') === '1' } catch { return false } })
   const [open, setOpen] = useState(false)
-  const [topic, setTopic] = useState(null)
   const [mood, setMood] = useState('peek')
+  const [question, setQuestion] = useState('')
+  const [messages, setMessages] = useState([welcome])
+  const [pending, setPending] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true)
+  const questionInput = useRef(null)
   const launcher = useRef(null)
   const closeButton = useRef(null)
-  const answerBack = useRef(null)
-  const firstTopic = useRef(null)
   const assistantArea = useRef(null)
+  const transcript = useRef(null)
+  const replyTimer = useRef(null)
+  const pendingLock = useRef(false)
+  const lastTopic = useRef('')
+  const turn = useRef(0)
+  const sequence = useRef(0)
+  const followBottom = useRef(true)
   const panelId = useId()
 
   useEffect(() => {
@@ -53,31 +64,35 @@ export default function HelpAssistant() {
     return () => window.clearTimeout(timer)
   }, [mood, open, hidden, staffPage])
 
-  useEffect(() => { setOpen(false); setTopic(null) }, [pathname, hash])
+  useEffect(() => { setOpen(false) }, [pathname, hash])
   useEffect(() => {
-    if (!open) return
-    if (topic) answerBack.current?.focus()
-    else firstTopic.current?.focus()
-  }, [topic])
+    if (!staffPage) return
+    window.clearTimeout(replyTimer.current)
+    pendingLock.current = false
+    setPending(false); setMessages([welcome]); setQuestion(''); lastTopic.current = ''
+  }, [staffPage])
+  useEffect(() => () => window.clearTimeout(replyTimer.current), [])
   useEffect(() => {
     if (!open) return undefined
     closeButton.current?.focus()
-    const escape = event => { if (event.key === 'Escape') { setOpen(false); setTopic(null); setMood('wave'); launcher.current?.focus() } }
+    const escape = event => { if (event.key === 'Escape') { setOpen(false); setMood('wave'); launcher.current?.focus() } }
+    const outside = event => { if (!assistantArea.current?.contains(event.target)) { setOpen(false); setMood('wave') } }
     document.addEventListener('keydown', escape)
-    return () => document.removeEventListener('keydown', escape)
+    document.addEventListener('pointerdown', outside, true)
+    return () => { document.removeEventListener('keydown', escape); document.removeEventListener('pointerdown', outside, true) }
   }, [open])
   useEffect(() => {
-    if (!open) return undefined
-    const outside = event => {
-      if (assistantArea.current?.contains(event.target)) return
-      setOpen(false); setTopic(null); setMood('wave')
-      // Keep focus on the outside control the visitor selected.
-    }
-    document.addEventListener('pointerdown', outside, true)
-    return () => document.removeEventListener('pointerdown', outside, true)
-  }, [open])
+    if (!open || pending) return undefined
+    if ((messages.length === 1 || messages.at(-1)?.intent === 'help') && !question) { setShowSuggestions(true); return undefined }
+    setShowSuggestions(false)
+    const timer = window.setTimeout(() => setShowSuggestions(true), 12000)
+    return () => window.clearTimeout(timer)
+  }, [question, pending, open, messages.length])
+  useEffect(() => {
+    if (open && followBottom.current && transcript.current) transcript.current.scrollTop = transcript.current.scrollHeight
+  }, [messages, pending, open])
 
-  function close() { setOpen(false); setTopic(null); setMood('wave'); launcher.current?.focus() }
+  function close() { setOpen(false); setMood('wave'); launcher.current?.focus() }
   function hide() {
     close(); setHidden(true)
     try { sessionStorage.setItem('rapidlink-help-hidden', '1') } catch { /* Preference only. */ }
@@ -87,19 +102,62 @@ export default function HelpAssistant() {
     setHidden(false); setMood('peek')
     try { sessionStorage.removeItem('rapidlink-help-hidden') } catch { /* Preference only. */ }
   }
+  function send(text) {
+    const value = text.trim()
+    if (!value || value.length > 300 || pendingLock.current) return
+    const reply = getConversationalReply(value, { lastTopic: lastTopic.current, turn: turn.current++ })
+    if (!['help', 'greeting', 'thanks', 'unavailable', 'privacy', 'identity', 'goodbye'].includes(reply.id)) lastTopic.current = reply.id
+    if (['unavailable', 'privacy'].includes(reply.id)) lastTopic.current = 'contact'
+    const messageId = ++sequence.current
+    pendingLock.current = true
+    followBottom.current = true
+    setMessages(current => [...current.slice(-39), { id: 'user-' + messageId, role: 'user', text: reply.id === 'privacy' ? 'A question about private account information' : value }])
+    setQuestion(''); setShowSuggestions(false); setPending(true); setMood('attentive')
+    questionInput.current?.focus()
+    // A presentation delay for prepared replies, not an AI or network request.
+    replyTimer.current = window.setTimeout(() => {
+      setMessages(current => [...current.slice(-39), { ...reply, intent: reply.id, id: 'reply-' + messageId, role: 'assistant' }])
+      setPending(false); pendingLock.current = false; setMood('excited')
+    }, 1500 + Math.min(value.length * 8, 600))
+  }
+  function newChat() {
+    window.clearTimeout(replyTimer.current); pendingLock.current = false
+    setPending(false); setMessages([welcome]); setQuestion(''); setShowSuggestions(true)
+    lastTopic.current = ''; turn.current = 0; followBottom.current = true
+    questionInput.current?.focus()
+  }
 
   if (staffPage) return null
   if (hidden) return <button className="help-restore" onClick={restore} aria-label="Show Abena">Help</button>
 
   return <aside ref={assistantArea} className="rapidlink-help" aria-label="Abena assistant">
-    {open && <section id={panelId} className="help-panel" role="dialog" aria-modal="false" aria-labelledby={`${panelId}-title`}>
-      <header className="help-panel-header"><div><span>YOUR RAPIDLINK GUIDE</span><h2 id={`${panelId}-title`}>Abena</h2></div><button ref={closeButton} className="help-icon-button" onClick={close} aria-label="Close Abena"><X size={20} /></button></header>
-      <div className="help-panel-body">
-        <p className="help-greeting">Hi there. Let’s find your next step.</p>
-        <p className="help-description">Choose a topic for public information. This is an automated menu, not a live agent.</p>
-        {!topic ? <div className="help-topics">{topics.map((item, index) => { const Icon = item.icon; return <button ref={index === 0 ? firstTopic : undefined} key={item.id} onClick={() => setTopic(item)}><Icon size={18} /><span>{item.title}</span><span aria-hidden="true">›</span></button> })}</div> : <div className="help-answer" aria-live="polite"><button ref={answerBack} className="help-back" onClick={() => setTopic(null)}><ChevronLeft size={16} />All topics</button><h3>{topic.title}</h3><p>{topic.text}</p><div className="help-answer-links">{topic.links.map(([label, href]) => href.startsWith('/') ? <Link key={href} to={href}>{label}</Link> : <a key={href} href={href}>{label}</a>)}</div></div>}
+    {open && <section id={panelId} className="help-panel help-messenger" role="dialog" aria-modal="false" aria-labelledby={panelId + '-title'}>
+      <header className="help-panel-header">
+        <span className="help-profile" aria-hidden="true"><span className="abena-sprite sprite-playing" /></span>
+        <div className="help-header-copy"><h2 id={panelId + '-title'}>Abena</h2><p>RapidLink's automated guide</p></div>
+        <button ref={closeButton} className="help-icon-button" onClick={close} aria-label="Close Abena"><X size={20} /></button>
+      </header>
+      <div ref={transcript} className="help-panel-body help-conversation" onScroll={event => { const el = event.currentTarget; followBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 90 }}>
+        <p className="help-chat-notice">Prepared answers, with a friendly touch. Please keep personal and account details private.</p>
+        <div className="help-message-log" role="log" aria-label="Conversation with Abena" aria-live="polite" aria-relevant="additions">
+          {messages.map(message => <div key={message.id} className={'help-message-row message-' + message.role}>
+            {message.role === 'assistant' && <span className="help-message-avatar" aria-hidden="true"><span className="abena-sprite sprite-playing" /></span>}
+            <div className="help-message-bubble"><span className="visually-hidden">{message.role === 'assistant' ? 'Abena says: ' : 'You said: '}</span><p>{message.text}</p>
+              {message.links?.length > 0 && <div className="help-message-links">{message.links.map(([label, href]) => href.startsWith('/') ? <Link key={href} to={href}>{label}</Link> : <a key={href} href={href} target={href.startsWith('https:') ? '_blank' : undefined} rel={href.startsWith('https:') ? 'noopener noreferrer' : undefined}>{label}</a>)}</div>}
+            </div>
+          </div>)}
+        </div>
+        {pending && <div className="help-thinking" role="status"><Character mood="attentive" /><span className="help-thought-bubble" aria-hidden="true"><i /><i /><i /></span><span className="visually-hidden">Abena is preparing a reply</span></div>}
+        {showSuggestions && !pending && <div className="help-suggestions" role="group" aria-label="Suggested questions"><span>How can I help?</span><div>{suggestions.map(([label, text]) => <button key={label} onClick={() => send(text)}>{label}</button>)}</div></div>}
       </div>
-      <footer className="help-panel-footer">Keep passwords, PINs and personal documents private.</footer>
+      <div className="help-composer-area">
+        <form className="help-question-form" onSubmit={event => { event.preventDefault(); send(question) }}>
+          <label className="visually-hidden" htmlFor={panelId + '-question'}>Message Abena</label>
+          <div><input ref={questionInput} id={panelId + '-question'} value={question} onChange={event => { setQuestion(event.target.value); setShowSuggestions(false); setMood('attentive') }} maxLength={300} autoComplete="off" placeholder="Type your message..." /><button type="submit" disabled={!question.trim() || pending}>Send</button></div>
+        </form>
+        <div className="help-chat-tools"><span>Replies stay on this page</span><button onClick={newChat}>New chat</button></div>
+      </div>
+      <footer className="help-panel-footer"><div className="help-support-links"><a href={whatsappChatbotUrl} target="_blank" rel="noopener noreferrer">WhatsApp chatbot</a><a href="tel:+233303955183"><Phone size={13} />Speak to our team</a></div></footer>
     </section>}
     <div className="help-character-dock">
       {!open && <button className="help-dismiss" onClick={hide} aria-label="Hide Abena"><X size={14} /></button>}

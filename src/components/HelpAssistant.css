@@ -40,6 +40,17 @@
 .help-answer>p { color:#53677c; font-size:.9rem; line-height:1.65; }
 .help-answer-links { display:grid; gap:8px; margin-top:16px; }
 .help-answer-links a { padding:11px 13px; border:1px solid #ccd8f2; border-radius:9px; text-decoration:none; font-weight:700; font-size:.9rem; background:#f5f7ff; }
+.help-question-form { margin:0 0 18px; }
+.help-question-form label { display:block; margin:0 0 7px; font-size:.85rem; font-weight:700; }
+.help-question-form>div { display:flex; gap:8px; }
+.help-question-form input { min-width:0; flex:1; padding:10px; font-size:.85rem; }
+.help-question-form button { padding:9px 12px; min-height:44px; border:0; border-radius:9px; color:white; background:var(--blue); font-weight:700; cursor:pointer; }
+.help-question-form button:disabled { opacity:.45; cursor:default; }
+.help-local-answer { margin:0 0 18px; padding:14px; border:1px solid #d6e1f2; border-radius:12px; background:#f3f6fc; }
+.help-local-answer>strong { font-size:.85rem; }
+.help-local-answer>p { margin:8px 0; font-size:.9rem; line-height:1.6; }
+.help-support-links { display:flex; flex-wrap:wrap; gap:8px 14px; margin-bottom:9px; }
+.help-panel-footer .help-support-links a { margin:0; color:#154da4; text-decoration:underline; font-size:.8rem; font-weight:700; }
 .pose-playing .character-body { animation:abena-idle 4.6s ease-in-out infinite; }
 .pose-attentive .character-body { animation:abena-attentive 5s ease-in-out infinite; }
 .pose-sulking .character-body { animation:abena-sulk .8s ease both; }
@@ -78,3 +89,49 @@
   .abena-sprite.is-departing,.abena-play-spark { display:none; }
   .character-body { transform:none!important; }
 }
+
+/* Messenger layout: only the conversation scrolls. */
+.help-panel.help-messenger { width:386px; height:min(640px,calc(100dvh - 192px)); }
+.help-messenger .help-panel-header { padding:16px 18px; gap:11px; }
+.help-profile { position:relative; width:45px; height:45px; flex:none; border-radius:50%; background:#f5f0e8; overflow:hidden; }
+.help-header-copy { min-width:0; flex:1; }
+.help-header-copy h2 { margin:0; font-size:1.15rem; }
+.help-header-copy p { margin:3px 0 0; color:#d6e2f2; font-size:.75rem; }
+.help-conversation { flex:1; padding:18px 14px; background:linear-gradient(#fafbfd,#f4f7fb); scroll-behavior:auto; }
+.help-chat-notice { margin:0 auto 20px; max-width:285px; color:#67788c; font-size:.75rem; line-height:1.6; text-align:center; }
+.help-message-log { display:grid; gap:16px; }
+.help-message-row { display:flex; align-items:flex-end; gap:7px; }
+.help-message-avatar { position:relative; display:block; flex:none; width:27px; height:31px; }
+.help-message-bubble { min-width:0; max-width:calc(100% - 34px); padding:12px 14px; border:1px solid #e2e8f0; border-radius:17px 17px 17px 4px; color:#263d56; background:white; box-shadow:0 2px 5px #102b4605; overflow-wrap:anywhere; }
+.help-message-bubble p { margin:0; font-size:.94rem; line-height:1.65; }
+.message-user { justify-content:flex-end; }
+.message-user .help-message-bubble { max-width:85%; background:#163957; color:white; border:0; border-radius:17px 17px 4px 17px; }
+.help-message-links { display:grid; gap:8px; margin-top:12px; }
+.help-message-links a { display:block; color:#154da4; font-size:.85rem; line-height:1.45; text-decoration:underline; text-underline-offset:3px; }
+.help-thinking { display:flex; align-items:center; gap:3px; padding:14px 0 2px; }
+.help-thinking .help-character { width:43px; height:43px; margin:0; flex:none; }
+.help-thought-bubble { position:relative; display:flex; gap:5px; padding:12px 14px; margin-bottom:16px; border:1px solid #dde5ef; border-radius:16px 16px 16px 4px; background:white; }
+.help-thought-bubble:before { content:''; position:absolute; left:-6px; bottom:-6px; width:5px; height:5px; border:1px solid #dde5ef; border-radius:50%; background:white; }
+.help-thought-bubble i { width:5px; height:5px; border-radius:50%; background:#687f98; animation:help-thinking-dot 1s ease-in-out infinite; }
+.help-thought-bubble i:nth-child(2) { animation-delay:.15s; }
+.help-thought-bubble i:nth-child(3) { animation-delay:.3s; }
+@keyframes help-thinking-dot { 0%,65%,100% { transform:translateY(0); opacity:.4; } 30% { transform:translateY(-3px); opacity:1; } }
+.help-suggestions { margin:18px 0 0 34px; }
+.help-suggestions>span { display:block; margin-bottom:8px; color:#6b7d92; font-size:.75rem; }
+.help-suggestions>div { display:flex; flex-wrap:wrap; gap:7px; }
+.help-suggestions button { padding:8px 11px; min-height:40px; border:1px solid #cad8ed; border-radius:16px; background:#fff; color:#244e81; text-align:left; font-size:.78rem; cursor:pointer; }
+.help-suggestions button:hover { background:#edf2ff; border-color:#829ed1; }
+.help-composer-area { flex:none; padding:12px 14px 9px; border-top:1px solid #e1e7f0; background:white; }
+.help-messenger .help-question-form { margin:0; }
+.help-messenger .help-question-form>div { align-items:center; padding:5px; background:#f4f6fa; border:1px solid #dce3ed; border-radius:14px; }
+.help-messenger .help-question-form input { padding:8px; border:0; background:transparent; font-size:1rem; box-shadow:none; }
+.help-messenger .help-question-form button { min-height:40px; padding:8px 12px; border-radius:10px; font-size:.85rem; }
+.help-chat-tools { display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:8px; color:#728196; font-size:.7rem; }
+.help-chat-tools button { padding:2px 0; border:0; background:none; color:#345d93; text-decoration:underline; font-size:.75rem; cursor:pointer; }
+.help-messenger .help-panel-footer { padding:10px 16px; border-top:1px solid #e7edf5; background:#f8fafc; }
+.help-messenger .help-panel-footer:before { display:none; }
+.help-messenger .help-support-links { justify-content:space-between; gap:10px; margin:0; }
+.help-messenger .help-support-links a { display:inline-flex; align-items:center; gap:5px; font-size:.75rem; text-decoration:none; }
+@media (max-width:600px) { .help-panel.help-messenger { height:min(640px,calc(100dvh - 168px)); width:350px; } }
+@media (max-height:600px) { .help-panel.help-messenger { right:0; bottom:142px; width:min(386px,calc(100vw - 32px)); height:calc(100dvh - 168px); max-height:calc(100dvh - 168px); } }
+@media (prefers-reduced-motion:reduce) { .help-thought-bubble i { animation:none; opacity:.7; } }
