@@ -42,6 +42,10 @@ export function createContentRepository({ local, publicSource = null }) {
       record: copy(local.getSiteInformation()),
       loading: Boolean(publicSource?.getSiteInformation),
     }),
+    getSharedContentSnapshot: () => ({
+      record: copy(local.getSharedContent()),
+      loading: Boolean(publicSource?.getSharedContent),
+    }),
     getLoanCalculatorSettingsSnapshot: () => ({
       record: copy(local.getLoanCalculatorSettings()),
       loading: Boolean(publicSource?.getLoanCalculatorSettings),
@@ -62,6 +66,27 @@ export function createContentRepository({ local, publicSource = null }) {
         ...localRecord,
         ...remoteRecord,
         contact: { ...localRecord.contact, ...remoteRecord.contact },
+      })
+    },
+    getPublishedSharedContent: async () => {
+      const localRecord = local.getSharedContent()
+      if (!publicSource?.getSharedContent) return copy(localRecord)
+      const remoteRecord = await publicSource.getSharedContent()
+      return copy({
+        ...localRecord,
+        ...remoteRecord,
+        appDownload: { ...localRecord.appDownload, ...remoteRecord.appDownload },
+        footer: {
+          ...localRecord.footer,
+          ...remoteRecord.footer,
+          headings: { ...localRecord.footer.headings, ...remoteRecord.footer?.headings },
+          menuDescriptions: {
+            ...localRecord.footer.menuDescriptions,
+            ...remoteRecord.footer?.menuDescriptions,
+          },
+          exploreLinks: remoteRecord.footer?.exploreLinks || localRecord.footer.exploreLinks,
+          companyLinks: remoteRecord.footer?.companyLinks || localRecord.footer.companyLinks,
+        },
       })
     },
     getPublishedLoanCalculatorSettings: async () => {

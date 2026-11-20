@@ -43,6 +43,7 @@
  *   getFaqs?: () => Promise<Faq[]>,
  *   getAnnouncements?: () => Promise<Announcement[]>,
  *   getSiteInformation?: () => Promise<typeof import('./site.js').siteInformation>,
+ *   getSharedContent?: () => Promise<typeof import('./shared.js').sharedContent>,
  *   getLoanCalculatorSettings?: () => Promise<typeof import('./loanCalculator.js').loanCalculatorSettings>}} PublicContentAdapter
  *
  * @typedef {{title: string, eyebrow?: string, intro?: string, image?: string,

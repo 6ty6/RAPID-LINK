@@ -6,7 +6,8 @@ This branch evaluates Sanity without changing RapidLink's production content sou
 
 - The website reads Sanity's public CDN with native `fetch`, so no Sanity SDK is added to the production bundle.
 - No secret token is stored in the frontend.
-- News, vacancies, impact counters and FAQs are included in the evaluation.
+- News, vacancies, impact counters, FAQs, announcements, site information,
+  calculator settings and shared footer content are included in the evaluation.
 - Studio dependencies are not installed until a free Sanity project exists.
 
 ## Create the free project
@@ -26,6 +27,10 @@ The prepared document types are in `cms/sanity/schemaTypes`:
 - `careerVacancy`
 - `impactCounter`
 - `faq`
+- `announcement`
+- `siteSettings`
+- `loanCalculatorSettings`
+- `sharedSettings`
 
 The standalone Studio is in `cms/sanity/studio` and imports these shared schema types. Its dependencies and build output remain isolated from the public website.
 
@@ -204,3 +209,24 @@ Pop-Location
 The initial record remains labelled **Provisional** and explains that the
 weekly schedule is awaiting operational/Flexibank verification. Do not change
 the status to **Approved** without recording the approver and effective date.
+
+## Footer and app-promotion settings
+
+Open **Footer & app promotion** from the top level of the Studio. It is a
+protected singleton, so editors update one clearly labelled record instead of
+creating competing footer configurations. Three numbered tabs separate the
+mobile app promotion, footer wording and footer menu links.
+
+The website loads this record from Sanity and safely falls back to its existing
+local copy if the CMS is unavailable. Store destinations and the main website
+navigation remain protected in application code.
+
+Preview, import and verify the current website content with:
+
+```powershell
+Push-Location .\cms\sanity\studio
+npm.cmd run migrate:shared-settings:dry-run
+npm.cmd run migrate:shared-settings
+npm.cmd run verify:shared-settings
+Pop-Location
+```

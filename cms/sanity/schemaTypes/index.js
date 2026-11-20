@@ -5,6 +5,7 @@ import { newsArticle } from './newsArticle'
 import { announcement } from './announcement'
 import { siteSettings } from './siteSettings'
 import { loanCalculatorSettings } from './loanCalculatorSettings'
+import { sharedSettings } from './sharedSettings'
 export const schemaTypes = [
   newsArticle,
   careerVacancy,
@@ -13,4 +14,5 @@ export const schemaTypes = [
   announcement,
   siteSettings,
   loanCalculatorSettings,
+  sharedSettings,
 ]

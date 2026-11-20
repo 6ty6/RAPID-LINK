@@ -2,7 +2,8 @@ import { useContext, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Check } from '../icons'
 import { config } from '../config'
-import { getPage, getSharedContent } from '../content/index.js'
+import { getPage } from '../content/index.js'
+import useSharedContent from '../hooks/useSharedContent.js'
 import { MetaContext } from '../prerender/MetaContext.js'
 import { getMetadata } from '../prerender/metadata.js'
 
@@ -91,7 +92,7 @@ export function CheckList({ items }) {
 }
 
 export function AppDownload() {
-  const { appDownload } = getSharedContent()
+  const { appDownload } = useSharedContent()
   return <section className="app-section" id="download">
     <div className="shell app-layout">
       <div className="app-device-visual">

@@ -108,6 +108,26 @@ const loanCalculatorSettingsQuery = `*[
   effectiveDate
 }`
 
+const sharedSettingsQuery = `*[_type == "sharedSettings" && _id == "rapidlink-shared-settings"]{
+  appEyebrow,
+  appTitle,
+  appDescription,
+  "appImage": appImage.asset->url,
+  appImageAlt,
+  iosLabel,
+  androidLabel,
+  footerDescription,
+  companyName,
+  privacyNotice,
+  socialHeading,
+  exploreHeading,
+  companyHeading,
+  contactHeading,
+  menuDescriptions[]{menu, description},
+  exploreLinks[]{label, href},
+  companyLinks[]{label, href}
+}`
+
 async function querySanity(query, params = {}) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
@@ -232,5 +252,43 @@ export async function getSanityLoanCalculatorSettings() {
       ? settings.repaymentFrequencies
       : [],
     weeklyPaymentsByMonth,
+  }
+}
+
+export async function getSanitySharedContent() {
+  const rows = await querySanity(sharedSettingsQuery)
+  const settings = rows[0]
+  if (!settings) throw new Error('Sanity footer and app-promotion settings have not been created.')
+
+  const menuDescriptions = Object.fromEntries(
+    (Array.isArray(settings.menuDescriptions) ? settings.menuDescriptions : [])
+      .filter(item => item?.menu && item?.description)
+      .map(item => [item.menu, item.description]),
+  )
+
+  return {
+    appDownload: {
+      eyebrow: settings.appEyebrow,
+      title: settings.appTitle,
+      description: settings.appDescription,
+      image: settings.appImage || '',
+      imageAlt: settings.appImageAlt,
+      iosLabel: settings.iosLabel,
+      androidLabel: settings.androidLabel,
+    },
+    footer: {
+      description: settings.footerDescription,
+      companyName: settings.companyName,
+      privacyNotice: settings.privacyNotice,
+      headings: {
+        social: settings.socialHeading,
+        explore: settings.exploreHeading,
+        company: settings.companyHeading,
+        contact: settings.contactHeading,
+      },
+      menuDescriptions,
+      exploreLinks: Array.isArray(settings.exploreLinks) ? settings.exploreLinks : [],
+      companyLinks: Array.isArray(settings.companyLinks) ? settings.companyLinks : [],
+    },
   }
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown } from '../icons'
-import { getNavigation as getNavigationGroups, getSharedContent } from '../content/index.js'
+import { getNavigation as getNavigationGroups } from '../content/index.js'
 import useSiteInformation from '../hooks/useSiteInformation.js'
+import useSharedContent from '../hooks/useSharedContent.js'
 
 const navGroups = getNavigationGroups()
 
@@ -21,7 +22,7 @@ function SocialIcon({ name }) {
 export default function Footer() {
   const { branches, contact, socialProfiles } = useSiteInformation()
   const primaryBranch = branches[0]
-  const { footer } = getSharedContent()
+  const { footer } = useSharedContent()
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
   const location = useLocation()

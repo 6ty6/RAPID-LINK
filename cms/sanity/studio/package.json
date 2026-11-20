@@ -18,7 +18,10 @@
     "verify:site-settings": "sanity exec scripts/verifySiteSettings.js --with-user-token",
     "migrate:loan-calculator": "sanity exec scripts/migrateLoanCalculatorSettings.js --with-user-token",
     "migrate:loan-calculator:dry-run": "sanity exec scripts/migrateLoanCalculatorSettings.js --with-user-token -- --dry-run",
-    "verify:loan-calculator": "sanity exec scripts/verifyLoanCalculatorSettings.js --with-user-token"
+    "verify:loan-calculator": "sanity exec scripts/verifyLoanCalculatorSettings.js --with-user-token",
+    "migrate:shared-settings": "sanity exec scripts/migrateSharedSettings.js --with-user-token",
+    "migrate:shared-settings:dry-run": "sanity exec scripts/migrateSharedSettings.js --with-user-token -- --dry-run",
+    "verify:shared-settings": "sanity exec scripts/verifySharedSettings.js --with-user-token"
   },
   "dependencies": {
     "@sanity/themer": "^0.10.7",

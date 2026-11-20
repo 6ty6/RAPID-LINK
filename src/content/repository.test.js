@@ -196,4 +196,50 @@ describe('public content repository', () => {
     })
     expect(publicSource.getLoanCalculatorSettings).toHaveBeenCalledWith()
   })
+
+  it('loads shared footer and app-promotion settings while preserving safe local fallbacks', async () => {
+    const remoteSettings = {
+      appDownload: {
+        title: 'Manage your money with the RapidLink app',
+        image: 'https://cdn.sanity.io/images/rapidlink/app.png',
+      },
+      footer: {
+        description: 'A CMS-managed RapidLink description.',
+        headings: { social: 'Connect with RapidLink' },
+        menuDescriptions: { Loans: 'Compare available RapidLink loan options.' },
+        exploreLinks: [{ label: 'Current rates', href: '/rates' }],
+        companyLinks: [{ label: 'Contact', href: '/contact' }],
+      },
+    }
+    const publicSource = {
+      getNews: vi.fn().mockResolvedValue([]),
+      getVacancies: vi.fn().mockResolvedValue([]),
+      getSharedContent: vi.fn().mockResolvedValue(remoteSettings),
+    }
+    const content = createContentRepository({ local: localContent, publicSource })
+
+    expect(content.getSharedContentSnapshot()).toEqual({
+      record: localContent.getSharedContent(),
+      loading: true,
+    })
+    await expect(content.getPublishedSharedContent()).resolves.toMatchObject({
+      appDownload: {
+        ...localContent.getSharedContent().appDownload,
+        ...remoteSettings.appDownload,
+      },
+      footer: {
+        ...localContent.getSharedContent().footer,
+        ...remoteSettings.footer,
+        headings: {
+          ...localContent.getSharedContent().footer.headings,
+          ...remoteSettings.footer.headings,
+        },
+        menuDescriptions: {
+          ...localContent.getSharedContent().footer.menuDescriptions,
+          ...remoteSettings.footer.menuDescriptions,
+        },
+      },
+    })
+    expect(publicSource.getSharedContent).toHaveBeenCalledWith()
+  })
 })
