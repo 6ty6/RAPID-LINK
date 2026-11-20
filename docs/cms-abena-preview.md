@@ -19,6 +19,8 @@ npm.cmd run cms:dev
 
 The demo uses only local data and synthetic staff identities. Its CMS adapter is enabled in the demo process. Abena is hidden on `/cms` and other staff/invitation routes. Existing content can be imported through Workspace tools → Import & export, as drafts. It is not automatically published, so managed website sections can be empty until reviewed content is released. The calculator stays unchanged.
 
+Open only **http://127.0.0.1:5182/**. The integration-preview toolbar connects **View website** and **Manage content** in the same tab. Your staff session stays in memory while switching; the CMS checks it again when you return. Unsaved drafts prompt before leaving the editor. Returning to the website fetches published content again, so you can see a release without opening another browser page. The backend process still runs internally; you do not need to open its URL. This toolbar is shown only when the custom CMS adapter is enabled, and is not present on `main`.
+
 ## Test an answer in Abena
 
 1. Choose Demo writer, open Customer help → Abena answers and create a draft. Enter a title, an example question, a prepared reply and its approved information source. Save and submit it.

@@ -11,6 +11,7 @@ import { ProductPage, RateChart, Rates } from './pages/Products'
 import CareerManagement from './pages/CareerManagement'
 import AcceptInvite from './pages/AcceptInvite'
 import HelpAssistant from './components/HelpAssistant'
+import WorkspaceSwitcher from './cms/WorkspaceSwitcher'
 const CustomCms = lazy(() => import('./cms/CustomCms'))
 const PublicDocuments = lazy(() => import('./cms/PublicDocuments'))
 import {
@@ -28,6 +29,7 @@ export default function App() {
   const staffArea = useLocation().pathname.replace(/\/$/, '') === '/cms'
   return <PublicCmsProvider>
     <RouteEffects />
+    <WorkspaceSwitcher />
     {!staffArea && <Header />}
     <main id="main-content">{!staffArea && <PublicCmsStatus />}
       <Routes>

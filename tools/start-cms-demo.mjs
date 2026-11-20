@@ -7,4 +7,4 @@ let closing = false
 function stop(code = 0) { if (closing) return; closing = true; children.forEach(child => child.kill()); process.exitCode = code }
 children.forEach(child => { child.on('error', error => { process.stderr.write(error.message + '\n'); stop(1) }); child.on('exit', code => stop(code || 0)) })
 process.on('SIGINT', () => stop()); process.on('SIGTERM', () => stop())
-process.stdout.write('\nLocal CMS: http://127.0.0.1:5182/cms — demonstration accounts, never deploy this mode.\n')
+process.stdout.write('\nWebsite & CMS workspace: http://127.0.0.1:5182/\nUse Manage content and View website in the same tab. Local demonstration accounts only.\n')

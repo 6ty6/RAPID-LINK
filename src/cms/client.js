@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 export const cmsBase = (import.meta.env.VITE_CMS_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8791' : '')).replace(/\/$/, '')
 let sessionToken = ''
 export function setCmsToken(value) { sessionToken = value || '' }
+export function hasCmsSession() { return Boolean(sessionToken) }
 export async function cmsRequest(path, { method = 'GET', body, headers = {} } = {}) {
   if (!cmsBase) throw Error('The CMS service is not configured.')
   const response = await fetch(`${cmsBase}/api/cms${path}`, { method, credentials: 'omit', headers: { ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}), ...(body !== undefined && !(body instanceof Blob) ? { 'Content-Type': 'application/json' } : {}), ...headers }, body: body instanceof Blob ? body : body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(30000) })

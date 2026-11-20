@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 export const cmsBase = (import.meta.env.VITE_CMS_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8791' : '')).replace(/\/$/, '')
 export const customCmsEnabled = import.meta.env.VITE_CUSTOM_CMS_ENABLED === 'true'
 const Context = createContext({ enabled: false, records: [], loading: false, error: false })
@@ -9,6 +10,7 @@ export function resolveMedia(value) {
   return value
 }
 export function PublicCmsProvider({ children }) {
+  const { pathname } = useLocation()
   const [state, setState] = useState({ enabled: customCmsEnabled, records: [], loading: customCmsEnabled, error: false })
   useEffect(() => {
     if (!customCmsEnabled) return
@@ -31,7 +33,7 @@ export function PublicCmsProvider({ children }) {
     const visible = () => { if (!document.hidden) refresh() }
     document.addEventListener('visibilitychange', visible)
     return () => { active = false; controller?.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', visible) }
-  }, [])
+  }, [pathname])
   return <Context.Provider value={state}>{children}</Context.Provider>
 }
 export function usePublicCms() { return useContext(Context) }

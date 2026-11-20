@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { PageMeta } from '../components/Shared'
 import { models, departments, roles, emptyData, validateData } from './models'
 import { CmsFields, CmsPreview, CmsImage } from './CmsFields'
-import { cmsRequest, setCmsToken, getCmsAuth } from './client'
+import { cmsRequest, setCmsToken, getCmsAuth, hasCmsSession } from './client'
+import { setCmsUnsaved } from './workspaceState'
 import './cms.css'
 import { importBundledContent } from './importContent'
 import { CmsNavigation, CmsOverview, CmsWorkflowSteps, contentDescriptions, statusLabels } from './CmsNavigation'
@@ -34,12 +35,12 @@ export default function CustomCms() {
     const current = await cmsRequest('/session')
     setMember(current); setView('overview'); setUploadDepartment(current.department); await load(current)
   }
-  async function finishAuth() {
-    const auth = getCmsAuth(config)
+  async function finishAuth(authConfig = config) {
+    const auth = getCmsAuth(authConfig)
     const { data, error: sessionError } = await auth.auth.getSession()
     if (sessionError || !data.session) throw Error('Please sign in again.')
     setCmsToken(data.session.access_token)
-    if (config.requireMfa) {
+    if (authConfig.requireMfa) {
       const { data: assurance, error: assuranceError } = await auth.auth.mfa.getAuthenticatorAssuranceLevel()
       if (assuranceError) throw assuranceError
       if (assurance.currentLevel !== 'aal2') {
@@ -62,7 +63,7 @@ export default function CustomCms() {
     cmsRequest('/config').then(async value => {
       if (!active) return
       setConfig(value)
-      if (value.demo) return
+      if (value.demo) { if (hasCmsSession()) await enter(); return }
       const auth = getCmsAuth(value)
       subscription = auth.auth.onAuthStateChange((_event, session) => setCmsToken(session?.access_token)).data.subscription
       const hash = new URLSearchParams(window.location.hash.slice(1))
@@ -71,10 +72,13 @@ export default function CustomCms() {
         const { error: sessionError } = await auth.auth.setSession({ access_token: hash.get('access_token'), refresh_token: hash.get('refresh_token') })
         if (sessionError) throw sessionError
         if (active) setInvite(true)
+      } else if (hasCmsSession()) {
+        await finishAuth(value)
       }
     }).catch(err => { if (active) setError(err.message) })
     return () => { active = false; subscription?.unsubscribe() }
   }, [])
+  useEffect(() => { setCmsUnsaved(dirty); return () => setCmsUnsaved(false) }, [dirty])
   function historyReplace() { window.history.replaceState({}, '', window.location.pathname + window.location.search) }
   function choose(record) {
     if (dirty && !window.confirm('Discard the unsaved changes before opening another record?')) return
