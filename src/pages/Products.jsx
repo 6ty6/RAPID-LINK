@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { products } from '../content'
+import { products as localProducts } from '../content'
+import { useManagedContent, usePublicCms } from '../cms/public'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
 function PdfCanvasPage({ document, pageNumber }) {
@@ -89,7 +90,13 @@ function PdfPreview({ url }) {
 export function ProductPage() {
   const { '*': key } = useParams()
   const [ratesOpen, setRatesOpen] = useState(false)
-  const product = products[key]
+  const cms = usePublicCms()
+  const products = useManagedContent('product', Object.entries(localProducts).map(([slug, data]) => ({...data, slug})))
+  const product = products.find(item => item.slug === key)
+  const pages = useManagedContent('page', [])
+  const managedPage = pages.find(page => page.slug === key)
+  if (cms.enabled && cms.loading) return <p role="status">Loading product information…</p>
+  if (managedPage) return <PageHero {...managedPage} />
   if (!product) return <NotFound />
   const action = product.loan
     ? key === 'deduct-at-source-loan'
@@ -143,18 +150,22 @@ export function Rates() {
 }
 
 function RateGuideDialog({ onClose }) {
+  const guides = useManagedContent('document', [{slug:'controller-loan-rates-guide',title:'RapidLink Controller Loan Rates Guide',file:'/downloads/rate-chart.pdf',preview:'/downloads/rate-chart-preview.txt'}])
+  const guide = guides.find(item => item.slug === 'controller-loan-rates-guide')
   const [previousFocus] = useState(() => document.activeElement)
   const dialogRef = useRef(null)
   useEffect(() => {
     const dialog = dialogRef.current
+    if (!dialog) return undefined
     dialog.showModal()
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus() }
-  }, [])
+  }, [guide?.id, guide?.file])
+  if (!guide) return <section className="panel" role="status"><p>The rates guide is currently unavailable. Please contact our team.</p><button onClick={onClose}>Close</button></section>
   return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby="rate-guide-title" onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
-    <header><h2 id="rate-guide-title">RapidLink Controller Loan Rates Guide</h2><div><a className="button button-secondary" href="/downloads/rate-chart.pdf" download>Download</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
-    <PdfPreview url="/downloads/rate-chart-preview.txt" />
+    <header><h2 id="rate-guide-title">{guide.title}</h2><div><a className="button button-secondary" href={guide.file} download>Download</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
+    <PdfPreview url={guide.preview || guide.file} />
   </dialog>
 }
 

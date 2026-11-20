@@ -1,4 +1,6 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
+import { PublicCmsProvider, PublicCmsStatus } from './cms/public'
 import Footer from './components/Footer'
 import Header from './components/Header'
 import RouteEffects from './components/RouteEffects'
@@ -8,6 +10,8 @@ import { ApplyLoan, LoanCalculator } from './pages/Loans'
 import { ProductPage, RateChart, Rates } from './pages/Products'
 import CareerManagement from './pages/CareerManagement'
 import AcceptInvite from './pages/AcceptInvite'
+const CustomCms = lazy(() => import('./cms/CustomCms'))
+const PublicDocuments = lazy(() => import('./cms/PublicDocuments'))
 import {
   Careers,
   Contact,
@@ -20,11 +24,14 @@ import {
 } from './pages/Information'
 
 export default function App() {
-  return <>
+  const staffArea = useLocation().pathname === '/cms'
+  return <PublicCmsProvider>
     <RouteEffects />
-    <Header />
-    <main id="main-content">
+    {!staffArea && <Header />}
+    <main id="main-content">{!staffArea && <PublicCmsStatus />}
       <Routes>
+        <Route path="/cms" element={<Suspense fallback={<p role="status">Opening content workspace…</p>}><CustomCms /></Suspense>} />
+        <Route path="/public-documents" element={<Suspense fallback={<p role="status">Loading documents…</p>}><PublicDocuments /></Suspense>} />
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/apply-loan" element={<ApplyLoan />} />
@@ -46,6 +53,6 @@ export default function App() {
         <Route path="/*" element={<ProductPage />} />
       </Routes>
     </main>
-    <Footer />
-  </>
+    {!staffArea && <Footer />}
+  </PublicCmsProvider>
 }

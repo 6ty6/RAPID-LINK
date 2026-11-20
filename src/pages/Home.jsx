@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
-import { products } from '../content'
+import { products as localProducts } from '../content'
+import { useManagedContent } from '../cms/public'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
 
-const slides = [
+export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
   { eyebrow: 'Customer notice', title: 'Issue cheques with sufficient funds.', text: 'Repeated dud cheques may attract financial penalties, a cheque ban and credit restrictions.', image: '/assets/hero-notice.jpg', link: '/stories/bank-of-ghana-dud-cheque-sanctions', action: 'Read the full notice' },
   { eyebrow: 'Salary-backed credit', title: 'Controller loans for CAGD staff.', text: 'Published loan terms extend up to 60 months. Eligibility and current rates apply.', image: '/assets/controller-loan-flyer.png', link: '/deduct-at-source-loan', action: 'View loan information' },
@@ -14,38 +15,43 @@ const slides = [
 
 
 function HeroSlider() {
+  const slides = useManagedContent('slide', localSlides)
   const [current, setCurrent] = useState(0)
+  const active = slides.length ? current % slides.length : 0
   const [interactionPaused, setInteractionPaused] = useState(false)
   const isPaused = interactionPaused
   const move = step => setCurrent(value => (value + step + slides.length) % slides.length)
 
   useEffect(() => {
-    if (isPaused) return undefined
+    if (isPaused || slides.length < 2) return undefined
     const timer = window.setTimeout(() => move(1), 11000)
     return () => window.clearTimeout(timer)
-  }, [isPaused, current])
+  }, [isPaused, current, slides.length])
 
+  if (!slides.length) return null
   return <section className="hero hero-flyer" aria-roledescription="carousel" aria-label={'Featured information'}
     onMouseEnter={() => setInteractionPaused(true)} onMouseLeave={() => setInteractionPaused(false)}
     onFocusCapture={() => setInteractionPaused(true)}
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setInteractionPaused(false) }}>
     <h1 className="visually-hidden">RapidLink savings, loans and financial services</h1>
     <div className="flyer-stage">
-      {slides.map((item, index) => <div className={`hero-media ${index === current ? 'is-active' : ''}`} aria-hidden={index !== current} key={item.title}>
-        <Link className="flyer-link" to={item.link} tabIndex={index === current ? 0 : -1} aria-label={index === 0 ? 'Back to School Support Loan information' : item.title}><picture><img src={item.image} alt={`RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture><span className="flyer-link-hint" aria-hidden="true"><ArrowRight size={28} /></span></Link>
+      {slides.map((item, index) => <div className={`hero-media ${index === active ? 'is-active' : ''}`} aria-hidden={index !== active} key={item.id || item.title}>
+        <Link className="flyer-link" to={item.link || "/contact"} tabIndex={index === active ? 0 : -1} aria-label={item.imageAlt || (index === 0 ? 'Back to School Support Loan information' : item.title)}><picture><img src={item.image} alt={item.imageAlt || `RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture><span className="flyer-link-hint" aria-hidden="true"><ArrowRight size={28} /></span></Link>
       </div>)}
       <button className="flyer-arrow flyer-previous" onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
       <button className="flyer-arrow flyer-next" onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
     </div>
     <div className="hero-controls">
-      <div className="dots">{slides.map((item, index) => <button key={item.title} className={current === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={current === index ? 'true' : undefined}><span aria-hidden="true" /></button>)}</div>
+      <div className="dots">{slides.map((item, index) => <button key={item.id || item.title} className={active === index ? 'active' : ''} onClick={() => setCurrent(index)} aria-label={`Show slide ${index + 1}: ${item.title}`} aria-current={active === index ? 'true' : undefined}><span aria-hidden="true" /></button>)}</div>
     </div>
 
   </section>
 }
 
 function ProductCard({ productKey }) {
-  const product = products[productKey]
+  const products = useManagedContent('product', Object.entries(localProducts).map(([slug, data]) => ({...data, slug})))
+  const product = products.find(item => item.slug === productKey)
+  if (!product) return null
   return <article className="product-card">
     <span>{product.category}</span><h3>{product.title}</h3><p>{product.intro}</p>
     <Link to={`/${productKey}`}>View details <ArrowRight size={16} /></Link>

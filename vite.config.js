@@ -6,7 +6,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.js',
-    exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
+    exclude: ['tests/e2e/**', 'tests/cms/**', '**/node_modules/**', 'dist/**', 'server/**', '.worktrees/**'],
     css: true,
   },
 })

@@ -118,7 +118,7 @@ describe('RapidLink site', () => {
     const { container } = renderAt('/rapidlink-careers')
     const page = within(container)
     expect(page.getByRole('heading', { name: 'Deposit Mobilization Lead' })).toBeInTheDocument()
-    expect(container.querySelector('.vacancy-department')).toHaveTextContent('Sales and Business Development')
+    expect(container.querySelector('.vacancy-department')).toHaveTextContent('Marketing/Sales')
     await user.click(page.getByRole('button', { name: 'View details' }))
     expect(page.getByRole('dialog')).toHaveTextContent('Manage agreed targets, key performance indicators and the sales budget.')
     expect(page.getByRole('link', { name: /Apply for this position/ })).toHaveAttribute('href', expect.stringContaining('info@rapidlinkfinance.com'))
@@ -158,24 +158,23 @@ describe('RapidLink site', () => {
     expect(article.getByRole('heading', { name: 'Third offence within one year' })).toBeInTheDocument()
   })
 
-  it('advances the homepage slider with an accessible control', async () => {
+  it('advances the clickable flyer with an accessible control', async () => {
     const user = userEvent.setup()
-    renderAt('/home')
-    expect(screen.getByRole('heading', { name: 'Build steadily. Move confidently.', hidden: true })).toBeInTheDocument()
+    const { container } = renderAt('/home')
+    expect(container.querySelector('.hero-media.is-active img')).toHaveAttribute('src', '/assets/hero-controller.png')
     await user.click(screen.getByRole('button', { name: 'Next slide' }))
-    expect(screen.getByRole('heading', { name: 'Issue cheques with sufficient funds.', hidden: true })).toBeInTheDocument()
+    expect(container.querySelector('.hero-media.is-active img')).toHaveAttribute('src', '/assets/hero-notice.jpg')
   })
 
-  it('shows the flyer for three seconds, then the copy for eight seconds', () => {
+  it('automatically advances the flyer after eleven seconds', () => {
     vi.useFakeTimers()
-    renderAt('/home')
-    const heading = screen.getByRole('heading', { name: 'Build steadily. Move confidently.', hidden: true })
-    expect(heading.closest('.hero-content')).toHaveAttribute('aria-hidden', 'true')
-    act(() => vi.advanceTimersByTime(3000))
-    expect(heading.closest('.hero-content')).toHaveAttribute('aria-hidden', 'false')
-    act(() => vi.advanceTimersByTime(8000))
-    expect(screen.getByRole('heading', { name: 'Issue cheques with sufficient funds.', hidden: true })).toBeInTheDocument()
-    vi.useRealTimers()
+    try {
+      const { container } = renderAt('/home')
+      expect(container.querySelector('.hero-media.is-active img')).toHaveAttribute('src', '/assets/hero-controller.png')
+      act(() => screen.getByRole('link', { name: 'RapidLink home' }).focus())
+      act(() => vi.advanceTimersByTime(11000))
+      expect(container.querySelector('.hero-media.is-active img')).toHaveAttribute('src', '/assets/hero-notice.jpg')
+    } finally { vi.useRealTimers() }
   })
 
   it('explains why the general loan application is blocked', () => {
@@ -275,7 +274,7 @@ describe('RapidLink site', () => {
   it('links the Deduction at Source product to the PDF rates guide', () => {
     const { container } = renderAt('/deduct-at-source-loan')
     expect(container.querySelector('.product-action a[href="https://rapidlinkfinance.com/loanform"]')).toBeInTheDocument()
-    expect(within(container).getByRole('link', { name: 'View Loan Rates Guide' })).toHaveAttribute('href', '/rate-chart')
+    expect(within(container).getByRole('button', { name: 'View Loan Rates Guide' })).toBeInTheDocument()
   })
 
   it('shows both branches on the contact map with separate directions', () => {
@@ -287,8 +286,8 @@ describe('RapidLink site', () => {
     expect(map.getAttribute('src')).toContain('Rapidlink%20Microfinance%20Madina%20Branch%2C%20Madina%20Taxi%20Rank')
     expect(page.getByRole('link', { name: /Directions to Head Office/ })).toHaveAttribute('href', expect.stringContaining('google.com/maps/dir'))
     expect(page.getByRole('link', { name: /Directions to Madina Branch/ })).toHaveAttribute('href', expect.stringContaining('Rapidlink%20Microfinance%20Madina%20Branch'))
-    expect(page.getAllByText(/GA-049-5378/)).toHaveLength(2)
-    expect(page.getAllByText(/GM-000-3774/)).toHaveLength(2)
+    expect(within(container.querySelector('.contact-map-section')).getAllByText(/GA-049-5378/)).toHaveLength(1)
+    expect(within(container.querySelector('.contact-map-section')).getAllByText(/GM-000-3774/)).toHaveLength(1)
   })
 
   it('previews the supplied controller rate guide before downloading', async () => {

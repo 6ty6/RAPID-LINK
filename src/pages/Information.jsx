@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, Briefcase, Building2, CalendarDays, ChevronDown, Eye, Info, MapPin, Search, Target, Users, WalletCards, X } from '../icons'
 import { config } from '../config'
-import { faqs } from '../content'
+import { faqs as localFaqs } from '../content'
+import { useManagedContent, usePublicCms } from '../cms/public'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
 import { careerVacancies } from '../content'
 import { careersAdminConfigured, getPublishedVacancies } from '../services/careers'
@@ -118,7 +119,7 @@ export function InstitutionalProfile() {
   </>
 }
 
-const people = [
+export const localPeople = [
   {
     name: 'Dr. Emmanuel Debrah', role: 'Board Chairman', image: '/assets/board-emmanuel-debrah.png',
     biography: 'Dr. Emmanuel Debrah, our distinguished Board Chair, brings over 12 years banking experience with an extensive knowledge and skills in various aspects of banking including Credit Appraisal/Analysis, Risk Management, Loan Recovery and Compliance, Financial Analysis/Interpretation, Financial Reporting, Sales and Customer Relationship Building, Banking Operations, General Management as well as Project Finance, Organizational Restructuring and Commodities Finance. He holds a PhD in Business Administration from CASS European Institute of Management Studies (France) in collaboration with Ghana Communication Technology University; an MSc. in International Accounting from Göteborg University, Sweden; an MSc. in Economics from the University of Skövde, Sweden and a Bachelor of Commerce (B.Com) from the University of Cape Coast. Besides, he is an Associate of the Chartered Institute of Bankers (Ghana) and a holder of Ghana Stock Exchange Securities Certificate as well as a Diploma in Theology from Kenneth Hagin’s Rhema Bible Training College, Ghana. Before working in the financial sector, Dr. Debrah taught business courses in Regent University College of Science and Technology, Accra. He also served as an adjunct lecturer in Ghana Communication Technology University (Takoradi campus) and on the Distance Education of the University of Education, Kumasi campus. Dr. Debrah is currently with the Faculty of Accounting and Finance of the University of Professional Studies as a lecturer. His research interests are in Corporate Governance, Risk Management, Auditing and Accounting Information Quality, Financial Economics, Banking and Economic Growth and Development.',
@@ -134,6 +135,7 @@ const people = [
 ]
 
 export function PeoplePage() {
+  const people = useManagedContent('board', localPeople.map(person => ({...person, title: person.name}))).map(person => ({...person, name: person.title}))
   const [selectedPerson, setSelectedPerson] = useState(null)
   const closeButtonRef = useRef(null)
   const triggerRef = useRef(null)
@@ -176,7 +178,7 @@ export function PeoplePage() {
 }
 
 export function DigitalChannels() {
-  const channels = [
+  const localChannels = [
     ['RapidLink mobile app', 'Real-time account access, balance enquiries, fund transfers and transaction history.', '/assets/digital-mobile-app.png', config.playStoreUrl],
     ['RapidPay USSD', 'Dial *899*727# on all networks to access the USSD service.', '/assets/digital-rapidpay-ussd.png', null],
     ['MTN Merchant ID', 'Dial *170#, choose MoMoPay, then enter Merchant ID 219440. Confirm the recipient is RapidLink Microfinance Limited.', '/assets/digital-mtn-merchant.png', null],
@@ -184,6 +186,7 @@ export function DigitalChannels() {
     ['MoneyQube', 'Digital nano loans with a one-month repayment period.', '/assets/digital-moneyqube.png', config.moneyQubeUrl],
   ]
 
+  const channels = useManagedContent('channel', localChannels.map(([title, description, image, href]) => ({title, description, image, href}))).map(item => [item.title, item.description, item.image, item.href])
   return <>
     <PageMeta title="Digital channels" description="Access RapidLink services from your phone." />
     <section className="digital-public-hero" aria-labelledby="digital-channels-title">
@@ -200,6 +203,7 @@ export function DigitalChannels() {
 }
 
 export function FAQs() {
+  const faqs = useManagedContent('faq', localFaqs.map(([title, answer]) => ({title, answer}))).map(item => [item.title, item.answer])
   return <>
     <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." image="/assets/faq-hero-v3.png" />
     <section className="section"><div className="shell narrow accordion">{faqs.map(([question, answer]) => <details key={question}>
@@ -287,15 +291,20 @@ export function StoryArticle() {
 }
 
 export function Careers() {
-  const [vacancies, setVacancies] = useState(careerVacancies)
-  const [loading, setLoading] = useState(careersAdminConfigured)
-  const [loadError, setLoadError] = useState(false)
+  const cms = usePublicCms()
+  const [legacyVacancies, setVacancies] = useState(careerVacancies)
+  const vacancies = useManagedContent('vacancy', legacyVacancies)
+  const [legacyLoading, setLoading] = useState(careersAdminConfigured)
+  const loading = cms.enabled ? cms.loading : legacyLoading
+  const [legacyError, setLoadError] = useState(false)
+  const loadError = cms.enabled ? cms.error : legacyError
   const [selectedVacancy, setSelectedVacancy] = useState(null)
   const [query, setQuery] = useState('')
   const [department, setDepartment] = useState('All departments')
   const closeButtonRef = useRef(null)
 
   useEffect(() => {
+    if (cms.enabled) return
     getPublishedVacancies().then(setVacancies).catch(() => setLoadError(true)).finally(() => setLoading(false))
   }, [])
 
@@ -349,32 +358,34 @@ export function Careers() {
   </>
 }
 
-function Branch({ title, address, digital, phones }) {
+function Branch({ title, address, digital, phones, hours }) {
   return <article>
     <p className="eyebrow">{title}</p><h2>{address}</h2><p>Digital address: {digital}</p>
+    {hours && <p>{hours}</p>}
     {phones.map(phone => <a className="contact-link" key={phone} href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>)}
     <a className="contact-link" href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
   </article>
 }
 
 export function Contact() {
+  const cms = usePublicCms()
   const headOfficeAddress = '17 Farrar Avenue, Asylum Down, Accra, Ghana'
   const madinaAddress = 'Madina Taxi Rank, Madina, Accra, Ghana'
   const headOfficeMapQuery = `Rapidlink Microfinance Head Office, ${headOfficeAddress}`
   const madinaMapQuery = `Rapidlink Microfinance Madina Branch, ${madinaAddress}`
-  const branches = [
-    { title: 'Head Office', address: '17 Farrar Avenue, Asylum Down, Accra', digital: 'GA-049-5378', query: headOfficeMapQuery },
-    { title: 'Madina Branch', address: 'Madina Taxi Rank, Madina, Accra', digital: 'GM-000-3774', query: madinaMapQuery },
+  const localBranches = [
+    { title: 'Head Office', address: '17 Farrar Avenue, Asylum Down, Accra', digital: 'GA-049-5378', phones: ['+233 30 224 7951', '+233 30 224 6657', '+233 53 373 0336'], query: headOfficeMapQuery },
+    { title: 'Madina Branch', address: 'Madina Taxi Rank, Madina, Accra', digital: 'GM-000-3774', phones: ['+233 30 395 5183', '+233 55 102 3151'], query: madinaMapQuery },
   ]
-  const mapUrl = `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(headOfficeMapQuery)}&daddr=${encodeURIComponent(madinaMapQuery)}`
+  const branches = useManagedContent('branch', localBranches).map(branch => ({...branch, query: branch.mapQuery || branch.query}))
+  const mapUrl = cms.enabled ? `https://www.google.com/maps?output=embed&q=${encodeURIComponent(branches.map(branch => branch.query).join(' | '))}` : `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(headOfficeMapQuery)}&daddr=${encodeURIComponent(madinaMapQuery)}`
 
   return <>
     <PageHero eyebrow="Contact" title="We’re here to help" intro="Call, email or visit one of RapidLink’s Accra branches." image="/assets/contact-hero-v2.png" />
     <section className="section"><div className="shell two-cards">
-      <Branch title="Head office" address="17 Farrar Avenue, Asylum Down, Accra" digital="GA-049-5378" phones={['+233 30 224 7951', '+233 30 224 6657', '+233 53 373 0336']} />
-      <Branch title="Madina branch" address="Madina Taxi Rank, Madina, Accra" digital="GM-000-3774" phones={['+233 30 395 5183', '+233 55 102 3151']} />
+      {branches.map(branch => <Branch key={branch.id || branch.title} {...branch} phones={branch.phones || []} />)}
     </div></section>
-    <section className="section contact-map-section" aria-labelledby="branch-map-title">
+    {branches.length > 0 && <section className="section contact-map-section" aria-labelledby="branch-map-title">
       <div className="shell contact-map-panel">
         <div className="contact-map-copy">
           <span className="contact-map-icon" aria-hidden="true"><MapPin size={28} /></span>
@@ -400,6 +411,6 @@ export function Contact() {
           />
         </div>
       </div>
-    </section>
+    </section>}
   </>
 }

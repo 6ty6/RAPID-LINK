@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown } from '../icons'
 import { navGroups } from '../content'
+import { useManagedContent } from '../cms/public'
 
 const socialLinks = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
@@ -30,6 +31,7 @@ function SocialIcon({ name }) {
 }
 
 export default function Footer() {
+  const settings = useManagedContent('settings', [{email:'info@rapidlinkfinance.com', supportPhone:'030 395 5183'}])[0]
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
   const location = useLocation()
@@ -106,8 +108,8 @@ export default function Footer() {
       </nav>
       <div className="footer-contact">
         <h2>Get in touch</h2>
-        <a href="tel:+233303955183">030 395 5183</a>
-        <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
+        {settings?.supportPhone && <a href={`tel:${settings.supportPhone.replace(/[^+0-9]/g, "")}`}>{settings.supportPhone}</a>}
+        {settings?.email && <a href={`mailto:${settings.email}`}>{settings.email}</a>}{settings?.footerCopy && <p>{settings.footerCopy}</p>}
         <p>17 Farrar Avenue, Asylum Down, Accra<br />Digital address: GA-049-5378</p>
       </div>
     </div>

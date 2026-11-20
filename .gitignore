@@ -6,3 +6,5 @@ test-results/
 *.local
 .prerender/
 cms/**/.sanity/
+.cms-data/
+.worktrees/

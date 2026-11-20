@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Check } from '../icons'
 import { config } from '../config'
+import { useManagedContent } from '../cms/public'
 
 export function PageMeta({ title, description, image = '/assets/rapidlink-logo.png', noIndex = false }) {
   const { pathname } = useLocation()
@@ -62,8 +63,12 @@ export function PageMeta({ title, description, image = '/assets/rapidlink-logo.p
 }
 
 export function PageHero({ eyebrow, title, intro, image }) {
+  const { pathname } = useLocation()
+  const pages = useManagedContent('page', [])
+  const managed = pages.find(page => page.slug === pathname.slice(1))
+  if (managed) ({ eyebrow, title, intro, image } = managed)
   return <>
-    <PageMeta title={title} description={intro} image={image} />
+    <PageMeta title={managed?.seoTitle || title} description={managed?.seoDescription || intro} image={image} />
     <section className={`page-hero${image ? ' has-image' : ''}`}>
       {image && <div className="page-hero-media" aria-hidden="true"><img src={image} alt="" /></div>}
       <div className="shell narrow">
@@ -72,6 +77,7 @@ export function PageHero({ eyebrow, title, intro, image }) {
         {intro && <p>{intro}</p>}
       </div>
     </section>
+    {managed?.sections?.length > 0 && <section className="section"><div className="shell narrow">{managed.sections.map((section, index) => <article key={index}><h2>{section.heading}</h2>{section.paragraphs?.map((text, i) => <p key={i}>{text}</p>)}</article>)}</div></section>}
   </>
 }
 

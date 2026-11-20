@@ -9,9 +9,15 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "cms:install": "npm --prefix server/cms install",
+    "cms:dev": "node tools/start-cms-demo.mjs",
+    "cms:start": "node --env-file-if-exists=server/cms/.env server/cms/server.mjs",
+    "cms:test": "node --test --test-isolation=none server/cms/store.test.mjs server/cms/http.test.mjs",
+    "cms:test:e2e": "playwright test --config playwright.cms.config.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.2",
     "pdfjs-dist": "^6.5.438",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
