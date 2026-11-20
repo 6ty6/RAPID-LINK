@@ -6,6 +6,8 @@ Local implementation, 20 November 2026. Branch: `feature/custom-public-cms`.
 
 The React website now has a separate staff workspace at `/cms`. It uses a small Node service, SQLite for content and permissions, private filesystem storage for images, and the existing Supabase service for invited staff authentication. No Sanity subscription or AI API is required by this CMS. Hosting, persistent storage, backups, authentication usage and ongoing maintenance can still incur costs.
 
+Staff land on an overview with four content groups: Website & Homepage, News & Careers, Company Information and Customer Help. Workflow totals show drafts, items awaiting review and approved items ready to publish. Select a category to browse its records; opening a record replaces the list with a focused editor, with a back button and Write → Review → Publish guidance. On mobile, **Browse sections** opens the grouped navigation. Image library, activity log and administrative tools are kept separate from everyday content editing.
+
 The implementation is isolated in `.worktrees/custom-public-cms`. It has not been merged into `main`, deployed, or connected to a hosted staff directory. The existing Abena feature remains on its own branch.
 
 Features:
@@ -40,7 +42,7 @@ If already inside the worktree, omit the `cd` line. Open **http://127.0.0.1:5182
 2. Sign out, choose **Demo approver**, open the FAQ and approve it.
 3. Publish the approved version, then open `/faqs` in another tab.
 4. Edit the draft to confirm the published copy stays unchanged. Unpublish to withdraw it.
-5. Choose **Demo administrator** to inspect staff access, export or import the existing site copy as drafts. Imported records use their suggested owner departments; the administrator can review records across departments but cannot approve their own imports. Assign a separate approver in the relevant department.
+5. Choose **Demo administrator** to inspect staff access. Open **Import & export** under **Workspace tools** to import the existing site copy as drafts or export content. Imported records use their suggested owner departments; the administrator can review records across departments but cannot approve their own imports. Assign a separate approver in the relevant department.
 
 The demo starts empty apart from its staff accounts. The public preview therefore has empty managed sections until records are published. This is intentional; it must not silently restore withdrawn content from the old static source. Test records persist across restarts. Do not use the demo database in production.
 
