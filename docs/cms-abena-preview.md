@@ -21,6 +21,8 @@ The demo uses only local data and synthetic staff identities. Its CMS adapter is
 
 Open only **http://127.0.0.1:5182/**. The integration-preview toolbar connects **View website** and **Manage content** in the same tab. Your staff session stays in memory while switching; the CMS checks it again when you return. Unsaved drafts prompt before leaving the editor. Returning to the website fetches published content again, so you can see a release without opening another browser page. The backend process still runs internally; you do not need to open its URL. This toolbar is shown only when the custom CMS adapter is enabled, and is not present on `main`.
 
+The CMS overview includes **Loan calculator**, also available under **Workspace tools → Loan calculator**. It displays the actual approved settings from the calculator's shared configuration and opens the public calculator in the same tab. Pricing settings are read-only; no rate, limit or formula changes were made by adding this entry.
+
 ## Test an answer in Abena
 
 1. Choose Demo writer, open Customer help → Abena answers and create a draft. Enter a title, an example question, a prepared reply and its approved information source. Save and submit it.

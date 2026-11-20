@@ -64,6 +64,13 @@
 @media(max-width:600px) { .cms-top { align-items:start; flex-direction:column; } .cms-profile { text-align:left; } .cms-workspace { padding:18px; } .cms-section-head { flex-wrap:wrap; } .cms-editor-meta,.cms-filter,.cms-fields { grid-template-columns:1fr; } .cms-assets { grid-template-columns:1fr; } .cms-nav { padding:10px; grid-template-columns:repeat(2,minmax(0,1fr)); } .cms-records>button { align-items:start; } }
 
 /* Grouped staff workspace. These rules are scoped away from the public site. */
+.custom-cms .cms-calculator-shortcut { display:flex; align-items:center; justify-content:space-between; gap:20px; width:100%; margin-top:20px; padding:20px; text-align:left; border:1px solid #dfe6ef; border-radius:12px; background:white; }
+.cms-calculator-shortcut strong { display:block; margin-bottom:5px; }
+.cms-calculator-values { margin:20px 0 0; }
+.cms-calculator-values>div { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 18px; padding:12px 0; border-bottom:1px solid #e4eaf2; font-size:.85rem; }
+.cms-calculator-values dt { color:#60778d; }
+.cms-calculator-values dd { margin:0; font-weight:700; }
+.cms-calculator .button { font-size:.85rem; }
 .custom-cms { font-size:16px; padding:24px clamp(16px,3vw,48px) 48px; background:#f3f6fa; }
 .cms-top { padding-bottom:22px; border-bottom:1px solid #dce4ee; margin-bottom:18px; }
 .cms-top h1 { font-size:1.5rem; letter-spacing:-.04em; }
