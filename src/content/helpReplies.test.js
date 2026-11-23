@@ -3,8 +3,8 @@ import { getHelpReply, getConversationalReply, whatsappChatbotUrl } from './help
 
 describe('Abena prepared replies', () => {
   it('uses the user-supplied WhatsApp number without copying questions into the link', () => {
-    expect(whatsappChatbotUrl).toBe('https://wa.me/233550584668')
-    expect(new URL(whatsappChatbotUrl).search).toBe('')
+    expect(new URL(whatsappChatbotUrl).pathname).toBe('/15554784866')
+    expect(new URL(whatsappChatbotUrl).searchParams.get('text')).toBe('Hello Abena, I would like to continue this conversation.')
   })
   it('recognises greetings and company topics with prepared answers', () => {
     expect(getHelpReply('Hello Abena!').id).toBe('greeting')

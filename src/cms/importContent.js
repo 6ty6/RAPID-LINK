@@ -1,5 +1,6 @@
 import { announcements, newsArticles, careerVacancies, products, faqs } from '../content'
 import { emptyData, models } from './models'
+import { whatsappChatbotUrl } from '../content/helpReplies'
 import { localSlides } from '../pages/Home'
 import { localPeople } from '../pages/Information'
 const slugify = value => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 120).replace(/-$/, '')
@@ -19,7 +20,7 @@ export function bundledDrafts() {
   add('branch', 'Head Office', 'head-office', { address: '17 Farrar Avenue, Asylum Down, Accra', digital: 'GA-049-5378', phones: ['+233 30 224 7951', '+233 30 224 6657', '+233 53 373 0336'], mapQuery: 'Rapidlink Microfinance Head Office, 17 Farrar Avenue, Asylum Down, Accra, Ghana' })
   add('branch', 'Madina Branch', 'madina-branch', { address: 'Madina Taxi Rank, Madina, Accra', digital: 'GM-000-3774', phones: ['+233 30 395 5183', '+233 55 102 3151'], mapQuery: 'Rapidlink Microfinance Madina Branch, Madina Taxi Rank, Madina, Accra, Ghana' })
   add('document', 'Controller Loan Rates Guide', 'controller-loan-rates-guide', { description: 'Existing Controller loan rates guide. Confirm its current validity before publishing.', file: '/downloads/rate-chart.pdf', category: 'Loan guides' })
-  add('settings', 'Official public contacts', 'official-public-contacts', { email: 'info@rapidlinkfinance.com', supportPhone: '030 395 5183', loanPhone: '053 373 0336', whatsapp: 'https://wa.me/233550584668' })
+  add('settings', 'Official public contacts', 'official-public-contacts', { email: 'info@rapidlinkfinance.com', supportPhone: '030 395 5183', loanPhone: '053 373 0336', whatsapp: whatsappChatbotUrl })
   // Existing copy is a draft source, not evidence of business approval.
   return records
 }

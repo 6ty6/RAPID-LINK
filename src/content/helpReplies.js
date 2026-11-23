@@ -1,5 +1,5 @@
 // Curated public information only. No AI, remote requests or customer records.
-export const whatsappChatbotUrl = 'https://wa.me/233550584668'
+export const whatsappChatbotUrl = 'https://wa.me/15554784866?text=Hello%20Abena%2C%20I%20would%20like%20to%20continue%20this%20conversation.'
 const assistance = [['Continue on WhatsApp', whatsappChatbotUrl], ['Call our team', 'tel:+233303955183'], ['Contact details', '/contact']]
 const unavailable = { id: 'unavailable', text: 'I do not have confirmed information about that. Please continue with our WhatsApp chatbot or contact our team for assistance.', links: assistance }
 

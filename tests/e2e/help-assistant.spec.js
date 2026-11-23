@@ -109,7 +109,7 @@ test('prepared chat handles unknown questions with WhatsApp and phone options', 
   await panel.getByRole('button', { name: 'Send', exact: true }).click()
   await page.clock.fastForward(2200)
   await expect(panel.getByRole('log')).toContainText('do not have confirmed information')
-  await expect(panel.getByRole('link', { name: 'Continue on WhatsApp', exact: true })).toHaveAttribute('href', 'https://wa.me/233550584668')
+  await expect(panel.getByRole('link', { name: 'Continue on WhatsApp', exact: true })).toHaveAttribute('href', 'https://wa.me/15554784866?text=Hello%20Abena%2C%20I%20would%20like%20to%20continue%20this%20conversation.')
   await expect(panel.getByRole('link', { name: 'Continue on WhatsApp', exact: true })).toHaveAttribute('rel', 'noopener noreferrer')
   await expect(panel.getByRole('link', { name: 'Speak to our team', exact: true })).toHaveAttribute('href', 'tel:+233303955183')
 })
