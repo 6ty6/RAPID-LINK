@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone } from '../icons'
-import { products as localProducts } from '../content'
 import { useManagedContent } from '../cms/public'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
 import HomeFinancialTools from '../components/HomeFinancialTools'
+import HomeProducts from '../components/HomeProducts'
 
 export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
@@ -49,16 +49,6 @@ function HeroSlider() {
   </section>
 }
 
-function ProductCard({ productKey }) {
-  const products = useManagedContent('product', Object.entries(localProducts).map(([slug, data]) => ({...data, slug})))
-  const product = products.find(item => item.slug === productKey)
-  if (!product) return null
-  return <article className="product-card">
-    <span>{product.category}</span><h3>{product.title}</h3><p>{product.intro}</p>
-    <Link to={`/${productKey}`}>View details <ArrowRight size={16} /></Link>
-  </article>
-}
-
 export default function Home() {
   const { articles } = usePublishedNews()
   const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
@@ -66,6 +56,7 @@ export default function Home() {
   return <>
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
     <HeroSlider />
+    <HomeProducts />
     <HomeFinancialTools />
     <section className="section notices"><div className="shell">
       <div className="section-heading"><p className="eyebrow">Latest news</p><h2>Updates from RapidLink</h2></div>
@@ -78,10 +69,6 @@ export default function Home() {
     <section className="section warm"><div className="shell split">
       <div><p className="eyebrow">What we provide</p><h2>Financial tools for real life</h2><p className="lead">Save consistently, access responsible credit, support your business and manage everyday banking from your phone.</p><Link className="text-link" to="/institutional-profile">Learn about RapidLink <ArrowRight size={17} /></Link></div>
       <div className="service-list">{[['Savings & deposits', Landmark], ['Micro & SME loans', Building2], ['Mobile and USSD banking', Smartphone]].map(([label, Icon]) => <Link key={label} to={label.includes('loan') ? '/business-loan' : label.includes('Mobile') ? '/digital-channels' : '/rapid-savings'}><Icon /><span>{label}</span><ArrowRight /></Link>)}</div>
-    </div></section>
-    <section className="section"><div className="shell">
-      <div className="section-heading"><p className="eyebrow">Explore products</p><h2>A clearer route to your next step</h2></div>
-      <div className="card-grid">{['rapid-savings', 'rapid-susu', 'rapid-edu-grow', 'personal-loan', 'business-loan', 'fixed-deposit'].map(key => <ProductCard key={key} productKey={key} />)}</div>
     </div></section>
     <AppDownload />
   </>
