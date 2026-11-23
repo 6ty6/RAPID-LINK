@@ -22,12 +22,12 @@ describe('RapidLink site', () => {
   it('shows the assigned image in a loan product hero', () => {
     const { container } = renderAt('/deduct-at-source-loan')
     expect(container.querySelector('.page-hero-media img')).toHaveAttribute('src', '/assets/deduct-loan-hero.jpg')
-    expect(container.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/deduct-loan.jpg')
+    expect(container.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/deduct-salary-nurse-v1.png')
   })
 
   it('uses the verified public personal-loan image in the compact product layout', () => {
     const { container } = renderAt('/personal-loan')
-    expect(container.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/personal-loan-public.webp')
+    expect(container.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/personal-loan-planning-v1.png')
     expect(container.querySelector('.product-info-card h3')).toHaveTextContent('Benefits')
     expect(container.querySelectorAll('.product-info-card h3')[1]).toHaveTextContent('What you’ll need')
   })
@@ -35,11 +35,11 @@ describe('RapidLink site', () => {
   it('uses verified public images for savings and investment products', () => {
     const savings = renderAt('/rapid-susu').container
     expect(savings.querySelector('.page-hero-media img')).toHaveAttribute('src', '/assets/rapid-susu-hero.png')
-    expect(savings.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/rapid-susu.jpg')
+    expect(savings.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/rapid-susu-growth-v1.png')
 
     const investment = renderAt('/fixed-deposit').container
     expect(investment.querySelector('.page-hero-media img')).toHaveAttribute('src', '/assets/fixed-deposit-hero-v2.png')
-    expect(investment.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/fixed-deposit.webp')
+    expect(investment.querySelector('.product-feature-image img')).toHaveAttribute('src', '/assets/fixed-deposit-term-v1.png')
   })
 
   it('uses banking-themed image headers for key information pages', () => {
@@ -212,7 +212,7 @@ describe('RapidLink site', () => {
     expect(within(productsSection).getByRole('link', { name: 'Rapid Susu', exact: true })).toHaveAttribute('href', '/rapid-susu')
     expect(page.getByRole('link', { name: /Current Interest Rates/ })).toHaveAttribute('href', '/rates')
     expect(container.querySelector('.quick-access-card[href="/loan-calculator"]')).toBeInTheDocument()
-    expect(page.getByRole('link', { name: /Bank of Ghana revises sanctions for dud cheques/ })).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')
+    for (const link of page.getAllByRole('link', { name: /Bank of Ghana revises sanctions for dud cheques/ })) expect(link).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')
     expect(page.queryByRole('button', { name: 'Downloadables' })).not.toBeInTheDocument()
     expect([...container.querySelectorAll('.site-header .nav-group-trigger')].map(button => button.textContent)).toEqual(['Savings & Investments', 'Loans', 'About Us'])
     expect(container.querySelector('.site-header .nav-group-trigger')).toHaveAttribute('aria-expanded', 'false')

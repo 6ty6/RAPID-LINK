@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { refreshSavingsImage } from '../content/savingsImage'
 export const cmsBase = (import.meta.env.VITE_CMS_API_BASE_URL || (import.meta.env.DEV ? 'http://127.0.0.1:8791' : '')).replace(/\/$/, '')
 export const customCmsEnabled = import.meta.env.VITE_CUSTOM_CMS_ENABLED === 'true'
 const Context = createContext({ enabled: false, records: [], loading: false, error: false })
@@ -11,7 +12,7 @@ export function resolveMedia(value) {
 }
 export function PublicCmsProvider({ children }) {
   const { pathname } = useLocation()
-  const [state, setState] = useState({ enabled: customCmsEnabled, records: [], loading: customCmsEnabled, error: false })
+  const [state, setState] = useState({ enabled: customCmsEnabled, records: [], loading: customCmsEnabled, error: false, pathname })
   useEffect(() => {
     if (!customCmsEnabled) return
     let active = true, controller
@@ -22,10 +23,10 @@ export function PublicCmsProvider({ children }) {
         if (!response.ok) throw Error('Content unavailable')
         const result = await response.json()
         if (!Array.isArray(result.records)) throw Error('Invalid content response')
-        const records = result.records.map(record => ({ ...resolveMedia(record.data), id: record.id, title: record.title, slug: record.slug, kind: record.kind }))
-        if (active) setState({ enabled: true, records, loading: false, error: false })
+        const records = result.records.map(record => refreshSavingsImage({ ...resolveMedia(record.data), id: record.id, title: record.title, slug: record.slug, kind: record.kind }))
+        if (active) setState({ enabled: true, records, loading: false, error: false, pathname })
       } catch (error) {
-        if (active && error.name !== 'AbortError') setState({ enabled: true, records: [], loading: false, error: true })
+        if (active && error.name !== 'AbortError') setState({ enabled: true, records: [], loading: false, error: true, pathname })
       }
     }
     refresh()
@@ -34,7 +35,7 @@ export function PublicCmsProvider({ children }) {
     document.addEventListener('visibilitychange', visible)
     return () => { active = false; controller?.abort(); clearInterval(timer); document.removeEventListener('visibilitychange', visible) }
   }, [pathname])
-  return <Context.Provider value={state}>{children}</Context.Provider>
+  return <Context.Provider value={{ ...state, loading: state.loading || (customCmsEnabled && state.pathname !== pathname) }}>{children}</Context.Provider>
 }
 export function usePublicCms() { return useContext(Context) }
 export function useManagedContent(kind, fallback) {

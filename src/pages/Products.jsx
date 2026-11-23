@@ -4,6 +4,23 @@ import { products as localProducts } from '../content'
 import { useManagedContent, usePublicCms } from '../cms/public'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
+const loanSectionHeadings = {
+  'personal-loan': 'Plan for life’s important moments.',
+  'business-loan': 'Support your business’s next step.',
+  'group-loan': 'Move forward together.',
+  'deduct-at-source-loan': 'Plan repayments around your salary.',
+}
+const investmentSectionHeadings = {
+  'fixed-deposit': 'Set money aside. Plan for the term ahead.',
+  'advantage-investment': 'Build your investment toward what matters.',
+}
+const savingsSectionHeadings = {
+  'rapid-savings': 'Make saving part of your everyday life.',
+  'rapid-susu': 'Small contributions. Steady progress.',
+  'rapid-edu-grow': 'Start saving for their next chapter.',
+  'rapid-target-savings': 'Give your next goal a savings plan.',
+}
+
 function PdfCanvasPage({ document, pageNumber }) {
   const canvasRef = useRef(null)
 
@@ -104,8 +121,8 @@ export function ProductPage() {
       : <Link className="button" to="/apply-loan">Apply for a Loan <span aria-hidden="true">→</span></Link>
     : <Link className="button" to="/open-account">Open an account</Link>
   const sectionHeading = product.loan
-    ? 'Support for your next step.'
-    : product.category === 'Investments' ? 'Put your money to work.' : 'Save for what matters.'
+    ? loanSectionHeadings[key] || 'Support for your next step.'
+    : product.category === 'Investments' ? investmentSectionHeadings[key] || 'Put your money to work.' : savingsSectionHeadings[key] || 'Save for what matters.'
 
   return <>
     <PageHero eyebrow={product.category} title={product.title} intro={product.intro} image={product.heroImage || product.image} />

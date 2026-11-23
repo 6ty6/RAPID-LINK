@@ -12,6 +12,8 @@ import CareerManagement from './pages/CareerManagement'
 import AcceptInvite from './pages/AcceptInvite'
 import HelpAssistant from './components/HelpAssistant'
 import WorkspaceSwitcher from './cms/WorkspaceSwitcher'
+import BrandCursor from './components/BrandCursor'
+import StartupReady from './components/StartupReady'
 const CustomCms = lazy(() => import('./cms/CustomCms'))
 const PublicDocuments = lazy(() => import('./cms/PublicDocuments'))
 import {
@@ -28,6 +30,7 @@ import {
 export default function App() {
   const staffArea = useLocation().pathname.replace(/\/$/, '') === '/cms'
   return <PublicCmsProvider>
+    <StartupReady />
     <RouteEffects />
     <WorkspaceSwitcher />
     {!staffArea && <Header />}
@@ -58,5 +61,6 @@ export default function App() {
     </main>
     {!staffArea && <Footer />}
     {!staffArea && <HelpAssistant />}
+    {!staffArea && <BrandCursor />}
   </PublicCmsProvider>
 }

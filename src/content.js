@@ -1,3 +1,5 @@
+import { advantageInvestmentImage, businessLoanImage, fixedDepositImage, groupLoanImage, personalLoanImage, salaryLoanImage, savingsImage, susuImage, targetSavingsImage } from './content/savingsImage.js'
+
 export const announcements = [
   'NEW: RapidLink introduces MoneyQube, a digital nano-loan platform offering small loans with a convenient one-month repayment period.',
   'IMPORTANT NOTICE: Customers who repeatedly issue dud cheques risk financial penalties, a cheque ban and restrictions on new credit facilities.',
@@ -91,6 +93,16 @@ export const products = {
   'fixed-deposit': { category: 'Investments', title: 'Fixed Deposit', intro: 'Lock away a lump sum for a fixed period and earn interest.', heroImage: '/assets/fixed-deposit-hero-v2.png', image: '/assets/fixed-deposit.webp', imageAlt: 'A confident businesswoman standing in a modern office', benefits: ['Flexible terms of 91, 182 and 365 days', 'Earn competitive interest rates up to 31% per annum', 'Renewal option at term end', 'Monthly, quarterly or annual interest-payment options', 'No account-maintenance or transaction fees', 'Early liquidation attracts a 20% penalty on accumulated interest'], requirements: ['1 passport-size photograph', 'Valid Ghana Card', 'Proof of residence', 'Completed account-opening forms', 'Minimum deposit: GH¢500; maximum: GH¢50,000'] },
   'advantage-investment': { category: 'Investments', title: 'Advantage Investment', intro: 'A flexible investment designed for people looking to grow wealth over time.', heroImage: '/assets/advantage-investment-hero.jpg', image: '/assets/advantage-investment.webp', imageAlt: 'Two business professionals shaking hands', benefits: ['Flexible terms of 91, 182 and 365 days', 'Earn competitive interest rates up to 31% per annum', 'Renewal option at term end', 'Monthly, quarterly or annual interest-payment options', 'No account-maintenance or transaction fees', 'Early liquidation attracts a 20% penalty on accumulated interest'], requirements: ['1 passport-size photograph', 'Valid Ghana Card', 'Proof of residence', 'Completed account-opening forms', 'Minimum deposit: GH¢500; maximum: GH¢50,000'] },
 }
+
+Object.assign(products['rapid-savings'], savingsImage)
+Object.assign(products['rapid-susu'], susuImage)
+Object.assign(products['personal-loan'], personalLoanImage)
+Object.assign(products['business-loan'], businessLoanImage)
+Object.assign(products['fixed-deposit'], fixedDepositImage)
+Object.assign(products['rapid-target-savings'], targetSavingsImage)
+Object.assign(products['advantage-investment'], advantageInvestmentImage)
+Object.assign(products['group-loan'], groupLoanImage)
+Object.assign(products['deduct-at-source-loan'], salaryLoanImage)
 
 export const faqs = [
   ['What do I need to open an account?', 'Visit a branch with a valid ID, proof of address and a passport-sized photograph, or begin with the online form.'],

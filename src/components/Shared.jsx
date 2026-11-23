@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Check } from '../icons'
+import { AppleMark, Check, GooglePlayMark } from '../icons'
 import { config } from '../config'
 import { useManagedContent } from '../cms/public'
 
@@ -97,8 +97,8 @@ export function AppDownload() {
       <div className="app-device-visual">
         <img src="/assets/rapidlink-mobile-app.png" alt="RapidLink mobile app screens showing login, payments and account information" />
       </div>
-      <div><p className="eyebrow">RapidLink mobile app</p><h2>Banking access in your pocket</h2><p>View account information, check balances, transfer funds and review transaction history from iOS or Android.</p></div>
-      <div className="app-actions"><a className="button" href={config.appStoreUrl} target="_blank" rel="noopener noreferrer">Download for iOS</a><a className="button button-secondary" href={config.playStoreUrl} target="_blank" rel="noopener noreferrer">Get it on Google Play</a></div>
+      <div><p className="eyebrow">RapidLink mobile app</p><h2>Your everyday banking.<br />Wherever you are.</h2><p>Check balances, transfer funds and view your transactions from your phone.</p></div>
+      <div className="app-actions"><a className="button" href={config.appStoreUrl} target="_blank" rel="noopener noreferrer"><AppleMark /><span>Download for iOS</span></a><a className="button button-secondary" href={config.playStoreUrl} target="_blank" rel="noopener noreferrer"><GooglePlayMark /><span>Get it on Google Play</span></a></div>
     </div>
   </section>
 }

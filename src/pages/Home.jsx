@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone } from '../icons'
+import { ArrowRight, ChevronLeft, ChevronRight } from '../icons'
 import { useManagedContent } from '../cms/public'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
 import HomeFinancialTools from '../components/HomeFinancialTools'
 import HomeProducts from '../components/HomeProducts'
+import HomeServicePathway from '../components/HomeServicePathway'
 
 export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
@@ -57,18 +58,22 @@ export default function Home() {
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
     <HeroSlider />
     <HomeProducts />
+    <HomeServicePathway />
     <HomeFinancialTools />
-    <section className="section notices"><div className="shell">
-      <div className="section-heading"><p className="eyebrow">Latest news</p><h2>Updates from RapidLink</h2></div>
-      <div className="notice-grid">{latestNews.map(article => <article className="notice-card" key={article.slug}>
-        <CircleAlert aria-hidden="true" /><p className="notice-category">{article.category}</p><h3>{article.title}</h3><p>{article.summary}</p>
-        <Link to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story <ArrowRight size={16} /></Link>
-      </article>)}</div>
-      <div className="news-home-action"><Link className="button button-secondary" to="/stories">View all news <ArrowRight size={17} /></Link></div>
-    </div></section>
-    <section className="section warm"><div className="shell split">
-      <div><p className="eyebrow">What we provide</p><h2>Financial tools for real life</h2><p className="lead">Save consistently, access responsible credit, support your business and manage everyday banking from your phone.</p><Link className="text-link" to="/institutional-profile">Learn about RapidLink <ArrowRight size={17} /></Link></div>
-      <div className="service-list">{[['Savings & deposits', Landmark], ['Micro & SME loans', Building2], ['Mobile and USSD banking', Smartphone]].map(([label, Icon]) => <Link key={label} to={label.includes('loan') ? '/business-loan' : label.includes('Mobile') ? '/digital-channels' : '/rapid-savings'}><Icon /><span>{label}</span><ArrowRight /></Link>)}</div>
+    <section className="section home-newsroom" aria-labelledby="home-newsroom-title"><div className="shell">
+      <div className="home-newsroom-heading"><div><p className="eyebrow">Latest news</p><h2 id="home-newsroom-title">Updates from RapidLink</h2></div><Link className="text-link" to="/stories">View all news</Link></div>
+      <div className={`home-newsroom-layout ${latestNews.length === 1 ? 'has-one-story' : ''}`}>
+        {latestNews.slice(0, 1).map(article => <article className="home-newsroom-feature" key={article.slug}>
+          {article.image && <div className="home-newsroom-image"><img src={article.image} alt={article.imageAlt || ''} loading="lazy" decoding="async" onError={event => { event.currentTarget.parentElement.hidden = true }} /></div>}
+          <p className="notice-category">{article.category}</p><h3><Link to={`/stories/${article.slug}`}>{article.title}</Link></h3><p className="home-newsroom-summary">{article.summary}</p>
+          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story</Link>
+        </article>)}
+        {latestNews.length > 1 && <div className="home-newsroom-briefs">{latestNews.slice(1).map(article => <article className="home-newsroom-brief" key={article.slug}>
+          <p className="notice-category">{article.category}</p><h3><Link to={`/stories/${article.slug}`}>{article.title}</Link></h3><p className="home-newsroom-summary">{article.summary}</p>
+          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story</Link>
+        </article>)}</div>}
+      </div>
+      {!latestNews.length && <p className="home-newsroom-summary">There are no published updates at the moment. Please check back soon.</p>}
     </div></section>
     <AppDownload />
   </>
