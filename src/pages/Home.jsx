@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Building2, CalendarDays, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone, WalletCards } from '../icons'
+import { ArrowRight, Building2, ChevronLeft, ChevronRight, CircleAlert, Landmark, Smartphone } from '../icons'
 import { products as localProducts } from '../content'
 import { useManagedContent } from '../cms/public'
 import { AppDownload, PageMeta } from '../components/Shared'
 import usePublishedNews from '../hooks/usePublishedNews'
+import HomeFinancialTools from '../components/HomeFinancialTools'
 
 export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
@@ -65,13 +66,7 @@ export default function Home() {
   return <>
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
     <HeroSlider />
-    <section className="home-quick-access" aria-labelledby="quick-access-title"><div className="shell quick-access-layout">
-      <div className="quick-access-heading"><p className="eyebrow">Plan with confidence</p><h2 id="quick-access-title">Tools at your fingertips</h2></div>
-      <div className="quick-access-links">
-        <Link className="quick-access-card" to="/rates"><span><WalletCards /></span><div><strong>Current Interest Rates</strong><small>Review the current rates table</small></div><ArrowRight /></Link>
-        <Link className="quick-access-card" to="/loan-calculator"><span><CalendarDays /></span><div><strong>Loan Calculator</strong><small>Estimate interest and repayment</small></div><ArrowRight /></Link>
-      </div>
-    </div></section>
+    <HomeFinancialTools />
     <section className="section notices"><div className="shell">
       <div className="section-heading"><p className="eyebrow">Latest news</p><h2>Updates from RapidLink</h2></div>
       <div className="notice-grid">{latestNews.map(article => <article className="notice-card" key={article.slug}>

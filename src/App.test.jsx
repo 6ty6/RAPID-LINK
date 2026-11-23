@@ -206,7 +206,7 @@ describe('RapidLink site', () => {
   it('exposes homepage loan tools, connected news and reordered navigation', () => {
     const { container } = renderAt('/home')
     const page = within(container)
-    expect(page.getByRole('heading', { name: 'Tools at your fingertips' })).toBeInTheDocument()
+    expect(page.getByRole('heading', { name: /Know your numbers/ })).toBeInTheDocument()
     expect(page.getByRole('link', { name: /Current Interest Rates/ })).toHaveAttribute('href', '/rates')
     expect(container.querySelector('.quick-access-card[href="/loan-calculator"]')).toBeInTheDocument()
     expect(page.getByRole('link', { name: /Bank of Ghana revises sanctions for dud cheques/ })).toHaveAttribute('href', '/stories/bank-of-ghana-dud-cheque-sanctions')

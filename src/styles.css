@@ -162,18 +162,37 @@ p { margin:.2em 0 1.15em; }
 /* ========================================================================== 
    06. HOMEPAGE: QUICK TOOLS, SERVICES AND MOBILE APP
    ========================================================================== */
-.home-quick-access { padding:30px 0; border-bottom:1px solid var(--border); background:var(--soft); }
-.quick-access-layout { display:grid; grid-template-columns:minmax(260px,.65fr) minmax(520px,1.35fr); align-items:center; gap:clamp(28px,5vw,65px); }
-.quick-access-heading .eyebrow { margin-bottom:7px; }
-.quick-access-heading h2 { margin:0; font-size:clamp(1.45rem,2.5vw,2rem); }
-.quick-access-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
-.quick-access-card { min-width:0; padding:17px 18px; display:grid; grid-template-columns:44px 1fr 22px; align-items:center; gap:13px; border:1px solid var(--border); border-radius:14px; color:var(--text); background:white; box-shadow:0 8px 24px rgba(20,45,67,.05); text-decoration:none; transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease; }
-.quick-access-card:hover { border-color:#b8c3ff; box-shadow:0 13px 30px rgba(8,49,255,.09); transform:translateY(-2px); }
-.quick-access-card>span { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; color:var(--orange-deep); background:var(--orange-soft); }
-.quick-access-card>div { min-width:0; display:grid; }
-.quick-access-card strong { color:var(--navy); font-family:'Manrope',system-ui,sans-serif; }
-.quick-access-card small { overflow:hidden; color:var(--muted); text-overflow:ellipsis; white-space:nowrap; }
-.quick-access-card>svg { color:var(--blue); }
+.home-quick-access { padding:72px 0; background:white; border-bottom:1px solid var(--border); }
+.quick-access-layout { display:block; }
+.quick-access-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:32px; margin-bottom:32px; }
+.quick-access-heading .eyebrow { margin-bottom:14px; }
+.quick-access-heading h2 { margin:0; font-size:clamp(2rem,3.5vw,3rem); line-height:1.18; letter-spacing:-.045em; font-weight:800; }
+.quick-access-heading h2 span { color:var(--navy); }
+.quick-access-intro { max-width:340px; margin:0 0 4px; color:var(--muted); font-size:1rem; line-height:1.75; }
+.quick-access-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; }
+.quick-access-card { isolation:isolate; position:relative; min-width:0; min-height:350px; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-start; padding:36px; overflow:hidden; border:1px solid #dfe6ee; border-radius:24px; color:var(--navy); background:#f0f4f8; text-decoration:none; transition:transform .25s ease,box-shadow .25s ease; }
+.quick-access-photo { position:absolute; inset:0 0 0 auto; width:60%; height:100%; object-fit:cover; object-position:65% center; z-index:-2; transition:transform .6s ease; }
+.quick-access-card::before { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,#f0f4f8 0%,#f0f4f8 37%,rgba(240,244,248,.96) 48%,rgba(240,244,248,.65) 65%,rgba(240,244,248,0) 88%); }
+.quick-access-card::after { content:''; pointer-events:none; position:absolute; top:-30%; left:-60%; width:45%; height:170%; z-index:2; transform:translateX(-100%) skewX(-20deg); background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent); }
+.quick-access-copy { width:66%; max-width:330px; }
+.quick-access-copy h3 { margin:0 0 18px; font-family:Manrope,system-ui,sans-serif; font-size:clamp(1.65rem,2.5vw,2.25rem); font-weight:800; line-height:1.25; letter-spacing:-.035em; color:inherit; }
+.quick-access-copy p { margin:0; max-width:24ch; font-size:1rem; line-height:1.65; color:#415a70; }
+.quick-access-arrow { display:grid; place-items:center; width:54px; height:54px; margin-top:28px; flex:none; border-radius:50%; background:var(--blue); color:white; transition:background .25s ease,transform .25s ease; }
+.quick-access-arrow svg { transform:rotate(-45deg); }
+.quick-access-calculator { background:var(--navy); color:white; border-color:var(--navy); }
+.quick-access-calculator .quick-access-photo { object-position:75% center; }
+.quick-access-calculator::before { background:linear-gradient(90deg,#102b46 0%,#102b46 37%,rgba(16,43,70,.97) 48%,rgba(16,43,70,.68) 65%,rgba(16,43,70,.06) 100%); }
+.quick-access-calculator .quick-access-copy p { color:#e0e8f0; }
+.quick-access-calculator .quick-access-arrow { background:var(--orange); color:var(--navy); }
+.quick-access-card:hover { transform:translateY(-3px); box-shadow:0 16px 32px #102b4612; }
+.quick-access-card:hover .quick-access-photo { transform:scale(1.035); }
+.quick-access-card:focus-visible { outline:3px solid var(--blue); outline-offset:5px; }
+.quick-access-card:is(:hover,:focus-visible)::after { animation:quick-access-sheen 1s ease-out both; }
+.quick-access-card:is(:hover,:focus-visible) .quick-access-arrow { transform:translate(2px,-2px); }
+@keyframes quick-access-sheen { from { left:-60%; } to { left:150%; } }
+@media(max-width:1000px) { .quick-access-card { padding:28px; min-height:340px; } .quick-access-copy { width:72%; } }
+@media(max-width:760px) { .home-quick-access { padding:48px 0; } .quick-access-heading { align-items:flex-start; flex-direction:column; gap:18px; margin-bottom:26px; } .quick-access-intro { max-width:36ch; margin:0; } .quick-access-links { grid-template-columns:1fr; gap:18px; } .quick-access-card { min-height:320px; padding:28px; } .quick-access-copy { width:65%; } .quick-access-copy h3 { font-size:1.8rem; } }
+@media(prefers-reduced-motion:reduce) { .quick-access-card,.quick-access-photo,.quick-access-arrow { transition:none; } .quick-access-card::after { display:none; } .quick-access-card:hover,.quick-access-card:hover .quick-access-photo,.quick-access-card:is(:hover,:focus-visible) .quick-access-arrow { transform:none; } }
 .product-card>span { color:var(--orange-deep); font-size:.77rem; font-weight:800; letter-spacing:.11em; text-transform:uppercase; }
 .product-card p { color:var(--muted); }
 .split { display:grid; grid-template-columns:1fr 1fr; gap:clamp(35px,7vw,90px); align-items:center; }
