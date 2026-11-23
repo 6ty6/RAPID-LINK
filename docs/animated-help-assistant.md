@@ -24,7 +24,7 @@ Pose changes crossfade over 650 ms while CSS adds anticipation, weight shifts, s
 
 ## Prepared replies and assistance
 
-The user supplied WhatsApp number +233 55 058 4668; the clean handoff link is `https://wa.me/233550584668`. The link carries no question or conversation history. WhatsApp opens separately. Phone assistance uses the existing public support number 030 395 5183. Missing/unrecognised information receives an explicit unavailable response and offers WhatsApp or contact assistance. Greetings and basic social phrases have prepared replies. Matching is rule-based rather than general natural-language understanding. No AI subscription, backend or API key is needed for these replies.
+The user supplied WhatsApp number +1 (555) 478-4866; the clean handoff link is `https://wa.me/15554784866`. The link carries no question or conversation history. WhatsApp opens separately. Phone assistance uses the existing public support number 030 395 5183. Missing/unrecognised information receives an explicit unavailable response and offers WhatsApp or contact assistance. Greetings and basic social phrases have prepared replies. Matching is rule-based rather than general natural-language understanding. No AI subscription, backend or API key is needed for these replies.
 
 ## Messenger interface
 
