@@ -7,9 +7,12 @@ export default function HomeProducts() {
   const {data:products}=usePageContent('products')
   const featured = homepage.products.featuredSlugs.map(slug => products.find(product => product.slug === slug)).filter(Boolean)
   const trackRef = useRef(null)
+  const drag = useRef(null)
+  const suppressClickUntil = useRef(0)
   const interaction = useRef({hovered:false,focused:false,resumeAt:0})
   const [progress, setProgress] = useState(0)
   const [canScroll, setCanScroll] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   useEffect(() => {
     const track = trackRef.current
     const update = () => {
@@ -28,7 +31,7 @@ export default function HomeProducts() {
     const timer = window.setInterval(() => {
       const track = trackRef.current
       const state = interaction.current
-      if (!track || document.hidden || state.hovered || state.focused || Date.now() < state.resumeAt || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      if (!track || drag.current || document.hidden || state.hovered || state.focused || Date.now() < state.resumeAt || matchMedia('(prefers-reduced-motion: reduce)').matches) return
       const bounds = track.getBoundingClientRect()
       if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return
       const maximum = track.scrollWidth - track.clientWidth
@@ -41,6 +44,35 @@ export default function HomeProducts() {
   }, [featured.length])
   function pauseAfterInteraction() {
     interaction.current.resumeAt = Date.now() + 9000
+  }
+  function beginDrag(event) {
+    if(event.pointerType!=='mouse'||event.button!==0||!canScroll)return
+    drag.current={pointerId:event.pointerId,startX:event.clientX,startScroll:event.currentTarget.scrollLeft,moved:false}
+    pauseAfterInteraction()
+  }
+  function moveDrag(event) {
+    const gesture=drag.current
+    if(!gesture||gesture.pointerId!==event.pointerId)return
+    const distance=event.clientX-gesture.startX
+    if(!gesture.moved&&Math.abs(distance)<6)return
+    if(!gesture.moved){
+      gesture.moved=true
+      event.currentTarget.classList.add('is-dragging')
+      setIsDragging(true)
+      event.currentTarget.setPointerCapture(event.pointerId)
+    }
+    event.preventDefault()
+    event.currentTarget.scrollLeft=gesture.startScroll-distance
+  }
+  function endDrag(event) {
+    const gesture=drag.current
+    if(!gesture||gesture.pointerId!==event.pointerId)return
+    drag.current=null
+    if(gesture.moved)suppressClickUntil.current=Date.now()+300
+    event.currentTarget.classList.remove('is-dragging')
+    setIsDragging(false)
+    if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)
+    pauseAfterInteraction()
   }
   function move(direction) {
     const track = trackRef.current
@@ -61,7 +93,12 @@ export default function HomeProducts() {
     onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) { interaction.current.focused = false; pauseAfterInteraction() } }}
     onPointerDown={pauseAfterInteraction} onWheel={pauseAfterInteraction} onKeyDownCapture={pauseAfterInteraction}><div className="shell">
     <div className="section-heading"><p className="eyebrow">{homepage.products.eyebrow}</p><h2 id="home-products-title">{homepage.products.title}</h2></div>
-    <div className="product-slider" id="home-product-slider" ref={trackRef} tabIndex={0} aria-label="Browse products" onKeyDown={event => {
+    <div className={`product-slider${canScroll?' is-draggable':''}${isDragging?' is-dragging':''}`} data-native-cursor id="home-product-slider" ref={trackRef} tabIndex={0} aria-label="Browse products"
+      onPointerDown={beginDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag} onLostPointerCapture={endDrag}
+      onPointerLeave={()=>{if(drag.current&&!drag.current.moved)drag.current=null}}
+      onDragStart={event=>event.preventDefault()}
+      onClickCapture={event=>{if(event.detail>0&&Date.now()<suppressClickUntil.current){event.preventDefault();event.stopPropagation();suppressClickUntil.current=0}}}
+      onKeyDown={event => {
       if (event.target !== event.currentTarget || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
       event.preventDefault()
       if (event.key.startsWith('Arrow')) move(event.key === 'ArrowRight' ? 1 : -1)

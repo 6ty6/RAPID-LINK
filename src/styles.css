@@ -307,6 +307,10 @@ p { margin:.2em 0 1.15em; }
 .product-photo-card-white .product-card-category { color:#bd4900; }
 .product-slider { display:flex; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-padding-inline:2px; scrollbar-width:none; padding:8px 2px 28px; overscroll-behavior-x:contain; }
 .product-slider::-webkit-scrollbar { display:none; }
+.product-slider.is-draggable,.product-slider.is-draggable * { cursor:grab!important; }
+.product-slider.is-dragging,.product-slider.is-dragging * { cursor:grabbing!important; }
+.product-slider.is-dragging { scroll-snap-type:none; scroll-behavior:auto; }
+@media(pointer:fine) { .product-slider.is-draggable { user-select:none; } }
 .product-slider-dots { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:4px; }
 .product-slider-dots button { display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; background:transparent; cursor:pointer; border-radius:12px; }
 .product-slider-dots button span { width:10px; height:10px; border-radius:10px; background:#7b8b9f; transition:width .3s ease,background-color .3s ease; }
