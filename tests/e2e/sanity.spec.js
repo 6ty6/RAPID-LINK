@@ -22,6 +22,41 @@ async function mockSanity(page, { empty = false, fail = false, apiDown = false }
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
 
+test('product cards advance automatically and pause for customers reading or interacting',async({page})=>{
+ await page.clock.install()
+ await mockSanity(page)
+ await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+  const query=new URL(route.request().url()).searchParams.get('query')
+  const model=Object.values(remainingCms).find(model=>query.includes(`_type == "${model.schema}"`))
+  if(!model)return route.fallback()
+  await route.fulfill({contentType:'application/json',body:JSON.stringify({result:model.collection?model.content:[model.content]})})
+ })
+ await page.goto('/home');await ready(page)
+ const track=page.locator('.product-slider')
+ await expect(page.locator('.product-photo-card')).toHaveCount(6)
+ await track.scrollIntoViewIfNeeded();await page.mouse.move(1,1)
+ await page.clock.fastForward(7000)
+ await expect.poll(()=>track.evaluate(node=>node.scrollLeft)).toBeGreaterThan(10)
+ await track.hover();await page.waitForTimeout(700)
+ const previous=await track.evaluate(node=>node.scrollLeft)
+ await page.clock.fastForward(18000)
+ expect(await track.evaluate(node=>node.scrollLeft)).toBe(previous)
+ await track.focus();await page.mouse.move(1,1)
+ await page.waitForTimeout(700)
+ const focused=await track.evaluate(node=>node.scrollLeft)
+ await page.clock.fastForward(18000)
+ expect(await track.evaluate(node=>node.scrollLeft)).toBe(focused)
+ await track.blur()
+ await page.clock.fastForward(18000)
+ await expect.poll(()=>track.evaluate(node=>node.scrollLeft)).not.toBe(focused)
+ await track.evaluate(node=>node.scrollTo({left:node.scrollWidth,behavior:'instant'}))
+ await page.clock.fastForward(7000)
+ await expect.poll(()=>track.evaluate(node=>node.scrollLeft)).toBeLessThan(3)
+ await page.emulateMedia({reducedMotion:'reduce'})
+ await page.clock.fastForward(18000)
+ expect(await track.evaluate(node=>node.scrollLeft)).toBeLessThan(3)
+})
+
 test('editorial page migrations preserve products, board, rates, navigation and prepared answers',async({page})=>{
  await mockSanity(page)
  await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
