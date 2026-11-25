@@ -1,0 +1,42 @@
+const visibilityLists = (S, type, title) => [
+  S.documentTypeListItem(type).title(`All ${title}`),
+  S.listItem()
+    .title('Visible on website')
+    .child(S.documentList().title(`Visible ${title}`).schemaType(type).filter(`_type == "${type}" && isPublished == true`)),
+  S.listItem()
+    .title('Hidden or draft')
+    .child(S.documentList().title(`Hidden ${title}`).schemaType(type).filter(`_type == "${type}" && isPublished != true`)),
+]
+
+const contentSection = (S, title, type, pluralTitle) => S.listItem()
+  .title(title)
+  .child(S.list().title(title).items(visibilityLists(S, type, pluralTitle)))
+
+export const structure = S => S.list()
+  .title('RapidLink content')
+  .items([
+    S.listItem()
+      .title('Contact & social settings')
+      .child(S.document()
+        .schemaType('siteSettings')
+        .documentId('rapidlink-site-settings')
+        .title('Contact & social settings')),
+    S.listItem()
+      .title('Loan calculator')
+      .child(S.document()
+        .schemaType('loanCalculatorSettings')
+        .documentId('rapidlink-loan-calculator-settings')
+        .title('Loan calculator settings')),
+    S.listItem()
+      .title('Footer & app promotion')
+      .child(S.document()
+        .schemaType('sharedSettings')
+        .documentId('rapidlink-shared-settings')
+        .title('Footer & app promotion')),
+    S.divider(),
+    contentSection(S, 'News', 'newsArticle', 'articles'),
+    contentSection(S, 'Careers', 'careerVacancy', 'vacancies'),
+    contentSection(S, 'FAQs', 'faq', 'questions'),
+    contentSection(S, 'Impact numbers', 'impactCounter', 'counters'),
+    contentSection(S, 'Announcements', 'announcement', 'announcements'),
+  ])

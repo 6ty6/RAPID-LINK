@@ -5,7 +5,9 @@ import { config } from '../config'
 import { faqs } from '../content'
 import { AppDownload, PageHero, PageMeta } from '../components/Shared'
 import { careerVacancies } from '../content'
-import { careersAdminConfigured, getPublishedVacancies } from '../services/careers'
+import useSanityContent from '../hooks/useSanityContent.js'
+import useSiteInformation from '../hooks/useSiteInformation.js'
+import { getSanityPublishedVacancies, getSanityPublishedFaqs, getSanityImpactCounters } from '../services/content/sanityContentRepository.js'
 import usePublishedNews from '../hooks/usePublishedNews'
 import DigitalChannelCard from '../components/DigitalChannelCard'
 
@@ -21,7 +23,7 @@ function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedT
   </>
 }
 
-function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
+function ImpactCounter({ target, prefix = '', suffix = '', label, icon: Icon }) {
   const [value, setValue] = useState(0)
   const counterRef = useRef(null)
 
@@ -60,7 +62,7 @@ function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
 
   return <article ref={counterRef} className="impact-stat">
     <div className="impact-icon"><Icon size={23} /></div>
-    <div><strong>{value.toLocaleString()}{suffix}</strong><span>{label}</span></div>
+    <div><strong>{prefix}{value.toLocaleString()}{suffix}</strong><span>{label}</span></div>
   </article>
 }
 
@@ -95,6 +97,11 @@ function PurposeFlipCard({ title, prompt, text, icon: Icon, variant = 'white' })
 }
 
 export function InstitutionalProfile() {
+  const { data: counters } = useSanityContent('counters', getSanityImpactCounters, [
+    { target:2, label:'Branches Nationwide', icon:'branches' }, { target:7000, suffix:'+', label:'Happy Customers', icon:'customers' },
+    { target:15, suffix:'+', label:'Years of Service', icon:'years' }, { target:5, suffix:'+', label:'Financial Products', icon:'products' },
+  ])
+  const icons = { branches:Building2, customers:Users, years:CalendarDays, products:WalletCards }
   return <>
     <AboutHero className="institutional-hero" title="Our institutional profile" intro="A customer-centred deposit-taking microfinance company established in June 2010." image="/assets/about-institutional-profile.jpg" position="center 58%" />
     <section className="section profile-copy-section"><div className="shell prose">
@@ -112,10 +119,7 @@ export function InstitutionalProfile() {
     <section className="impact-section" aria-labelledby="impact-title"><div className="shell impact-panel">
       <div className="impact-heading"><p className="eyebrow">Our reach</p><h2 id="impact-title">Our Impact in Numbers</h2></div>
       <div className="impact-grid">
-        <ImpactCounter target={2} label="Branches Nationwide" icon={Building2} />
-        <ImpactCounter target={7000} suffix="+" label="Happy Customers" icon={Users} />
-        <ImpactCounter target={15} suffix="+" label="Years of Service" icon={CalendarDays} />
-        <ImpactCounter target={5} suffix="+" label="Financial Products" icon={WalletCards} />
+        {counters.map(counter => <ImpactCounter key={`${counter.id || counter.label}-${counter.target}`} {...counter} icon={icons[counter.icon] || Building2} />)}
       </div>
     </div></section>
   </>
@@ -205,9 +209,10 @@ export function DigitalChannels() {
 }
 
 export function FAQs() {
+  const { data: records, error } = useSanityContent('faqs', getSanityPublishedFaqs, faqs.map(([question, answer]) => ({ question, answer })), { clearOnError: true })
   return <>
     <PageHero eyebrow="Help centre" title="Frequently asked questions" intro="Clear answers to common questions about RapidLink products and services." image="/assets/faq-hero-v3.png" />
-    <section className="section"><div className="shell narrow accordion">{faqs.map(([question, answer]) => <details key={question}>
+    <section className="section"><div className="shell narrow accordion">{error && <p role="status">FAQs are temporarily unavailable. Please contact our team.</p>}{!error && !records.length && <p>No FAQs are currently published.</p>}{records.map(({question, answer}) => <details key={question}>
       <summary>{question}<ChevronDown aria-hidden="true" /></summary><p>{answer}</p>
     </details>)}</div></section>
   </>
@@ -292,17 +297,11 @@ export function StoryArticle() {
 }
 
 export function Careers() {
-  const [vacancies, setVacancies] = useState(careerVacancies)
-  const [loading, setLoading] = useState(careersAdminConfigured)
-  const [loadError, setLoadError] = useState(false)
+  const { data: vacancies, loading, error: loadError } = useSanityContent('vacancies', getSanityPublishedVacancies, careerVacancies, { clearOnError: true })
   const [selectedVacancy, setSelectedVacancy] = useState(null)
   const [query, setQuery] = useState('')
   const [department, setDepartment] = useState('All departments')
   const closeButtonRef = useRef(null)
-
-  useEffect(() => {
-    getPublishedVacancies().then(setVacancies).catch(() => setLoadError(true)).finally(() => setLoading(false))
-  }, [])
 
   useEffect(() => {
     if (!selectedVacancy) return undefined
@@ -354,30 +353,25 @@ export function Careers() {
   </>
 }
 
-function Branch({ title, address, digital, phones }) {
+function Branch({ title, address, digital, phones, email }) {
   return <article>
     <p className="eyebrow">{title}</p><h2>{address}</h2><p>Digital address: {digital}</p>
     {phones.map(phone => <a className="contact-link" key={phone} href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>)}
-    <a className="contact-link" href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
+    <a className="contact-link" href={`mailto:${email}`}>{email}</a>
   </article>
 }
 
 export function Contact() {
-  const headOfficeAddress = '17 Farrar Avenue, Asylum Down, Accra, Ghana'
-  const madinaAddress = 'Madina Taxi Rank, Madina, Accra, Ghana'
-  const headOfficeMapQuery = `Rapidlink Microfinance Head Office, ${headOfficeAddress}`
-  const madinaMapQuery = `Rapidlink Microfinance Madina Branch, ${madinaAddress}`
-  const branches = [
-    { title: 'Head Office', address: '17 Farrar Avenue, Asylum Down, Accra', digital: 'GA-049-5378', query: headOfficeMapQuery },
-    { title: 'Madina Branch', address: 'Madina Taxi Rank, Madina, Accra', digital: 'GM-000-3774', query: madinaMapQuery },
-  ]
-  const mapUrl = `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(headOfficeMapQuery)}&daddr=${encodeURIComponent(madinaMapQuery)}`
+  const { contact, branches: records } = useSiteInformation()
+  const branches = records.map(branch => ({ ...branch, digital:branch.digitalAddress, query:`${branch.mapName}, ${branch.fullAddress}` }))
+  const mapUrl = branches.length === 2
+    ? `https://www.google.com/maps?output=embed&saddr=${encodeURIComponent(branches[0].query)}&daddr=${encodeURIComponent(branches[1].query)}`
+    : `https://www.google.com/maps?output=embed&q=${encodeURIComponent(branches.map(branch => branch.query).join(' | '))}`
 
   return <>
     <PageHero eyebrow="Contact" title="We’re here to help" intro="Call, email or visit one of RapidLink’s Accra branches." image="/assets/contact-hero-v2.png" />
     <section className="section"><div className="shell two-cards">
-      <Branch title="Head office" address="17 Farrar Avenue, Asylum Down, Accra" digital="GA-049-5378" phones={['+233 30 224 7951', '+233 30 224 6657', '+233 53 373 0336']} />
-      <Branch title="Madina branch" address="Madina Taxi Rank, Madina, Accra" digital="GM-000-3774" phones={['+233 30 395 5183', '+233 55 102 3151']} />
+      {branches.map(branch => <Branch key={branch.id || branch.title} {...branch} title={branch.contactTitle || branch.title} email={contact.email} />)}
     </div></section>
     <section className="section contact-map-section" aria-labelledby="branch-map-title">
       <div className="shell contact-map-panel">

@@ -128,9 +128,10 @@ describe('RapidLink site', () => {
     expect(page.getByRole('link', { name: /Apply for this position/ })).toHaveAttribute('href', expect.stringContaining('info@rapidlinkfinance.com'))
   })
 
-  it('keeps the hidden content portal unavailable until secure authentication is configured', () => {
+  it('directs staff to Sanity without exposing an alternate CMS login', () => {
     const { container } = renderAt('/content-management')
-    expect(screen.getByRole('heading', { name: 'Content management is securely locked' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'RapidLink Content Studio' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Open Sanity Studio' })).toHaveAttribute('href', 'http://127.0.0.1:3333')
     expect(screen.queryByRole('textbox', { name: /Job title/ })).not.toBeInTheDocument()
     expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow')
     expect(container.querySelector('a[href="/content-management"]')).not.toBeInTheDocument()

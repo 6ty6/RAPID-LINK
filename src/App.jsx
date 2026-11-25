@@ -6,7 +6,7 @@ import Home from './pages/Home'
 import OpenAccount from './pages/OpenAccount'
 import { ApplyLoan, LoanCalculator } from './pages/Loans'
 import { ProductPage, RateChart, Rates } from './pages/Products'
-import CareerManagement from './pages/CareerManagement'
+import SanityManagement from './pages/SanityManagement'
 import AcceptInvite from './pages/AcceptInvite'
 import HelpAssistant from './components/HelpAssistant'
 import BrandCursor from './components/BrandCursor'
@@ -43,7 +43,8 @@ export default function App() {
         <Route path="/stories" element={<Stories />} />
         <Route path="/stories/:slug" element={<StoryArticle />} />
         <Route path="/rapidlink-careers" element={<Careers />} />
-        <Route path="/content-management" element={<CareerManagement />} />
+        <Route path="/content-management" element={<SanityManagement />} />
+        <Route path="/cms" element={<Navigate to="/content-management" replace />} />
         <Route path="/accept-invite" element={<AcceptInvite />} />
         <Route path="/career-management" element={<Navigate to="/content-management" replace />} />
         <Route path="/contact" element={<Contact />} />

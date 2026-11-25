@@ -1,0 +1,46 @@
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { getSanityPublishedNews, getSanityPublishedVacancies, getSanitySharedContent, getSanityLoanCalculatorSettings } from './sanityContentRepository.js'
+import { loanCalculatorSettings } from '../../content/loanCalculator.js'
+afterEach(() => vi.unstubAllGlobals())
+const respond = result => vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok:true, json:async()=>({result}) }))
+describe('Sanity public content', () => {
+  it('reads the configured project with published perspective and no credentials', async () => {
+    respond([{slug:'notice',title:'Published notice'}])
+    expect((await getSanityPublishedNews())[0].title).toBe('Published notice')
+    const [endpoint,options]=fetch.mock.calls[0]
+    expect(endpoint.hostname).toBe('04unhu7g.apicdn.sanity.io')
+    expect(endpoint.searchParams.get('perspective')).toBe('published')
+    expect(endpoint.searchParams.get('query')).toContain('isPublished == true')
+    expect(options.credentials).toBe('omit')
+    expect(options.headers.Authorization).toBeUndefined()
+  })
+  it('honours an empty published careers list and maps existing fields', async () => {
+    respond([])
+    expect(await getSanityPublishedVacancies()).toEqual([])
+    respond([{title:'Officer',employmentType:'Full-time',applicationEmail:'jobs@example.test',isPublished:true}])
+    expect((await getSanityPublishedVacancies())[0]).toMatchObject({employment_type:'Full-time',application_email:'jobs@example.test',responsibilities:[]})
+  })
+  it('reports failed and malformed remote reads instead of silently republishing local news', async () => {
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:false,json:async()=>({})}))
+    await expect(getSanityPublishedNews()).rejects.toThrow()
+    respond(null)
+    await expect(getSanityPublishedNews()).rejects.toThrow('unexpected')
+  })
+  it('preserves app and footer defaults for incomplete shared settings', async () => {
+    respond([{appTitle:'Updated app heading'}])
+    const settings=await getSanitySharedContent()
+    expect(settings.appDownload.title).toBe('Updated app heading')
+    expect(settings.appDownload.image).toBe('/assets/rapidlink-mobile-app.png')
+    expect(settings.footer.headings.contact).toBe('Get in touch')
+  })
+  it('accepts complete approved pricing and rejects unapproved or incomplete schedules', async () => {
+    const record={...loanCalculatorSettings,weeklySchedule:Object.entries(loanCalculatorSettings.weeklyPaymentsByMonth).map(([months,payments])=>({months:Number(months),payments}))}
+    respond([record])
+    expect((await getSanityLoanCalculatorSettings()).maximumPrincipal).toBe(20000)
+    expect(fetch.mock.calls[0][0].searchParams.get('query')).toContain('approvalStatus == "approved"')
+    respond([{...record,approvalStatus:'provisional'}])
+    await expect(getSanityLoanCalculatorSettings()).rejects.toThrow('approval')
+    respond([{...record,weeklySchedule:[]}])
+    await expect(getSanityLoanCalculatorSettings()).rejects.toThrow('weekly schedule')
+  })
+})

@@ -3,6 +3,8 @@ import { CircleAlert, Phone } from '../icons'
 import { config } from '../config'
 import { PageHero } from '../components/Shared'
 import { loanCalculatorSettings } from '../content/loanCalculator.js'
+import useLoanCalculatorSettings from '../hooks/useLoanCalculatorSettings.js'
+import useSiteInformation from '../hooks/useSiteInformation.js'
 
 export const LOAN_CALCULATOR_TERMS = loanCalculatorSettings
 
@@ -41,6 +43,7 @@ export function calculateLoanEstimate(principal, duration, frequency = 'monthly'
 }
 
 export function ApplyLoan() {
+  const { contact } = useSiteInformation()
   if (config.generalLoanPortal) {
     return <>
       <PageHero eyebrow="Loans" title="Continue your loan application" intro="You’ll continue to RapidLink’s loan application portal." />
@@ -53,15 +56,15 @@ export function ApplyLoan() {
     <section className="section"><div className="shell narrow panel">
       <div className="callout warning"><CircleAlert /><div><h2>Online application connection pending</h2><p>The existing general application page is marked “Coming Soon.” MoneyQube is verified only for one-month nano loans, so it is not used as a general application portal.</p></div></div>
       <h2>Speak with the loans team</h2>
-      <p>For Controller or SME loan assistance, call <a href="tel:+233533730336">053 373 0336</a> or <a href="tel:+233302246657">030 224 6657</a>.</p>
-      <div className="button-row"><a className="button" href="tel:+233533730336"><Phone size={18} /> Call the loans team</a><a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">MoneyQube nano loans</a></div>
+      <p>For Controller or SME loan assistance, call {contact.loanSupportLines.map((line, index) => <span key={line.href}>{index > 0 && ' or '}<a href={line.href}>{line.display}</a></span>)}.</p>
+      <div className="button-row">{contact.loanSupportLines[0] && <a className="button" href={contact.loanSupportLines[0].href}><Phone size={18} /> Call the loans team</a>}<a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">MoneyQube nano loans</a></div>
     </div>
     </section>
   </>
 }
 
 export function LoanCalculator() {
-  const terms = LOAN_CALCULATOR_TERMS
+  const terms = useLoanCalculatorSettings()
   const [principal, setPrincipal] = useState('')
   const [duration, setDuration] = useState(String(terms.minimumMonths))
   const [frequency, setFrequency] = useState(terms.repaymentFrequencies[0])
@@ -74,6 +77,7 @@ export function LoanCalculator() {
     (_, index) => terms.minimumMonths + index,
   )
   const totalFeeRate = terms.processingFeeRate + terms.insuranceFeeRate + terms.managementFeeRate
+  useEffect(() => { setResult(null); setError('') }, [terms])
 
   useEffect(() => {
     const months = Number(duration)

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { ChevronDown } from '../icons'
 import { navGroups } from '../content'
+import useSiteInformation from '../hooks/useSiteInformation.js'
+import useSharedContent from '../hooks/useSharedContent.js'
 
 const socialLinks = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
@@ -30,6 +32,9 @@ function SocialIcon({ name }) {
 }
 
 export default function Footer() {
+  const { contact, branches, socialProfiles } = useSiteInformation()
+  const { footer } = useSharedContent()
+  const primaryBranch = branches[0]
   const [openGroup, setOpenGroup] = useState('')
   const hoverOpenedGroup = useRef('')
   const location = useLocation()
@@ -72,7 +77,7 @@ export default function Footer() {
     return <div className="footer-menu-group" key={group.label} onPointerEnter={event => event.pointerType === 'mouse' && openGroupFromHover(group.label)} onPointerLeave={event => event.pointerType === 'mouse' && closeGroupFromHover()} onBlur={event => !event.currentTarget.contains(event.relatedTarget) && setOpenGroup('')}>
       <button className="footer-menu-trigger" type="button" aria-expanded={isOpen} aria-controls={groupId(group.label)} onClick={() => toggleGroup(group.label)}><span>{group.label}</span><ChevronDown size={16} /></button>
       <div id={groupId(group.label)} className={`footer-menu-list${group.label === 'Savings & Investments' ? ' is-wide' : ''}`} hidden={!isOpen}>
-        <div className="footer-menu-heading"><span aria-hidden="true" /><div><strong>{group.label}</strong><small>{footerMenuDescriptions[group.label]}</small></div></div>
+        <div className="footer-menu-heading"><span aria-hidden="true" /><div><strong>{group.label}</strong><small>{footer.menuDescriptions[group.label] || footerMenuDescriptions[group.label]}</small></div></div>
         <div className={`footer-menu-links${group.label === 'Savings & Investments' ? ' is-two-column' : ''}`}>{group.items.map(([label, href]) => <Link key={href} to={href}>{label}</Link>)}</div>
       </div>
     </div>
@@ -82,35 +87,32 @@ export default function Footer() {
     <div className="shell footer-grid">
       <div className="footer-brand">
         <img className="footer-logo" src="/assets/rapidlink-logo.png" alt="RapidLink Microfinance Limited" />
-        <p>Accessible financial services for individuals, communities and small businesses in Ghana.</p>
+        <p>{footer.description}</p>
         <nav className="footer-socials" aria-label="Official RapidLink social media profiles">
-          <h2>Follow RapidLink</h2>
+          <h2>{footer.headings.social}</h2>
           <div className="footer-social-links">
-            {socialLinks.map(social => <a className="footer-social-link" href={social.href} key={social.name} target="_blank" rel="noopener noreferrer" aria-label={`Follow RapidLink on ${social.name}`} title={social.name}><SocialIcon name={social.icon} /></a>)}
+            {socialProfiles.map(social => <a className="footer-social-link" href={social.href} key={social.name} target="_blank" rel="noopener noreferrer" aria-label={`Follow RapidLink on ${social.name}`} title={social.name}><SocialIcon name={social.icon} /></a>)}
           </div>
         </nav>
       </div>
       <nav className="footer-links-column" aria-label="Explore RapidLink products">
-        <h2>Explore</h2>
+        <h2>{footer.headings.explore}</h2>
         {dropdown(navGroups[0])}
         {dropdown(navGroups[1])}
-        <Link to="/rates">Current rates</Link>
-        <Link to="/digital-channels">Digital channels</Link>
+        {footer.exploreLinks.map(link => <Link key={link.href} to={link.href}>{link.label}</Link>)}
       </nav>
       <nav className="footer-links-column" aria-label="Company information">
-        <h2>Company</h2>
+        <h2>{footer.headings.company}</h2>
         {dropdown(navGroups[2])}
-        <Link to="/stories">News</Link>
-        <Link to="/faqs">FAQs</Link>
-        <Link to="/contact">Contact</Link>
+        {footer.companyLinks.map(link => <Link key={link.href} to={link.href}>{link.label}</Link>)}
       </nav>
       <div className="footer-contact">
-        <h2>Get in touch</h2>
-        <a href="tel:+233303955183">030 395 5183</a>
-        <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a>
-        <p>17 Farrar Avenue, Asylum Down, Accra<br />Digital address: GA-049-5378</p>
+        <h2>{footer.headings.contact}</h2>
+        {contact.supportLines[0] && <a href={contact.supportLines[0].href}>{contact.supportLines[0].display}</a>}
+        <a href={`mailto:${contact.email}`}>{contact.email}</a>
+        {primaryBranch && <p>{primaryBranch.address}<br />Digital address: {primaryBranch.digitalAddress}</p>}
       </div>
     </div>
-    <div className="shell footer-bottom"><span>© {new Date().getFullYear()} RapidLink Microfinance Ltd.</span><span>Approved privacy-policy content is pending.</span></div>
+    <div className="shell footer-bottom"><span>© {new Date().getFullYear()} {footer.companyName}</span><span>{footer.privacyNotice}</span></div>
   </footer>
 }

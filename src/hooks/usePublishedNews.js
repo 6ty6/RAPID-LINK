@@ -1,19 +1,8 @@
-import { useEffect, useState } from 'react'
+import useSanityContent from './useSanityContent.js'
 import { newsArticles } from '../content'
-import { contentAdminConfigured, getPublishedNews } from '../services/careers'
+import { getSanityPublishedNews } from '../services/content/sanityContentRepository.js'
 
 export default function usePublishedNews() {
-  const [articles, setArticles] = useState(newsArticles)
-  const [loading, setLoading] = useState(contentAdminConfigured)
-  const [error, setError] = useState(false)
-
-  useEffect(() => {
-    if (!contentAdminConfigured) return
-    getPublishedNews()
-      .then(setArticles)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false))
-  }, [])
-
-  return { articles, loading, error }
+  const { data: articles, loading, error } = useSanityContent('news', getSanityPublishedNews, newsArticles, { clearOnError: true })
+  return { articles: loading ? [] : articles, loading, error }
 }

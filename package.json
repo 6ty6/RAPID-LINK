@@ -4,6 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "cms:install": "npm --prefix cms/sanity/studio install",
+    "cms:dev": "npm --prefix cms/sanity/studio run dev -- --host 127.0.0.1 --port 3333",
+    "cms:build": "npm --prefix cms/sanity/studio run build",
+    "test:sanity": "npm run build && playwright test --config playwright.sanity.config.js",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

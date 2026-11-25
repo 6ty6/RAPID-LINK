@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AppleMark, Check, GooglePlayMark } from '../icons'
 import { config } from '../config'
+import useSharedContent from '../hooks/useSharedContent.js'
 
 export function PageMeta({ title, description, image = '/assets/rapidlink-logo.png', noIndex = false }) {
   const { pathname } = useLocation()
@@ -86,13 +87,14 @@ export function CheckList({ items }) {
 }
 
 export function AppDownload() {
+  const { appDownload: app } = useSharedContent()
   return <section className="app-section" id="download">
     <div className="shell app-layout">
       <div className="app-device-visual">
-        <img src="/assets/rapidlink-mobile-app.png" alt="RapidLink mobile app screens showing login, payments and account information" />
+        <img src={app.image} alt={app.imageAlt} />
       </div>
-      <div><p className="eyebrow">RapidLink mobile app</p><h2>Your everyday banking.<br />Wherever you are.</h2><p>Check balances, transfer funds and view your transactions from your phone.</p></div>
-      <div className="app-actions"><a className="button" href={config.appStoreUrl} target="_blank" rel="noopener noreferrer"><AppleMark /><span>Download for iOS</span></a><a className="button button-secondary" href={config.playStoreUrl} target="_blank" rel="noopener noreferrer"><GooglePlayMark /><span>Get it on Google Play</span></a></div>
+      <div><p className="eyebrow">{app.eyebrow}</p><h2>{app.title}</h2><p>{app.description}</p></div>
+      <div className="app-actions"><a className="button" href={config.appStoreUrl} target="_blank" rel="noopener noreferrer"><AppleMark /><span>{app.iosLabel}</span></a><a className="button button-secondary" href={config.playStoreUrl} target="_blank" rel="noopener noreferrer"><GooglePlayMark /><span>{app.androidLabel}</span></a></div>
     </div>
   </section>
 }

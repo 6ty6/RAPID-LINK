@@ -50,8 +50,8 @@ function HeroSlider() {
 }
 
 export default function Home() {
-  const { articles } = usePublishedNews()
-  const latestNews = [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
+  const { articles, loading, error } = usePublishedNews()
+  const latestNews = loading || error ? [] : [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
 
   return <>
     <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
@@ -72,7 +72,7 @@ export default function Home() {
           <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story</Link>
         </article>)}</div>}
       </div>
-      {!latestNews.length && <p className="home-newsroom-summary">There are no published updates at the moment. Please check back soon.</p>}
+      {!latestNews.length && <p className="home-newsroom-summary" role="status">{loading ? 'Loading the latest updates…' : error ? 'News is temporarily unavailable. Please check back soon.' : 'There are no published updates at the moment. Please check back soon.'}</p>}
     </div></section>
     <AppDownload />
   </>
