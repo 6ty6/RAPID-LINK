@@ -5,6 +5,8 @@ import { PageHero } from '../components/Shared'
 import { loanCalculatorSettings } from '../content/loanCalculator.js'
 import useLoanCalculatorSettings from '../hooks/useLoanCalculatorSettings.js'
 import useSiteInformation from '../hooks/useSiteInformation.js'
+import useCalculatorPage from '../hooks/useCalculatorPage.js'
+import {formatCalculatorText} from '../content/calculatorPage.js'
 
 export const LOAN_CALCULATOR_TERMS = loanCalculatorSettings
 
@@ -64,6 +66,7 @@ export function ApplyLoan() {
 }
 
 export function LoanCalculator() {
+  const page=useCalculatorPage()
   const terms = useLoanCalculatorSettings()
   const [principal, setPrincipal] = useState('')
   const [duration, setDuration] = useState(String(terms.minimumMonths))
@@ -130,58 +133,58 @@ export function LoanCalculator() {
   const frequencyLabel = frequency === 'weekly' ? 'weekly' : 'monthly'
 
   return <>
-    <PageHero eyebrow="Planning tool" title="Loan calculator" intro={terms.heroIntro} image="/assets/loan-calculator-hero-v2.png" />
+    <PageHero eyebrow={page.heroEyebrow} title={page.heroTitle} intro={terms.heroIntro} image={page.heroImage} />
     <section className="section"><div className="shell calculator-layout">
       <form className="panel calculator-form" onSubmit={handleSubmit}>
-        <p className="eyebrow">Plan your repayment</p>
-        <h2>Calculate an estimate</h2>
-        <div className="calculator-field"><label htmlFor="principal-amount">Principal Amount</label>
+        <p className="eyebrow">{page.formEyebrow}</p>
+        <h2>{page.formTitle}</h2>
+        <div className="calculator-field"><label htmlFor="principal-amount">{page.principalLabel}</label>
           <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="0.01" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
           <small id="principal-limit">Maximum loan amount: GHC {terms.maximumPrincipal.toLocaleString('en-GH')}.</small>
           {exceedsMaximum && <p className="form-error" role="alert">{maximumMessage}</p>}
         </div>
-        <div className="calculator-field"><label htmlFor="interest-rate">Monthly flat interest rate</label>
+        <div className="calculator-field"><label htmlFor="interest-rate">{page.rateLabel}</label>
           <span className="input-with-suffix"><input id="interest-rate" type="number" value={terms.monthlyFlatRate} readOnly aria-readonly="true" /><span aria-hidden="true">%</span></span>
-          <small>Calculated each month on the original principal. Nominal annual rate: {terms.nominalAnnualRate}%.</small>
+          <small>{formatCalculatorText(page.rateHelp,{annualRate:terms.nominalAnnualRate})}</small>
         </div>
-        <div className="calculator-field"><label htmlFor="loan-duration">Loan Duration (Months)</label>
+        <div className="calculator-field"><label htmlFor="loan-duration">{page.durationLabel}</label>
           <select id="loan-duration" value={duration} onChange={event => { setDuration(event.target.value); setPaymentsMade('0'); setResult(null) }}>
             {durationOptions.map(month => <option key={month} value={month}>{month} {month === 1 ? 'month' : 'months'}</option>)}
           </select>
         </div>
-        <div className="calculator-field"><label htmlFor="repayment-frequency">Repayment frequency</label>
+        <div className="calculator-field"><label htmlFor="repayment-frequency">{page.frequencyLabel}</label>
           <select id="repayment-frequency" value={frequency} onChange={event => { setFrequency(event.target.value); setPaymentsMade('0'); setResult(null) }}>
             {terms.repaymentFrequencies.map(option => <option key={option} value={option}>{option === 'weekly' ? 'Weekly' : 'Monthly'}</option>)}
           </select>
           <small>{repaymentCount} equal {frequencyLabel} {repaymentCount === 1 ? 'payment' : 'payments'}.</small>
         </div>
-        <div className="calculator-field"><label htmlFor="payments-made">Number of instalments already paid <span className="optional-label">(optional)</span></label>
+        <div className="calculator-field"><label htmlFor="payments-made">{page.paymentsLabel} <span className="optional-label">{page.optionalLabel}</span></label>
           <input id="payments-made" type="number" min="0" max={repaymentCount} step="1" aria-describedby="payments-made-help" value={paymentsMade} onChange={event => { setPaymentsMade(event.target.value); setResult(null) }} />
-          <small id="payments-made-help">Planning a new loan? Leave this at 0. To estimate the cost of clearing an existing loan early, enter how many {frequencyLabel} instalments you have already paid, not the amount of money paid. Your selected schedule has {repaymentCount} {repaymentCount === 1 ? 'instalment' : 'instalments'}, so enter a whole number from 0 to {repaymentCount}. This does not check your actual loan account; contact the loans team for a settlement quote.</small>
+          <small id="payments-made-help">{formatCalculatorText(page.paymentsHelp,{frequency:frequencyLabel,count:repaymentCount,instalments:repaymentCount === 1 ? 'instalment' : 'instalments'})}</small>
         </div>
         {error && <p className="form-error" role="alert">{error}</p>}
-        <button className="button" type="submit" disabled={exceedsMaximum}>Calculate</button>
+        <button className="button" type="submit" disabled={exceedsMaximum}>{page.calculateLabel}</button>
       </form>
       <div className="calculator-results" aria-live="polite">
-        <p className="eyebrow">Your estimate</p>
-        <h2>Repayment summary</h2>
-        {!result ? <div className="calculator-empty-state"><strong>Enter a loan amount to begin.</strong><p>Your interest, fees and instalments will appear here.</p></div> : <>
+        <p className="eyebrow">{page.resultsEyebrow}</p>
+        <h2>{page.resultsTitle}</h2>
+        {!result ? <div className="calculator-empty-state"><strong>{page.emptyTitle}</strong><p>{page.emptyDescription}</p></div> : <>
           <div className="result-card result-card-featured"><span>{frequency === 'weekly' ? 'Weekly' : 'Monthly'} instalment</span><strong>{money(result.installmentAmount)}</strong><small>{result.repaymentCount} equal payments</small></div>
           <dl className="calculator-breakdown">
-            <div><dt>Principal</dt><dd>{money(result.principal)}</dd></div>
-            <div><dt>Flat interest</dt><dd>{money(result.totalInterest)}</dd></div>
-            <div><dt>Processing fee ({terms.processingFeeRate}%)</dt><dd>{money(result.processingFee)}</dd></div>
-            <div><dt>Insurance ({terms.insuranceFeeRate}%)</dt><dd>{money(result.insuranceFee)}</dd></div>
-            <div><dt>Management fee ({terms.managementFeeRate}%)</dt><dd>{money(result.managementFee)}</dd></div>
-            <div className="calculator-total"><dt>Total repayment</dt><dd>{money(result.totalRepayment)}</dd></div>
+            <div><dt>{page.principalResult}</dt><dd>{money(result.principal)}</dd></div>
+            <div><dt>{page.interestResult}</dt><dd>{money(result.totalInterest)}</dd></div>
+            <div><dt>{page.processingResult} ({terms.processingFeeRate}%)</dt><dd>{money(result.processingFee)}</dd></div>
+            <div><dt>{page.insuranceResult} ({terms.insuranceFeeRate}%)</dt><dd>{money(result.insuranceFee)}</dd></div>
+            <div><dt>{page.managementResult} ({terms.managementFeeRate}%)</dt><dd>{money(result.managementFee)}</dd></div>
+            <div className="calculator-total"><dt>{page.totalResult}</dt><dd>{money(result.totalRepayment)}</dd></div>
           </dl>
-          <div className="settlement-card"><span>Estimated early settlement today</span><strong>{money(result.earlySettlementTotal)}</strong><small>Outstanding principal {money(result.remainingPrincipal)} + {terms.earlySettlementRate}% settlement fee {money(result.earlySettlementFee)}. {terms.excludeFutureInterest ? 'Future interest is excluded.' : 'Future interest treatment is included in the published configuration.'}</small></div>
+          <div className="settlement-card"><span>{page.settlementTitle}</span><strong>{money(result.earlySettlementTotal)}</strong><small>Outstanding principal {money(result.remainingPrincipal)} + {terms.earlySettlementRate}% settlement fee {money(result.earlySettlementFee)}. {terms.excludeFutureInterest ? 'Future interest is excluded.' : 'Future interest treatment is included in the published configuration.'}</small></div>
         </>}
       </div>
     </div>
       <div className="shell calculator-disclosure">
         <CircleAlert />
-        <div><h2>Important calculation information</h2><p>{terms.disclaimer} It uses a {terms.monthlyFlatRate}% monthly flat rate on the original principal, adds {totalFeeRate}% in fees to repayment and assumes equal instalments. Final amounts remain subject to RapidLink assessment and approval.</p></div>
+        <div><h2>{page.disclosureTitle}</h2><p>{terms.disclaimer} It uses a {terms.monthlyFlatRate}% monthly flat rate on the original principal, adds {totalFeeRate}% in fees to repayment and assumes equal instalments. Final amounts remain subject to RapidLink assessment and approval.</p></div>
       </div>
     </section>
   </>

@@ -21,6 +21,22 @@ async function mockSanity(page, { empty = false, fail = false, apiDown = false }
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
 
+test('calculator page and homepage card use CMS wording without changing calculations',async({page})=>{
+  await mockSanity(page)
+  await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+    if(!new URL(route.request().url()).searchParams.get('query').includes('_type == "loanCalculatorPage"'))return route.fallback()
+    await route.fulfill({contentType:'application/json',body:JSON.stringify({result:[{heroTitle:'CMS calculator heading',calculateLabel:'Estimate my repayment',cardTitleFirst:'Plan',cardTitleSecond:'Your loan',cardDescription:'CMS homepage calculator description'}]})})
+  })
+  await page.goto('/home');await ready(page)
+  await expect(page.locator('.quick-access-calculator')).toContainText('CMS homepage calculator description')
+  await expect(page.locator('.quick-access-calculator')).toHaveAttribute('href','/loan-calculator')
+  await page.locator('.quick-access-calculator').click();await ready(page)
+  await expect(page.getByRole('heading',{name:'CMS calculator heading',exact:true})).toBeVisible()
+  await page.locator('#principal-amount').fill('1250.50')
+  await page.getByRole('button',{name:'Estimate my repayment',exact:true}).click()
+  await expect(page.locator('.calculator-breakdown')).toContainText('1250.50')
+})
+
 test('digital channels preserves the page design, reads CMS ordering and respects hidden cards',async({page})=>{
   await mockSanity(page)
   let content={...digitalChannelsPage,channels:[...digitalChannelsPage.channels].reverse()}

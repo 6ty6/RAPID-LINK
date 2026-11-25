@@ -7,6 +7,7 @@ import { siteSettings } from './siteSettings'
 import { loanCalculatorSettings } from './loanCalculatorSettings'
 import { sharedSettings } from './sharedSettings'
 import { digitalChannelsPage } from './digitalChannelsPage'
+import { loanCalculatorPage } from './loanCalculatorPage'
 export const schemaTypes = [
   newsArticle,
   careerVacancy,
@@ -17,4 +18,5 @@ export const schemaTypes = [
   loanCalculatorSettings,
   sharedSettings,
   digitalChannelsPage,
+  loanCalculatorPage,
 ]

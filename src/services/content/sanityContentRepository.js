@@ -1,5 +1,6 @@
 import { validateCalculatorSettings } from '../../content/validateCalculatorSettings.js'
 import { sharedContent } from '../../content/shared.js'
+import { calculatorPage } from '../../content/calculatorPage.js'
 const projectId = (import.meta.env.VITE_SANITY_PROJECT_ID || '04unhu7g').trim()
 const dataset = (import.meta.env.VITE_SANITY_DATASET || 'production').trim()
 const apiVersion = (import.meta.env.VITE_SANITY_API_VERSION || '2026-11-14').trim()
@@ -27,6 +28,18 @@ const newsQuery = `*[_type == "newsArticle" && isPublished == true] | order(publ
   externalLink,
   externalLabel
 }`
+
+const calculatorPageQuery = `*[_type == "loanCalculatorPage" && _id == "rapidlink-loan-calculator-page"]{
+  ${Object.keys(calculatorPage).filter(key=>!['heroImage','cardImage'].includes(key)).join(',')},
+  "heroImage":heroImage.asset->url,"cardImage":cardImage.asset->url
+}`
+export async function getSanityCalculatorPage() {
+  const rows=await querySanity(calculatorPageQuery)
+  if(!rows[0]) throw Error('Calculator page content is not published.')
+  const page={...calculatorPage,...Object.fromEntries(Object.entries(rows[0]).filter(([,value])=>typeof value==='string' && value.trim()))}
+  if(!page.rateHelp.includes('{annualRate}') || !['{frequency}','{count}','{instalments}'].every(token=>page.paymentsHelp.includes(token))) throw Error('Calculator wording is missing required schedule placeholders.')
+  return page
+}
 
 const digitalChannelsQuery = `*[_type == "digitalChannelsPage" && _id == "rapidlink-digital-channels-page"]{
   title, description, "bannerImage": bannerImage.asset->url, bannerAlt,

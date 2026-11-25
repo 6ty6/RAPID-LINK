@@ -2,7 +2,7 @@ import { defineArrayMember, defineField, defineType } from 'sanity'
 export const digitalChannelsPage = defineType({
   name:'digitalChannelsPage',title:'Digital channels page',type:'document',
   description:'The /digital-channels page. Keep codes, merchant IDs and service links verified before publishing. Reorder the cards by dragging them.',
-  groups:[{name:'banner',title:'1. Page & banner',default:true},{name:'channels',title:'2. Channel cards'}],
+  groups:[{name:'banner',title:'Banner',default:true},{name:'channels',title:'Service cards'}],
   fields:[
     defineField({name:'title',title:'Page title',type:'string',group:'banner',validation:rule=>rule.required().max(100)}),
     defineField({name:'description',title:'Search description',type:'text',rows:2,group:'banner',validation:rule=>rule.required().max(240)}),

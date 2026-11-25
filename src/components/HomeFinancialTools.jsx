@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import useCalculatorPage from '../hooks/useCalculatorPage.js'
 
 export default function HomeFinancialTools() {
+  const page=useCalculatorPage()
   return <section className="home-quick-access" aria-labelledby="quick-access-title">
     <div className="shell quick-access-layout">
       <div className="quick-access-heading">
@@ -14,8 +16,8 @@ export default function HomeFinancialTools() {
           <span className="quick-access-fold" aria-hidden="true" />
         </Link>
         <Link className="quick-access-card quick-access-calculator" to="/loan-calculator" aria-labelledby="calculator-tool-title" aria-describedby="calculator-tool-description">
-          <img className="quick-access-photo" src="/assets/planning-calculator-photo.jpg" alt="" loading="lazy" decoding="async" />
-          <div className="quick-access-copy"><h3 id="calculator-tool-title"><span>Loan</span>{' '}<span>Calculator</span></h3><p id="calculator-tool-description">Estimate your interest, fees and repayments before you apply.</p></div>
+          <img className="quick-access-photo" src={page.cardImage} alt={page.cardImageAlt} loading="lazy" decoding="async" />
+          <div className="quick-access-copy"><h3 id="calculator-tool-title"><span>{page.cardTitleFirst}</span>{' '}<span>{page.cardTitleSecond}</span></h3><p id="calculator-tool-description">{page.cardDescription}</p></div>
           <span className="quick-access-fold" aria-hidden="true" />
         </Link>
       </div>

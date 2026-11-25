@@ -1,10 +1,24 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getSanityPublishedNews, getSanityPublishedVacancies, getSanitySharedContent, getSanityLoanCalculatorSettings, getSanityDigitalChannelsPage } from './sanityContentRepository.js'
 import { digitalChannelsPage } from '../../content/digitalChannels.js'
+import {getSanityCalculatorPage} from './sanityContentRepository.js'
+import {calculatorPage,formatCalculatorText} from '../../content/calculatorPage.js'
 import { loanCalculatorSettings } from '../../content/loanCalculator.js'
 afterEach(() => vi.unstubAllGlobals())
 const respond = result => vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok:true, json:async()=>({result}) }))
 describe('Sanity public content', () => {
+  it('reads calculator presentation independently of pricing and preserves fallback fields',async()=>{
+    respond([{heroTitle:'Plan your loan',cardDescription:'Updated card explanation'}])
+    const page=await getSanityCalculatorPage()
+    expect(page.heroTitle).toBe('Plan your loan')
+    expect(page.cardDescription).toBe('Updated card explanation')
+    expect(page.principalLabel).toBe(calculatorPage.principalLabel)
+    expect(formatCalculatorText(page.rateHelp,{annualRate:72})).toContain('72%')
+    respond([{paymentsHelp:'A description missing the current schedule'}])
+    await expect(getSanityCalculatorPage()).rejects.toThrow('placeholders')
+    respond([])
+    await expect(getSanityCalculatorPage()).rejects.toThrow('not published')
+  })
   it('reads ordered digital channel cards and honours hiding every card',async()=>{
     respond([digitalChannelsPage])
     expect((await getSanityDigitalChannelsPage()).channels.map(channel=>channel.id)).toEqual(digitalChannelsPage.channels.map(channel=>channel.id))

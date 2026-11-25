@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "migrate:calculator-page": "sanity exec scripts/migrateCalculatorPage.js --with-user-token",
+    "migrate:calculator-page:dry-run": "node scripts/migrateCalculatorPage.js --dry-run",
+    "verify:calculator-page": "sanity exec scripts/verifyCalculatorPage.js --with-user-token",
     "migrate:digital-channels": "sanity exec scripts/migrateDigitalChannels.js --with-user-token",
     "migrate:digital-channels:dry-run": "node scripts/migrateDigitalChannels.js --dry-run",
     "verify:digital-channels": "sanity exec scripts/verifyDigitalChannels.js --with-user-token",

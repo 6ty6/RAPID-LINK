@@ -19,13 +19,13 @@ const linkFields = [
 
 export const sharedSettings = defineType({
   name: 'sharedSettings',
-  title: 'Footer & app promotion',
+  title: 'Shared website content',
   type: 'document',
   description: 'Shared wording that appears across several public pages.',
   groups: [
-    { name: 'app', title: '1. Mobile app promotion', default: true },
-    { name: 'footer', title: '2. Footer wording' },
-    { name: 'menus', title: '3. Footer menus' },
+    { name: 'footer', title: 'Footer text', default: true },
+    { name: 'menus', title: 'Footer links' },
+    { name: 'app', title: 'App download section' },
   ],
   fields: [
     defineField({ name: 'appEyebrow', title: 'Small heading', type: 'string', group: 'app', validation: requiredText }),
