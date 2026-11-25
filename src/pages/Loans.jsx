@@ -136,7 +136,7 @@ export function LoanCalculator() {
         <p className="eyebrow">Plan your repayment</p>
         <h2>Calculate an estimate</h2>
         <div className="calculator-field"><label htmlFor="principal-amount">Principal Amount</label>
-          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="100" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
+          <span className="input-with-prefix"><span aria-hidden="true">GH₵</span><input id="principal-amount" type="number" min={terms.minimumPrincipal} max={terms.maximumPrincipal} step="0.01" placeholder={`${terms.minimumPrincipal.toLocaleString()} - ${terms.maximumPrincipal.toLocaleString()}`} aria-invalid={exceedsMaximum} aria-describedby="principal-limit" value={principal} onChange={event => { setPrincipal(event.target.value); setResult(null); setError('') }} required /></span>
           <small id="principal-limit">Maximum loan amount: GHC {terms.maximumPrincipal.toLocaleString('en-GH')}.</small>
           {exceedsMaximum && <p className="form-error" role="alert">{maximumMessage}</p>}
         </div>

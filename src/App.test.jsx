@@ -208,6 +208,16 @@ describe('RapidLink site', () => {
     expect(screen.getByText('GH₵ 1187.50')).toBeInTheDocument()
   })
 
+  it('accepts principal amounts between hundred-cedi increments', async () => {
+    const user = userEvent.setup()
+    const { container } = renderAt('/loan-calculator')
+    const principal = screen.getByLabelText('Principal Amount')
+    await user.type(principal, '1250.50')
+    expect(principal.checkValidity()).toBe(true)
+    await user.click(screen.getByRole('button', { name: 'Calculate' }))
+    expect(container.querySelector('.calculator-breakdown')).toHaveTextContent('1250.50')
+  })
+
   it('exposes homepage loan tools, connected news and reordered navigation', () => {
     const { container } = renderAt('/home')
     const page = within(container)

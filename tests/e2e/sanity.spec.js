@@ -55,4 +55,7 @@ test('unpublished or unavailable content does not restore old public listings',a
   await expect(page.locator('.vacancy-card')).toHaveCount(0)
   await page.goto('/loan-calculator'); await ready(page)
   await expect(page.locator('#principal-amount')).toHaveAttribute('max','20000')
+  await page.locator('#principal-amount').fill('1250.50')
+  await page.getByRole('button',{name:'Calculate',exact:true}).click()
+  await expect(page.locator('.calculator-breakdown')).toContainText('1250.50')
 })
