@@ -1,6 +1,7 @@
-import {helpIcon,sectionHelp} from './EditorHelp.jsx'
-const info = title => helpIcon(sectionHelp[title] || `Edit ${title}. Changes reach the website after Publish.`)
-const singleton = (S,title,type,id) => S.listItem().title(title).icon(info(title))
+import {helpIcon} from './EditorHelp.jsx'
+import {getSectionHelp} from './editorHelpText.js'
+const info = (title,id) => helpIcon(getSectionHelp(title,id))
+const singleton = (S,title,type,id) => S.listItem().title(title).icon(info(title,id))
   .child(S.document().schemaType(type).documentId(id).title(title))
 const records = (S,title,type,listTitle=title) => S.listItem().title(title).icon(info(title))
   .child(S.documentTypeList(type).title(listTitle))
