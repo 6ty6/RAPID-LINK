@@ -477,9 +477,19 @@ p { margin:.2em 0 1.15em; }
 /* ========================================================================== 
    09A. INSTITUTIONAL PROFILE: MISSION AND VISION FLIP CARDS
    ========================================================================== */
-.institutional-hero { background:var(--navy); }
-.institutional-hero > img { opacity:.28; }
-.institutional-hero:not(.about-hero-embedded):after { background:linear-gradient(90deg,#102b46 0%,#102b46cc 55%,#102b4640); }
+.institutional-hero { background:#fff; color:var(--navy); height:clamp(280px,28vw,420px); }
+.institutional-hero > img { opacity:1; object-position:var(--about-image-position,right center); }
+.about-hero.institutional-hero:not(.about-hero-embedded):after { background:linear-gradient(90deg,#fff 0%,#fff 34%,#ffffffed 45%,#ffffff00 72%); }
+.institutional-hero .about-hero-content { z-index:2; }
+.institutional-hero .about-hero-content h1 { color:var(--navy); max-width:65%; }
+.institutional-hero .about-hero-content>p:not(.eyebrow) { color:var(--muted); max-width:60%; }
+.institutional-hero .about-hero-content .eyebrow { color:var(--orange); }
+@media(max-width:600px) {
+  .institutional-hero > img { width:155%; max-width:none; left:auto; right:0; object-position:right center; }
+  .about-hero.institutional-hero:not(.about-hero-embedded):after { background:linear-gradient(90deg,#fff 0%,#fffffffa 40%,#ffffffed 74%,#ffffff80 100%); }
+  .institutional-hero .about-hero-content h1 { max-width:100%; }
+  .institutional-hero .about-hero-content>p:not(.eyebrow) { max-width:90%; }
+}
 .institutional-hero:before { content:''; position:absolute; z-index:2; left:0; right:0; bottom:0; height:3px; background:linear-gradient(90deg,var(--blue),var(--orange)); }
 .profile-copy-section { background:white; padding-bottom:clamp(30px,3vw,45px); color:var(--navy); }
 .profile-copy-section .prose:before { content:''; display:block; width:72px; height:3px; background:var(--orange); margin-bottom:28px; }

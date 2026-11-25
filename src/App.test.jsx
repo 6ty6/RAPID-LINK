@@ -71,7 +71,9 @@ describe('RapidLink site', () => {
 
   it('shows the published institutional impact counters', () => {
     const { container } = renderAt('/institutional-profile')
-    expect(container.querySelector('.about-hero img')).toHaveAttribute('src', '/assets/about-institutional-profile.jpg')
+    expect(container.querySelector('.about-hero img')).toHaveAttribute('src', '/assets/about-us-community-v1.webp')
+    expect(screen.getByRole('heading',{level:1,name:'Our institutional profile'})).toBeInTheDocument()
+    expect(container.querySelector('.institutional-hero')).toHaveTextContent('A customer-centred deposit-taking microfinance company established in June 2010.')
     expect(screen.getByText(/trusted and customer-centric force in Ghana’s financial sector/)).toBeInTheDocument()
     expect(screen.getByText('Asylum Down; 17 Farrar Avenue')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()

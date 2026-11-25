@@ -46,8 +46,8 @@ export const editorialFallbacks = {
       "hero": {
         "title": "Our institutional profile",
         "intro": "A customer-centred deposit-taking microfinance company established in June 2010.",
-        "image": "/assets/about-institutional-profile.jpg",
-        "position": "center 58%"
+        "image": "/assets/about-us-community-v1.webp",
+        "position": "right center"
       },
       "body": [
         {
