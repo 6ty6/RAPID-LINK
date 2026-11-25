@@ -7,11 +7,12 @@ import { AppDownload, PageHero, PageMeta } from '../components/Shared'
 import { careerVacancies } from '../content'
 import { careersAdminConfigured, getPublishedVacancies } from '../services/careers'
 import usePublishedNews from '../hooks/usePublishedNews'
+import DigitalChannelCard from '../components/DigitalChannelCard'
 
-function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center' }) {
+function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center', className = '' }) {
   return <>
     <PageMeta title={title} description={intro} />
-    <section className={`about-hero${embeddedTitle ? ' about-hero-embedded' : ''}`} style={{ '--about-image-position': position }}>
+    <section className={`about-hero${embeddedTitle ? ' about-hero-embedded' : ''} ${className}`} style={{ '--about-image-position': position }}>
       <img src={image} alt="" />
       {embeddedTitle ? <h1 className="visually-hidden">{title}</h1> : <div className="shell about-hero-content">
         <p className="eyebrow">{eyebrow}</p><h1>{title}</h1>{intro && <p>{intro}</p>}
@@ -63,11 +64,11 @@ function ImpactCounter({ target, suffix = '', label, icon: Icon }) {
   </article>
 }
 
-function PurposeFlipCard({ title, prompt, text, icon: Icon }) {
+function PurposeFlipCard({ title, prompt, text, icon: Icon, variant = 'white' }) {
   const [flipped, setFlipped] = useState(false)
 
   return <button
-    className={`purpose-flip-card${flipped ? ' is-flipped' : ''}`}
+    className={`purpose-flip-card purpose-${variant}${flipped ? ' is-flipped' : ''}`}
     type="button"
     aria-label={`${flipped ? 'Show front of' : 'Show details for'} ${title}`}
     aria-pressed={flipped}
@@ -80,12 +81,14 @@ function PurposeFlipCard({ title, prompt, text, icon: Icon }) {
         <strong>{title}</strong>
         <span className="purpose-prompt">{prompt}</span>
         <span className="purpose-action">Click to discover <ArrowRight size={17} /></span>
+        <span className="quick-access-fold" aria-hidden="true" />
       </span>
       <span className="purpose-face purpose-back" aria-hidden={!flipped}>
         <span className="purpose-icon"><Icon size={28} /></span>
         <strong>{title}</strong>
         <span className="purpose-copy">{text}</span>
         <span className="purpose-action">Click to flip back</span>
+        <span className="quick-access-fold" aria-hidden="true" />
       </span>
     </span>
   </button>
@@ -93,7 +96,7 @@ function PurposeFlipCard({ title, prompt, text, icon: Icon }) {
 
 export function InstitutionalProfile() {
   return <>
-    <AboutHero title="Our institutional profile" intro="A customer-centred deposit-taking microfinance company established in June 2010." image="/assets/about-institutional-profile.jpg" position="center 58%" />
+    <AboutHero className="institutional-hero" title="Our institutional profile" intro="A customer-centred deposit-taking microfinance company established in June 2010." image="/assets/about-institutional-profile.jpg" position="center 58%" />
     <section className="section profile-copy-section"><div className="shell prose">
       <p><strong><em>RapidLink Microfinance Ltd</em></strong>, a registered Non-Bank Financial Institution (Deposit Taking Microfinance Company) established in June 2010, is a trusted and customer-centric force in Ghana’s financial sector. Recognized by the Registrar General’s Department of Ghana, our mission is to transform lives and foster economic empowerment through inclusive and innovative financial services.</p>
       <p>In October 2013, we received full authorization from the Bank of Ghana to operate as a licensed Microfinance Company — a milestone that affirms our dedication to regulatory compliance, financial integrity, and sustainable growth. Our headquarters, located in the heart of Accra at <strong>Asylum Down; 17 Farrar Avenue</strong>, symbolizes trust, accessibility, and our deep connection with the communities we serve. Over the years, RapidLink has built a strong reputation for providing responsive financial solutions, including savings, personal and group loans, salary advances, susu contributions, and digital banking services.</p>
@@ -103,7 +106,7 @@ export function InstitutionalProfile() {
       <div className="purpose-heading"><p className="eyebrow">Our purpose</p><h2 id="purpose-title">The future we see. The work we do.</h2><p>Explore the vision that guides RapidLink and the mission that moves us forward.</p></div>
       <div className="purpose-flip-grid">
         <PurposeFlipCard title="Our Vision" prompt="Where we are going" icon={Eye} text="A leading financial institution recognised for innovative solutions, a client-centric approach and commitment to social impact." />
-        <PurposeFlipCard title="Our Mission" prompt="How we will get there" icon={Target} text="To provide accessible, affordable and sustainable financial services to underserved individuals and small businesses, improving quality of life and fostering economic growth." />
+        <PurposeFlipCard variant="navy" title="Our Mission" prompt="How we will get there" icon={Target} text="To provide accessible, affordable and sustainable financial services to underserved individuals and small businesses, improving quality of life and fostering economic growth." />
       </div>
     </div></section>
     <section className="impact-section" aria-labelledby="impact-title"><div className="shell impact-panel">
@@ -118,7 +121,7 @@ export function InstitutionalProfile() {
   </>
 }
 
-const people = [
+export const localPeople = [
   {
     name: 'Dr. Emmanuel Debrah', role: 'Board Chairman', image: '/assets/board-emmanuel-debrah.png',
     biography: 'Dr. Emmanuel Debrah, our distinguished Board Chair, brings over 12 years banking experience with an extensive knowledge and skills in various aspects of banking including Credit Appraisal/Analysis, Risk Management, Loan Recovery and Compliance, Financial Analysis/Interpretation, Financial Reporting, Sales and Customer Relationship Building, Banking Operations, General Management as well as Project Finance, Organizational Restructuring and Commodities Finance. He holds a PhD in Business Administration from CASS European Institute of Management Studies (France) in collaboration with Ghana Communication Technology University; an MSc. in International Accounting from Göteborg University, Sweden; an MSc. in Economics from the University of Skövde, Sweden and a Bachelor of Commerce (B.Com) from the University of Cape Coast. Besides, he is an Associate of the Chartered Institute of Bankers (Ghana) and a holder of Ghana Stock Exchange Securities Certificate as well as a Diploma in Theology from Kenneth Hagin’s Rhema Bible Training College, Ghana. Before working in the financial sector, Dr. Debrah taught business courses in Regent University College of Science and Technology, Accra. He also served as an adjunct lecturer in Ghana Communication Technology University (Takoradi campus) and on the Distance Education of the University of Education, Kumasi campus. Dr. Debrah is currently with the Faculty of Accounting and Finance of the University of Professional Studies as a lecturer. His research interests are in Corporate Governance, Risk Management, Auditing and Accounting Information Quality, Financial Economics, Banking and Economic Growth and Development.',
@@ -134,6 +137,7 @@ const people = [
 ]
 
 export function PeoplePage() {
+  const people = localPeople
   const [selectedPerson, setSelectedPerson] = useState(null)
   const closeButtonRef = useRef(null)
   const triggerRef = useRef(null)
@@ -142,7 +146,10 @@ export function PeoplePage() {
     if (!selectedPerson) return undefined
 
     const previousOverflow = document.body.style.overflow
-    const closeOnEscape = event => event.key === 'Escape' && setSelectedPerson(null)
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') setSelectedPerson(null)
+      if (event.key === 'Tab') { event.preventDefault(); closeButtonRef.current?.focus() }
+    }
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', closeOnEscape)
     closeButtonRef.current?.focus()
@@ -161,15 +168,17 @@ export function PeoplePage() {
 
   return <>
     <AboutHero title="Board of Directors" intro="Meet the experienced leaders guiding RapidLink’s governance, growth and commitment to financial inclusion." image="/assets/about-board-directors-v2.png" />
-    <section className="section"><div className="shell people-grid">{people.map(person => <article className="person-card" key={person.name}>
-      <div className="person-image"><img src={person.image} alt={`${person.name}, ${person.role}`} /><button className="person-info-button" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}><Info size={24} /><span>View profile</span></button></div>
-      <h2>{person.name}</h2><p>{person.role}</p>
+    <section className="section board-profiles"><div className="shell board-profile-list">{people.map(person => <article className="board-profile-card" key={person.name}>
+      <div className="board-profile-portrait"><img src={person.image} alt={`${person.name}, ${person.role}`} loading="lazy" /></div>
+      <div className="board-profile-copy"><h2>{person.name}</h2><p className="board-profile-role">{person.role}</p><button className="board-profile-link" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}>View biography</button></div>
+      <span className="quick-access-fold" aria-hidden="true" />
     </article>)}</div></section>
-    {selectedPerson && <div className="board-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setSelectedPerson(null)}>
-      <section className="board-dialog" role="dialog" aria-modal="true" aria-labelledby="board-dialog-title" aria-describedby="board-dialog-biography">
+    {selectedPerson && <div className="board-modal board-profile-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setSelectedPerson(null)}>
+      <section className="board-dialog board-profile-dialog" role="dialog" aria-modal="true" aria-labelledby="board-dialog-title">
         <button ref={closeButtonRef} className="board-dialog-close" type="button" onClick={() => setSelectedPerson(null)} aria-label="Close biography"><X size={22} /></button>
-        <div className="board-dialog-heading"><div className="board-dialog-photo"><img src={selectedPerson.image} alt="" /></div><div><h2 id="board-dialog-title">{selectedPerson.name}</h2><p>{selectedPerson.role}</p></div></div>
-        <p id="board-dialog-biography" className="board-dialog-biography">{selectedPerson.biography}</p>
+        <div className="board-profile-dialog-layout"><div className="board-profile-identity"><img src={selectedPerson.image} alt="" /><h2 id="board-dialog-title">{selectedPerson.name}</h2><p>{selectedPerson.role}</p></div>
+        <div className="board-profile-biography"><p className="eyebrow">Full biography</p>{(selectedPerson.biography || '').split(/(?<=\.)\s+(?=He |Besides,|Before |Dr\. Debrah is|His |She |During |At Cal |Henrici holds)/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div></div>
+        <span className="quick-access-fold" aria-hidden="true" />
       </section>
     </div>}
   </>
@@ -190,11 +199,7 @@ export function DigitalChannels() {
       <h1 id="digital-channels-title" className="visually-hidden">Digital channels</h1>
       <img src="/assets/digital-channels-hero.png" alt="Digital Products: RapidLink mobile app and RapidPay USSD" />
     </section>
-    <section className="digital-products-section"><div className="shell digital-grid">{channels.map(([title, text, image, link]) => <article className="digital-card" key={title}>
-      <div className="digital-card-image"><img src={image} alt={title} /></div>
-      <h2>{title}</h2>
-      <details className="digital-card-details"><summary className="button">Learn More</summary><p>{text}</p>{link && <a href={link} target="_blank" rel="noopener noreferrer">Open service <ArrowRight size={16} /></a>}</details>
-    </article>)}</div></section>
+    <section className="digital-products-section"><div className="shell digital-grid">{channels.map(([title, text, image, link], index) => <DigitalChannelCard key={title} title={title} text={text} image={image} link={link} index={index} />)}</div></section>
     <AppDownload />
   </>
 }

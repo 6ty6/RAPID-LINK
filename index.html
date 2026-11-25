@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="site-is-loading">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,9 +22,34 @@
     <link rel="alternate icon" type="image/png" href="/assets/rapidlink-logo.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <title>RapidLink Microfinance Limited</title>
+    <style>
+      html{scrollbar-gutter:stable}
+      html.site-is-loading{overflow:hidden}
+      #root{opacity:1;transition:opacity .52s cubic-bezier(.22,1,.36,1)}
+      html.site-is-loading #root{opacity:0;transition:none}
+      #site-loader{position:fixed;inset:0;z-index:2147483646;display:grid;place-content:center;justify-items:center;gap:12px;padding:24px;background:white;color:#102b46;font:14px/1.6 system-ui,sans-serif;text-align:center;transition:opacity .52s cubic-bezier(.4,0,.2,1)}
+      #site-loader>img{width:min(220px,58vw);height:auto}
+      #site-loader p{max-width:400px;margin:0;color:#536b80}
+      #site-loader [data-loading-recovery][hidden]{display:none}
+      #site-loader .loading-recovery{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:20px}
+      #site-loader button{border:0;border-radius:999px;padding:12px 25px;background:#102b46;color:white;box-shadow:inset 0 -4px #ff7400;font:inherit;font-weight:700;cursor:pointer}
+      #site-loader a{color:#0831ff;text-underline-offset:4px}
+      #site-loader :is(a,button):focus-visible{outline:3px solid #ff7400;outline-offset:4px}
+      #site-loader.is-finished{opacity:0;pointer-events:none}
+      #site-loader.is-entering{opacity:0}
+      #site-loader[hidden]{display:none}
+      @media(prefers-reduced-motion:reduce){#site-loader,#root{transition:none}}
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="site-loader" data-native-cursor>
+      <img src="/assets/rapidlink-loader.svg" alt="RapidLink Microfinance" width="1080" height="520" fetchpriority="high" />
+      <p role="status" aria-live="polite" data-loading-message>Getting things ready for you…</p>
+      <div class="loading-recovery" data-loading-recovery hidden><button type="button" data-loading-retry>Retry</button><a href="tel:+233303955183">Call customer support</a></div>
+    </div>
+    <div id="root" inert aria-hidden="true"></div>
+    <script src="/loading-screen.js"></script>
+    <noscript><style>#site-loader{display:none}html.site-is-loading{overflow:auto}</style><p>Please enable JavaScript to use the RapidLink website. For help, call <a href="tel:+233303955183">030 395 5183</a>.</p></noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

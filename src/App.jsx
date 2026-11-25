@@ -9,6 +9,8 @@ import { ProductPage, RateChart, Rates } from './pages/Products'
 import CareerManagement from './pages/CareerManagement'
 import AcceptInvite from './pages/AcceptInvite'
 import HelpAssistant from './components/HelpAssistant'
+import BrandCursor from './components/BrandCursor'
+import StartupReady from './components/StartupReady'
 import {
   Careers,
   Contact,
@@ -22,6 +24,7 @@ import {
 
 export default function App() {
   return <>
+    <StartupReady />
     <RouteEffects />
     <Header />
     <main id="main-content">
@@ -49,5 +52,6 @@ export default function App() {
     </main>
     <Footer />
     <HelpAssistant />
+    <BrandCursor />
   </>
 }
