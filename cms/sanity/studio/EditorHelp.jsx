@@ -1,15 +1,24 @@
 import {useId} from 'react'
 import {useFormValue} from 'sanity'
 import {getFieldHelp} from './editorHelpText.js'
+import {getImageGuidance,getImageDimensions,imageFileAdvice} from './imageGuidelines.js'
 import './editor-help.css'
 
 export function EditorFieldHelp(props){
  const id=useId()
  const document=useFormValue([])||{}
  const help=getFieldHelp({document,path:props.path,name:props.name,schemaType:props.schemaType})
- if(!help)return props.renderDefault(props)
+ const imageGuide=getImageGuidance(document,props.path||[])
+ const dimensions=imageGuide?getImageDimensions(props.value):null
+ if(!help&&!imageGuide)return props.renderDefault(props)
  return <div className="cms-help-field">
-  <details className="cms-field-help"><summary title={help} aria-label={`Help for ${props.schemaType.title || props.name}`} aria-describedby={id}>i</summary><p id={id}>{help}</p></details>
+  {help&&<details className="cms-field-help"><summary title={help} aria-label={`Help for ${props.schemaType.title || props.name}`} aria-describedby={id}>i</summary><p id={id}>{help}</p></details>}
+  {imageGuide&&<aside className="cms-image-guidance" aria-label={`Image size guidance for ${props.schemaType.title || props.name}`}>
+   <strong>Recommended upload: {imageGuide.width} × {imageGuide.height} px ({imageGuide.ratio})</strong>
+   <p>{imageGuide.placement}. {imageGuide.display}</p>
+   <p className="cms-image-current">{dimensions?`Selected image: ${dimensions.width} × ${dimensions.height} px.`:'Select or upload an image to see its actual dimensions here.'}</p>
+   <small>{imageFileAdvice}</small>
+  </aside>}
   {props.renderDefault({...props,description:help})}
  </div>
 }

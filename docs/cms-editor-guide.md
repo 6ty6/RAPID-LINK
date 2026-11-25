@@ -8,6 +8,8 @@ Run `npm.cmd run cms:dev` from the repository, open `http://127.0.0.1:3333`, and
 
 The information icons in the section menu describe the section on hover. Each form field also has an **i** help control: hover for an explanation, or focus/click it to read the help. Normal Sanity editing, validation and publication controls remain available.
 
+Every image upload also shows a **Recommended upload** size/shape, where it appears and how it is cropped. **Selected image** shows the actual uploaded width and height. These are source-image recommendations, not a fixed screen size or a new upload restriction. See [CMS image upload sizes](cms-image-sizes.md) for the complete size table and measured current artwork.
+
 ## Common controls
 
 | Control | What it does |

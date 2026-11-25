@@ -13,7 +13,7 @@ describe('CMS help explains public locations and effects',()=>{
   expect(help('publicHomepage',['services','items',{_key:'service'},'to'])).toContain('homepage service-stop link')
  })
  it('identifies button destinations and separates public fields from internal metadata',()=>{
-  expect(help('publicRateGuide',['downloadLabel'])).toContain('downloads the file')
+  expect(help('publicRateGuide',['downloadLabel'])).toContain('downloads the selected library document')
   expect(help('publicAccountPage',['content','contactLabel'])).toContain('opens /contact')
   expect(help('loanCalculatorPage',['calculateLabel'])).toContain('still calculates on this page')
   expect(help('publicPageCopy',['title'],{slug:'contact'})).toContain('Studio')
