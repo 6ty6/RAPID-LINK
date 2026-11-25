@@ -6,6 +6,7 @@ import { rapidLinkTheme } from './theme.js'
 import { RapidLinkIcon, RapidLinkNavbar } from './RapidLinkBrand.jsx'
 import {remainingCms} from '../../../src/content/remainingCms.js'
 import {EditorFieldHelp} from './EditorHelp.jsx'
+import GrowingTextInput from './GrowingTextInput.jsx'
 const singletonTypes=['siteSettings','loanCalculatorSettings','sharedSettings','digitalChannelsPage','loanCalculatorPage',...Object.values(remainingCms).filter(model=>!model.collection).map(model=>model.schema)]
 
 export default defineConfig({
@@ -15,7 +16,7 @@ export default defineConfig({
   projectId: '04unhu7g',
   dataset: 'production',
   theme: rapidLinkTheme,
-  form: {components: {field: EditorFieldHelp}},
+  form: {components: {field: EditorFieldHelp,input: GrowingTextInput}},
   plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,

@@ -12,3 +12,6 @@
 .cms-product-picker button { cursor: pointer; }
 .cms-product-picker button:disabled { opacity: .45; cursor: default; }
 .cms-product-picker option { color: #102f4b; background: #fff; }
+.cms-growing-text { display: block; box-sizing: border-box; width: 100%; min-height: 42px; max-height: 360px; padding: 10px 12px; border: 1px solid #8798aa80; border-radius: 5px; background: transparent; color: inherit; font: inherit; line-height: 1.5; overflow-y: auto; resize: vertical; transition: border-color .15s ease; }
+.cms-growing-text:focus { outline: 2px solid #6589ff; outline-offset: 1px; border-color: #6589ff; }
+.cms-growing-text[aria-invalid="true"] { border-color: #e76a6a; }
