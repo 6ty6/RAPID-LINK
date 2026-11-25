@@ -6,6 +6,7 @@ import { announcement } from './announcement'
 import { siteSettings } from './siteSettings'
 import { loanCalculatorSettings } from './loanCalculatorSettings'
 import { sharedSettings } from './sharedSettings'
+import { digitalChannelsPage } from './digitalChannelsPage'
 export const schemaTypes = [
   newsArticle,
   careerVacancy,
@@ -15,4 +16,5 @@ export const schemaTypes = [
   siteSettings,
   loanCalculatorSettings,
   sharedSettings,
+  digitalChannelsPage,
 ]

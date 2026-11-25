@@ -10,6 +10,8 @@ import useSiteInformation from '../hooks/useSiteInformation.js'
 import { getSanityPublishedVacancies, getSanityPublishedFaqs, getSanityImpactCounters } from '../services/content/sanityContentRepository.js'
 import usePublishedNews from '../hooks/usePublishedNews'
 import DigitalChannelCard from '../components/DigitalChannelCard'
+import { digitalChannelsPage } from '../content/digitalChannels.js'
+import { getSanityDigitalChannelsPage } from '../services/content/sanityContentRepository.js'
 
 function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center', className = '' }) {
   return <>
@@ -189,21 +191,15 @@ export function PeoplePage() {
 }
 
 export function DigitalChannels() {
-  const channels = [
-    ['RapidLink mobile app', 'Real-time account access, balance enquiries, fund transfers and transaction history.', '/assets/digital-mobile-app.png', config.playStoreUrl],
-    ['RapidPay USSD', 'Dial *899*727# on all networks to access the USSD service.', '/assets/digital-rapidpay-ussd.png', null],
-    ['MTN Merchant ID', 'Dial *170#, choose MoMoPay, then enter Merchant ID 219440. Confirm the recipient is RapidLink Microfinance Limited.', '/assets/digital-mtn-merchant.png', null],
-    ['Telecel Merchant ID', 'Dial *110#, choose Make Payments and Pay Merchant, then enter Till number 394675. Confirm the recipient before proceeding.', '/assets/digital-telecel-merchant.png', null],
-    ['MoneyQube', 'Digital nano loans with a one-month repayment period.', '/assets/digital-moneyqube.png', config.moneyQubeUrl],
-  ]
+  const { data: page } = useSanityContent('digital-channels', getSanityDigitalChannelsPage, digitalChannelsPage)
 
   return <>
-    <PageMeta title="Digital channels" description="Access RapidLink services from your phone." />
+    <PageMeta title={page.title} description={page.description} />
     <section className="digital-public-hero" aria-labelledby="digital-channels-title">
-      <h1 id="digital-channels-title" className="visually-hidden">Digital channels</h1>
-      <img src="/assets/digital-channels-hero.png" alt="Digital Products: RapidLink mobile app and RapidPay USSD" />
+      <h1 id="digital-channels-title" className="visually-hidden">{page.title}</h1>
+      <img src={page.bannerImage} alt={page.bannerAlt} />
     </section>
-    <section className="digital-products-section"><div className="shell digital-grid">{channels.map(([title, text, image, link], index) => <DigitalChannelCard key={title} title={title} text={text} image={image} link={link} index={index} />)}</div></section>
+    <section className="digital-products-section"><div className="shell digital-grid">{page.channels.map((channel, index) => <DigitalChannelCard key={channel.id} {...channel} text={channel.description} index={index} />)}</div></section>
     <AppDownload />
   </>
 }

@@ -1,9 +1,21 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { getSanityPublishedNews, getSanityPublishedVacancies, getSanitySharedContent, getSanityLoanCalculatorSettings } from './sanityContentRepository.js'
+import { getSanityPublishedNews, getSanityPublishedVacancies, getSanitySharedContent, getSanityLoanCalculatorSettings, getSanityDigitalChannelsPage } from './sanityContentRepository.js'
+import { digitalChannelsPage } from '../../content/digitalChannels.js'
 import { loanCalculatorSettings } from '../../content/loanCalculator.js'
 afterEach(() => vi.unstubAllGlobals())
 const respond = result => vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok:true, json:async()=>({result}) }))
 describe('Sanity public content', () => {
+  it('reads ordered digital channel cards and honours hiding every card',async()=>{
+    respond([digitalChannelsPage])
+    expect((await getSanityDigitalChannelsPage()).channels.map(channel=>channel.id)).toEqual(digitalChannelsPage.channels.map(channel=>channel.id))
+    expect(fetch.mock.calls[0][0].searchParams.get('query')).toContain('channels[isPublished == true]')
+    respond([{...digitalChannelsPage,channels:[]}])
+    expect((await getSanityDigitalChannelsPage()).channels).toEqual([])
+    respond([])
+    await expect(getSanityDigitalChannelsPage()).rejects.toThrow('published completely')
+    respond([{...digitalChannelsPage,channels:[{...digitalChannelsPage.channels[0],link:'javascript:alert(1)'}]}])
+    await expect(getSanityDigitalChannelsPage()).rejects.toThrow('Incomplete')
+  })
   it('reads the configured project with published perspective and no credentials', async () => {
     respond([{slug:'notice',title:'Published notice'}])
     expect((await getSanityPublishedNews())[0].title).toBe('Published notice')

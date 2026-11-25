@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "migrate:digital-channels": "sanity exec scripts/migrateDigitalChannels.js --with-user-token",
+    "migrate:digital-channels:dry-run": "node scripts/migrateDigitalChannels.js --dry-run",
+    "verify:digital-channels": "sanity exec scripts/verifyDigitalChannels.js --with-user-token",
     "dev": "sanity dev",
     "build": "sanity build",
     "deploy": "sanity deploy",

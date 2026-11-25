@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { siteInformation } from '../../src/content/site.js'
 import { loanCalculatorSettings } from '../../src/content/loanCalculator.js'
+import { digitalChannelsPage } from '../../src/content/digitalChannels.js'
 
 async function mockSanity(page, { empty = false, fail = false, apiDown = false } = {}) {
   await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//, async route => {
@@ -19,6 +20,28 @@ async function mockSanity(page, { empty = false, fail = false, apiDown = false }
   })
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
+
+test('digital channels preserves the page design, reads CMS ordering and respects hidden cards',async({page})=>{
+  await mockSanity(page)
+  let content={...digitalChannelsPage,channels:[...digitalChannelsPage.channels].reverse()}
+  let unavailable=false
+  await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+    if(!new URL(route.request().url()).searchParams.get('query').includes('_type == "digitalChannelsPage"')) return route.fallback()
+    await route.fulfill({status:unavailable?503:200,contentType:'application/json',body:JSON.stringify({result:[content]})})
+  })
+  await page.goto('/digital-channels'); await ready(page)
+  await expect(page.locator('.digital-card').first().getByRole('heading',{name:'MoneyQube'})).toBeVisible()
+  await expect(page.locator('.digital-public-hero img')).toHaveAttribute('src',digitalChannelsPage.bannerImage)
+  await expect(page.locator('.digital-card')).toHaveCount(5)
+  await page.getByRole('button',{name:'View MTN Merchant ID details'}).click()
+  await expect(page.getByText('Dial *170#, choose MoMoPay, then enter Merchant ID 219440. Confirm the recipient is RapidLink Microfinance Limited.')).toBeVisible()
+  content={...content,channels:[]}
+  await expect(page.locator('.digital-card')).toHaveCount(0,{timeout:12000})
+  unavailable=true
+  await page.reload(); await ready(page)
+  await expect(page.locator('.digital-card')).toHaveCount(5)
+  await expect(page.locator('.digital-card').first().getByRole('heading',{name:'RapidLink mobile app'})).toBeVisible()
+})
 
 test('uses the CDN during API failure and refreshes an open page after publishing',async({page})=>{
   await mockSanity(page,{apiDown:true})

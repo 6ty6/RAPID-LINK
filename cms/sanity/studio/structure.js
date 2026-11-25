@@ -12,31 +12,34 @@ const contentSection = (S, title, type, pluralTitle) => S.listItem()
   .title(title)
   .child(S.list().title(title).items(visibilityLists(S, type, pluralTitle)))
 
+const singleton = (S,title,type,id) => S.listItem().title(title)
+  .child(S.document().schemaType(type).documentId(id).title(title))
+const group = (S,title,items) => S.listItem().title(title).child(S.list().title(title).items(items))
+
 export const structure = S => S.list()
   .title('RapidLink content')
   .items([
-    S.listItem()
-      .title('Contact & social settings')
-      .child(S.document()
-        .schemaType('siteSettings')
-        .documentId('rapidlink-site-settings')
-        .title('Contact & social settings')),
-    S.listItem()
-      .title('Loan calculator')
-      .child(S.document()
-        .schemaType('loanCalculatorSettings')
-        .documentId('rapidlink-loan-calculator-settings')
-        .title('Loan calculator settings')),
-    S.listItem()
-      .title('Footer & app promotion')
-      .child(S.document()
-        .schemaType('sharedSettings')
-        .documentId('rapidlink-shared-settings')
-        .title('Footer & app promotion')),
-    S.divider(),
-    contentSection(S, 'News', 'newsArticle', 'articles'),
-    contentSection(S, 'Careers', 'careerVacancy', 'vacancies'),
-    contentSection(S, 'FAQs', 'faq', 'questions'),
-    contentSection(S, 'Impact numbers', 'impactCounter', 'counters'),
-    contentSection(S, 'Announcements', 'announcement', 'announcements'),
+    group(S,'Homepage',[
+      contentSection(S,'Announcements','announcement','announcements'),
+    ]),
+    group(S,'Products & services',[
+      singleton(S,'Digital channels — page & cards','digitalChannelsPage','rapidlink-digital-channels-page'),
+      singleton(S,'Loan calculator','loanCalculatorSettings','rapidlink-loan-calculator-settings'),
+    ]),
+    group(S,'Company',[
+      group(S,'Institutional profile',[
+        contentSection(S,'Impact numbers','impactCounter','counters'),
+      ]),
+      singleton(S,'Contact page & social profiles','siteSettings','rapidlink-site-settings'),
+    ]),
+    group(S,'News & careers',[
+      contentSection(S,'News','newsArticle','articles'),
+      contentSection(S,'Careers','careerVacancy','vacancies'),
+    ]),
+    group(S,'Help',[
+      contentSection(S,'FAQs','faq','questions'),
+    ]),
+    group(S,'Shared website content',[
+      singleton(S,'Footer & app promotion','sharedSettings','rapidlink-shared-settings'),
+    ]),
   ])

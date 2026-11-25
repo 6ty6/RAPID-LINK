@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react'
 
-export default function DigitalChannelCard({ title, text, image, link, index }) {
+export default function DigitalChannelCard({ title, text, image, imageAlt, link, index }) {
   const [flipped, setFlipped] = useState(false)
   const detailsId = useId()
   const frontButton = useRef(null)
@@ -15,7 +15,7 @@ export default function DigitalChannelCard({ title, text, image, link, index }) 
   }}>
     <div className="digital-flip-inner">
       <div className="digital-flip-face digital-flip-front" data-cursor-link aria-hidden={flipped} inert={flipped ? '' : undefined} onClick={event => { if (!event.target.closest('button')) flip(true) }}>
-        <div className="digital-card-image"><img src={image} alt={title} loading="lazy" decoding="async" /></div>
+        <div className="digital-card-image"><img src={image} alt={imageAlt || title} loading="lazy" decoding="async" /></div>
         <h2>{title}</h2>
         <button ref={frontButton} type="button" className="digital-flip-toggle" aria-label={`View ${title} details`} aria-expanded={flipped} aria-controls={detailsId} onClick={() => flip(true)}>View details</button>
         <span className="quick-access-fold" aria-hidden="true" />

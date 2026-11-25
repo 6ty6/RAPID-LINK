@@ -28,6 +28,22 @@ const newsQuery = `*[_type == "newsArticle" && isPublished == true] | order(publ
   externalLabel
 }`
 
+const digitalChannelsQuery = `*[_type == "digitalChannelsPage" && _id == "rapidlink-digital-channels-page"]{
+  title, description, "bannerImage": bannerImage.asset->url, bannerAlt,
+  "channels": channels[isPublished == true]{"id": _key,title,description,"image": image.asset->url,imageAlt,link,isPublished}
+}`
+
+export async function getSanityDigitalChannelsPage() {
+  const rows = await querySanity(digitalChannelsQuery)
+  const page = rows[0]
+  if (!page || !page.title || !page.description || !page.bannerImage || !page.bannerAlt || !Array.isArray(page.channels)) {
+    throw Error('The digital channels page has not been published completely.')
+  }
+  if (page.channels.some(channel => !channel.id || !channel.title || !channel.description || !channel.image || !channel.imageAlt ||
+      (channel.link && !/^https:\/\//i.test(channel.link)))) throw Error('Incomplete digital channel content.')
+  return page
+}
+
 const vacancyQuery = `*[_type == "careerVacancy" && isPublished == true] | order(_createdAt desc){
   "id": _id,
   title,
