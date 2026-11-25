@@ -1,10 +1,11 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
-import { schemaTypes } from '../schemaTypes/index.js'
+import { schemaTypes } from './schemaTypes/index.js'
 import { structure } from './structure.js'
 import { rapidLinkTheme } from './theme.js'
 import { RapidLinkIcon, RapidLinkNavbar } from './RapidLinkBrand.jsx'
 import {remainingCms} from '../../../src/content/remainingCms.js'
+import {EditorFieldHelp} from './EditorHelp.jsx'
 const singletonTypes=['siteSettings','loanCalculatorSettings','sharedSettings','digitalChannelsPage','loanCalculatorPage',...Object.values(remainingCms).filter(model=>!model.collection).map(model=>model.schema)]
 
 export default defineConfig({
@@ -14,6 +15,7 @@ export default defineConfig({
   projectId: '04unhu7g',
   dataset: 'production',
   theme: rapidLinkTheme,
+  form: {components: {field: EditorFieldHelp}},
   plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,

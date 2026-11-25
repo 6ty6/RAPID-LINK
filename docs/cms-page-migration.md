@@ -93,3 +93,5 @@ Calculation formulas, approval enforcement, unavailable/privacy responses, Abena
 Validation: 61 unit tests, 12 desktop/mobile Sanity browser tests, website build and Studio build passed. Live-data browser checks and import verification are recorded with this migration work.
 
 For Sanity-hosted PDF previews, Render's Content-Security-Policy must include `https://cdn.sanity.io` in `connect-src`. The repository configuration includes it; any manually configured Render header must also be updated.
+
+The full Render CSP has now been restored and verified, including that destination. The homepage product list now uses a named-product picker; it preserves existing stored slugs. See [CMS editor guide](cms-editor-guide.md) for editing instructions and [CMS deployment verification](cms-deployment-verification.md) for the later control checks, fixes and current hosting requirements.

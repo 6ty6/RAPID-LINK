@@ -17,6 +17,7 @@ export const announcement = defineType({
     defineField({
       name: 'priority',
       title: 'Priority',
+      description: 'Internal editorial priority. The current website ticker uses display order; this field does not change its colour or position.',
       type: 'string',
       initialValue: 'normal',
       options: {

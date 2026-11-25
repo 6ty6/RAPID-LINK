@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { products as localProducts } from '../content'
 import usePageContent from '../hooks/usePageContent.js'
 
-const featuredSlugs = ['rapid-savings', 'rapid-susu', 'rapid-edu-grow', 'personal-loan', 'business-loan', 'fixed-deposit']
 export default function HomeProducts() {
   const {data:homepage}=usePageContent('homepage')
   const {data:products}=usePageContent('products')

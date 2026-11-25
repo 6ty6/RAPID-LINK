@@ -2,7 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Phone, X } from '../icons'
 import './HelpAssistant.css'
-import { getConversationalReply, whatsappChatbotUrl } from '../content/helpReplies'
+import { getConversationalReply, whatsappChatbotUrl as fallbackWhatsappUrl } from '../content/helpReplies'
 import usePageContent from '../hooks/usePageContent.js'
 
 const suggestions = [
@@ -118,6 +118,7 @@ export default function HelpAssistant() {
       const choices=followUp&&topic?.followUpVariations?.length?topic.followUpVariations:topic?.variations
       reply=choices?.length?{...reply,text:reply.id==='identity'&&/how are you/i.test(value)?abena.howAreYouReply:choices[(turn.current-1)%choices.length],links:topic.links.map(item=>[item.label,item.href])}:getConversationalReply('unconfirmed information')
     }
+    reply={...reply,links:reply.links.map(([label,href])=>[label,href===fallbackWhatsappUrl?whatsappChatbotUrl:href])}
     if (!['help', 'greeting', 'thanks', 'unavailable', 'privacy', 'identity', 'goodbye'].includes(reply.id)) lastTopic.current = reply.id
     if (['unavailable', 'privacy'].includes(reply.id)) lastTopic.current = 'contact'
     const messageId = ++sequence.current

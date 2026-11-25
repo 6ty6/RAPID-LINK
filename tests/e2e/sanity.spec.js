@@ -54,6 +54,42 @@ test('editorial page migrations preserve products, board, rates, navigation and 
   await expect(page.getByRole('log')).toContainText('Institutional Profile')
 })
 
+test('new products share their page and homepage content while featured news takes priority',async({page})=>{
+ await mockSanity(page)
+ const product={...remainingCms.products.content.find(item=>item.slug==='rapid-savings'),slug:'new-community-savings',title:'Community Savings',intro:'An approved new product introduction.'}
+ const homepage=structuredClone(remainingCms.homepage.content)
+ homepage.products.featuredSlugs=[product.slug,'business-loan']
+ const articles=[
+  {id:'new',slug:'latest-story',title:'Latest story',category:'Service Updates',publishedAt:'2026-11-25',summary:'A recent story.',featured:false},
+  {id:'chosen',slug:'chosen-story',title:'Chosen story',category:'Customer Notices',publishedAt:'2026-10-01',summary:'An older selected story.',featured:true},
+ ]
+ await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+  const query=new URL(route.request().url()).searchParams.get('query')
+  let result
+  if(query.includes('_type == "publicProduct"'))result=[...remainingCms.products.content,product]
+  else if(query.includes('_type == "publicHomepage"'))result=[homepage]
+  else if(query.includes('_type == "newsArticle"'))result=articles
+  else return route.fallback()
+  await route.fulfill({contentType:'application/json',body:JSON.stringify({result})})
+ })
+ await page.goto('/home');await ready(page)
+ await expect(page.locator('.product-photo-card')).toHaveCount(2)
+ await expect(page.locator('.product-photo-card').first()).toContainText('Community Savings')
+ await expect(page.locator('.home-newsroom-feature')).toContainText('Chosen story')
+ await page.locator('.product-photo-card').first().click();await ready(page)
+ await expect(page.getByRole('heading',{level:1,name:'Community Savings',exact:true})).toBeVisible()
+ await expect(page.locator('.page-hero')).toContainText(product.intro)
+ product.title='Community Savings Plus'
+ product.intro='The updated public introduction.'
+ await expect(page.getByRole('heading',{level:1,name:product.title,exact:true})).toBeVisible({timeout:12000})
+ await page.goto('/home');await ready(page)
+ await expect(page.locator('.product-photo-card').first()).toContainText(product.intro)
+ articles[1].featured=false
+ await expect(page.locator('.home-newsroom-feature')).toContainText('Latest story',{timeout:12000})
+ homepage.products.featuredSlugs=[]
+ await expect(page.locator('.product-photo-card')).toHaveCount(0,{timeout:12000})
+})
+
 test('calculator page and homepage card use CMS wording without changing calculations',async({page})=>{
   await mockSanity(page)
   await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{

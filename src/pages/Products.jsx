@@ -165,6 +165,8 @@ export function Rates() {
 
 function RateGuideDialog({ onClose }) {
   const {data:guide}=usePageContent('rateGuide')
+  const downloadUrl=guide.file.startsWith('https://cdn.sanity.io/')?new URL(guide.file):null
+  downloadUrl?.searchParams.set('dl','RapidLink-loan-rates.pdf')
   const [previousFocus] = useState(() => document.activeElement)
   const dialogRef = useRef(null)
   useEffect(() => {
@@ -175,7 +177,7 @@ function RateGuideDialog({ onClose }) {
     return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus() }
   }, [])
   return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby="rate-guide-title" onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
-    <header><h2 id="rate-guide-title">{guide.dialogTitle}</h2><div><a className="button button-secondary" href={guide.file} download>{guide.downloadLabel}</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
+    <header><h2 id="rate-guide-title">{guide.dialogTitle}</h2><div><a className="button button-secondary" href={downloadUrl?.href||guide.file} download>{guide.downloadLabel}</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
     <PdfPreview url={guide.preview} />
   </dialog>
 }

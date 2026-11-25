@@ -101,13 +101,12 @@ export default function Footer() {
       </div>
       <nav className="footer-links-column" aria-label="Explore RapidLink products">
         <h2>{footer.headings.explore}</h2>
-        {dropdown(navGroups[0])}
-        {dropdown(navGroups[1])}
+        {navGroups.filter(group=>group.id!=='menu-2').map(dropdown)}
         {footer.exploreLinks.map(link => <Link key={link.href} to={link.href}>{link.label}</Link>)}
       </nav>
       <nav className="footer-links-column" aria-label="Company information">
         <h2>{footer.headings.company}</h2>
-        {dropdown(navGroups[2])}
+        {dropdown(navGroups.find(group=>group.id==='menu-2'))}
         {footer.companyLinks.map(link => <Link key={link.href} to={link.href}>{link.label}</Link>)}
       </nav>
       <div className="footer-contact">

@@ -12,7 +12,7 @@ export const newsArticle = defineType({
     defineField({ name: 'summary', title: 'Summary', type: 'text', rows: 3, validation: rule => rule.required() }),
     defineField({ name: 'image', title: 'Article image', type: 'image', options: { hotspot: true }, validation: rule => rule.required() }),
     defineField({ name: 'imageAlt', title: 'Image description', type: 'string', validation: rule => rule.required() }),
-    defineField({ name: 'featured', title: 'Feature on homepage', type: 'boolean', initialValue: false }),
+    defineField({ name: 'featured', title: 'Feature on homepage', description: 'Prioritise this published story in the three homepage spaces. Featured stories are ordered newest first; remaining spaces use the newest other stories. This does not publish or hide the article.', type: 'boolean', initialValue: false }),
     defineField({ name: 'isPublished', title: 'Visible on website', type: 'boolean', initialValue: false }),
     defineField({
       name: 'sections', title: 'Article sections', type: 'array', of: [defineArrayMember({

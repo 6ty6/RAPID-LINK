@@ -1,8 +1,10 @@
-const singleton = (S,title,type,id) => S.listItem().title(title)
+import {helpIcon,sectionHelp} from './EditorHelp.jsx'
+const info = title => helpIcon(sectionHelp[title] || `Edit ${title}. Changes reach the website after Publish.`)
+const singleton = (S,title,type,id) => S.listItem().title(title).icon(info(title))
   .child(S.document().schemaType(type).documentId(id).title(title))
-const records = (S,title,type,listTitle=title) => S.listItem().title(title)
+const records = (S,title,type,listTitle=title) => S.listItem().title(title).icon(info(title))
   .child(S.documentTypeList(type).title(listTitle))
-const group=(S,title,items)=>S.listItem().title(title).child(S.list().title(title).items(items))
+const group=(S,title,items)=>S.listItem().title(title).icon(info(title)).child(S.list().title(title).items(items))
 
 // Page names stay visible at the first level. Existing record IDs are unchanged.
 export const structure = S => S.list().title('Edit the website').items([
@@ -12,7 +14,7 @@ export const structure = S => S.list().title('Edit the website').items([
   ]),
   records(S,'Products','publicProduct'),
   singleton(S,'Digital Channels','digitalChannelsPage','rapidlink-digital-channels-page'),
-  S.listItem().title('Loan Calculator').child(S.list().title('Loan Calculator').items([
+  S.listItem().title('Loan Calculator').icon(info('Loan Calculator')).child(S.list().title('Loan Calculator').items([
     singleton(S,'Page appearance & homepage card','loanCalculatorPage','rapidlink-loan-calculator-page'),
     singleton(S,'Rates, fees & approval','loanCalculatorSettings','rapidlink-loan-calculator-settings'),
   ])),

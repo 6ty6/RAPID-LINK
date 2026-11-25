@@ -7,6 +7,7 @@ import HomeFinancialTools from '../components/HomeFinancialTools'
 import HomeProducts from '../components/HomeProducts'
 import HomeServicePathway from '../components/HomeServicePathway'
 import usePageContent from '../hooks/usePageContent.js'
+import {selectHomepageNews} from '../content/homepageNews.js'
 
 export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
@@ -54,7 +55,7 @@ function HeroSlider() {
 export default function Home() {
   const {data:page}=usePageContent('homepage')
   const { articles, loading, error } = usePublishedNews()
-  const latestNews = loading || error ? [] : [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
+  const latestNews = loading || error ? [] : selectHomepageNews(articles)
 
   return <>
     <PageMeta title={page.meta.title} description={page.meta.description} />

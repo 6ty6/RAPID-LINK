@@ -1,0 +1,14 @@
+.cms-help-field { position: relative; }
+.cms-field-help { position: relative; z-index: 2; margin: 0 0 6px auto; width: max-content; max-width: 100%; }
+.cms-field-help summary { cursor: help; list-style: none; border: 1px solid currentColor; border-radius: 50%; width: 20px; height: 20px; text-align: center; font: bold 14px/20px Georgia,serif; }
+.cms-field-help summary::-webkit-details-marker { display: none; }
+.cms-field-help p { display: none; position: absolute; right: 0; top: 18px; width: min(320px,70vw); box-sizing: border-box; padding: 14px; color: #fff; background: #102f4b; border-bottom: 3px solid #ff7400; border-radius: 8px; box-shadow: 0 5px 20px #0004; font: 14px/1.5 system-ui; }
+.cms-field-help[open] p,.cms-field-help:hover p,.cms-field-help:focus-within p { display: block; }
+.cms-product-picker { display: grid; gap: 10px; }
+.cms-product-picker ol { padding: 0; margin: 0; list-style: none; display: grid; gap: 8px; }
+.cms-product-picker li { border: 1px solid #8798aa66; border-radius: 6px; padding: 10px; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.cms-product-picker li span { flex: 1; min-width: 130px; }
+.cms-product-picker button,.cms-product-picker select { font: inherit; padding: 8px; border: 1px solid #8798aa; border-radius: 5px; background: transparent; color: inherit; }
+.cms-product-picker button { cursor: pointer; }
+.cms-product-picker button:disabled { opacity: .45; cursor: default; }
+.cms-product-picker option { color: #102f4b; background: #fff; }

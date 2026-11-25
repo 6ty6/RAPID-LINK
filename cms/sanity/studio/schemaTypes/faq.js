@@ -30,6 +30,7 @@ export const faq = defineType({
     defineField({
       name: 'category',
       title: 'Category',
+      description: 'Groups questions for editors. The public FAQ page currently shows one list ordered by Display order.',
       type: 'string',
       initialValue: 'General',
       options: { list: categoryOptions, layout: 'dropdown' },

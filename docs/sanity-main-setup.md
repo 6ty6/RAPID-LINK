@@ -39,6 +39,8 @@ The existing migration scripts are retained for deliberate operator use only. Do
 
 ## Verification on 25 November 2026
 
-Public reads succeeded for the existing dataset. Caleb enabled CORS for `https://rapidlinkgh.com`, `https://www.rapidlinkgh.com` and `http://127.0.0.1:5190`; subsequent HTTP checks returned 200 with the matching allowed origin and three published news records. The local CLI is not authenticated, so those project settings were changed by Caleb in Sanity, not by a migration or deployment script.
+Public reads succeeded for the existing dataset. Caleb enabled CORS for `https://rapidlinkgh.com`, `https://www.rapidlinkgh.com` and `http://127.0.0.1:5190`; subsequent HTTP checks returned 200 with the matching allowed origin and three published news records. The CLI is now authenticated through the authorised GitHub account. Read-only validation found 52 valid documents and one incomplete news draft, which remains unpublished and unchanged.
 
 Validation commands: `npm test`, `npm run build`, `npm run cms:build`, `npm run test:sanity`. Browser tests use isolated published-content fixtures and perform no writes to the live project.
+
+Editors: see [CMS editor guide](cms-editor-guide.md). Release operators: see [CMS deployment verification](cms-deployment-verification.md), including the optional Node server for real HTTP 404s. The existing Static Site remains unchanged until the separate Web Service configuration is deliberately deployed.
