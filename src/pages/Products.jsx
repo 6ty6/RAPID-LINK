@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { products } from '../content'
+import usePageContent from '../hooks/usePageContent.js'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
 const loanSectionHeadings = {
@@ -105,23 +106,25 @@ function PdfPreview({ url }) {
 
 export function ProductPage() {
   const { '*': key } = useParams()
+  const {data:catalog,loading}=usePageContent('products')
   const [ratesOpen, setRatesOpen] = useState(false)
-  const product = products[key]
+  const product = catalog.find(item=>item.slug===key)
+  if(loading)return <p role="status">Loading product information…</p>
   if (!product) return <NotFound />
   const action = product.loan
     ? key === 'deduct-at-source-loan'
       ? <a className="button" href="https://rapidlinkfinance.com/loanform" target="_blank" rel="noopener noreferrer">Apply for a Loan <span aria-hidden="true">→</span></a>
       : <Link className="button" to="/apply-loan">Apply for a Loan <span aria-hidden="true">→</span></Link>
     : <Link className="button" to="/open-account">Open an account</Link>
-  const sectionHeading = product.loan
+  const sectionHeading = product.sectionHeading || (product.loan
     ? loanSectionHeadings[key] || 'Support for your next step.'
-    : product.category === 'Investments' ? investmentSectionHeadings[key] || 'Put your money to work.' : savingsSectionHeadings[key] || 'Save for what matters.'
+    : product.category === 'Investments' ? investmentSectionHeadings[key] || 'Put your money to work.' : savingsSectionHeadings[key] || 'Save for what matters.')
 
   return <>
     <PageHero eyebrow={product.category} title={product.title} intro={product.intro} image={product.heroImage || product.image} />
     <Breadcrumb current={product.title} />
     {product.image ? <section className="section product-details-section"><div className="shell product-showcase">
-      <figure className="product-feature-image"><img src={product.image} alt={product.imageAlt || ''} /></figure>
+      <figure className="product-feature-image"><img data-product={key} src={product.image} alt={product.imageAlt || ''} /></figure>
       <div className="product-showcase-content">
         <p className="eyebrow">{product.title}</p>
         <h2>{sectionHeading}</h2>
@@ -140,6 +143,7 @@ export function ProductPage() {
 }
 
 export function Rates() {
+  const {data:page}=usePageContent('rates')
   const rows = [
     ['GH¢1,000–10,000', '4.25%', '6.00%', '8.50%'],
     ['GH¢10,001–25,000', '4.50%', '6.50%', '9.00%'],
@@ -148,18 +152,19 @@ export function Rates() {
   ]
 
   return <>
-    <PageHero eyebrow="Savings & investments" title="Fixed deposit rates" intro="Published rates as of 19 October 2026." image="/assets/rates-hero-v2.png" />
+    <PageHero {...page.hero} />
     <section className="section"><div className="shell narrow">
       <div className="table-wrap"><table>
-        <caption>Fixed deposit rates by amount and term</caption>
-        <thead><tr><th>Amount</th><th>91 days</th><th>182 days</th><th>365 days</th></tr></thead>
-        <tbody>{rows.map(row => <tr key={row[0]}>{row.map((cell, index) => index ? <td key={cell}>{cell}</td> : <th scope="row" key={cell}>{cell}</th>)}</tr>)}</tbody>
+        <caption>{page.caption}</caption>
+        <thead><tr><th>{page.amountLabel}</th><th>{page.days91Label}</th><th>{page.days182Label}</th><th>{page.days365Label}</th></tr></thead>
+        <tbody>{page.rows.map(row=><tr key={row.id}><th scope="row">{row.amount}</th><td>{row.days91}</td><td>{row.days182}</td><td>{row.days365}</td></tr>)}</tbody>
       </table></div>
     </div></section>
   </>
 }
 
 function RateGuideDialog({ onClose }) {
+  const {data:guide}=usePageContent('rateGuide')
   const [previousFocus] = useState(() => document.activeElement)
   const dialogRef = useRef(null)
   useEffect(() => {
@@ -170,19 +175,20 @@ function RateGuideDialog({ onClose }) {
     return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus() }
   }, [])
   return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby="rate-guide-title" onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
-    <header><h2 id="rate-guide-title">RapidLink Controller Loan Rates Guide</h2><div><a className="button button-secondary" href="/downloads/rate-chart.pdf" download>Download</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
-    <PdfPreview url="/downloads/rate-chart-preview.txt" />
+    <header><h2 id="rate-guide-title">{guide.dialogTitle}</h2><div><a className="button button-secondary" href={guide.file} download>{guide.downloadLabel}</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
+    <PdfPreview url={guide.preview} />
   </dialog>
 }
 
 export function RateChart() {
+  const {data:page}=usePageContent('rateGuide')
   const [isOpen, setIsOpen] = useState(false)
   return <>
-    <PageHero eyebrow="Controller loans" title="Rates Chart (2025)" intro="View or download RapidLink's controller (government) loan rates guide." image="/assets/rates-hero-v2.png" />
+    <PageHero {...page.hero} />
     <section className="section"><div className="shell narrow panel centered rate-guide">
-      <h2>Controller Loan Rates Guide</h2>
-      <p>Click below to view the controller (government) loan rates guide.</p>
-      <button className="button" type="button" onClick={() => setIsOpen(true)}>View document</button>
+      <h2>{page.title}</h2>
+      <p>{page.description}</p>
+      <button className="button" type="button" onClick={() => setIsOpen(true)}>{page.buttonLabel}</button>
     </div></section>
     {isOpen && <RateGuideDialog onClose={() => setIsOpen(false)} />}
   </>

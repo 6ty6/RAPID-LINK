@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { AppleMark, Check, GooglePlayMark } from '../icons'
 import { config } from '../config'
 import useSharedContent from '../hooks/useSharedContent.js'
+import useEditorialPage from '../hooks/useEditorialPage.js'
 
 export function PageMeta({ title, description, image = '/assets/rapidlink-logo.png', noIndex = false }) {
   const { pathname } = useLocation()
@@ -63,6 +64,8 @@ export function PageMeta({ title, description, image = '/assets/rapidlink-logo.p
 }
 
 export function PageHero({ eyebrow, title, intro, image }) {
+  const page=useEditorialPage()
+  if(page)({eyebrow,title,intro,image}=page.hero)
   return <>
     <PageMeta title={title} description={intro} image={image} />
     <section className={`page-hero${image ? ' has-image' : ''}`}>

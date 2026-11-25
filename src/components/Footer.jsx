@@ -4,6 +4,7 @@ import { ChevronDown } from '../icons'
 import { navGroups } from '../content'
 import useSiteInformation from '../hooks/useSiteInformation.js'
 import useSharedContent from '../hooks/useSharedContent.js'
+import usePageContent from '../hooks/usePageContent.js'
 
 const socialLinks = [
   { name: 'LinkedIn', href: 'https://www.linkedin.com/company/rapidlinkmicrofinance', icon: 'linkedin' },
@@ -32,6 +33,8 @@ function SocialIcon({ name }) {
 }
 
 export default function Footer() {
+  const {data:navigation}=usePageContent('navigation')
+  const navGroups=navigation.groups.map(group=>({...group,items:group.items.map(item=>[item.label,item.href])}))
   const { contact, branches, socialProfiles } = useSiteInformation()
   const { footer } = useSharedContent()
   const primaryBranch = branches[0]
@@ -73,6 +76,7 @@ export default function Footer() {
   }
 
   const dropdown = group => {
+    if(!group)return null
     const isOpen = openGroup === group.label
     return <div className="footer-menu-group" key={group.label} onPointerEnter={event => event.pointerType === 'mouse' && openGroupFromHover(group.label)} onPointerLeave={event => event.pointerType === 'mouse' && closeGroupFromHover()} onBlur={event => !event.currentTarget.contains(event.relatedTarget) && setOpenGroup('')}>
       <button className="footer-menu-trigger" type="button" aria-expanded={isOpen} aria-controls={groupId(group.label)} onClick={() => toggleGroup(group.label)}><span>{group.label}</span><ChevronDown size={16} /></button>

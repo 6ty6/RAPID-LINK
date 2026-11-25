@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { products as localProducts } from '../content'
+import usePageContent from '../hooks/usePageContent.js'
 
 const featuredSlugs = ['rapid-savings', 'rapid-susu', 'rapid-edu-grow', 'personal-loan', 'business-loan', 'fixed-deposit']
 export default function HomeProducts() {
-  const products = Object.entries(localProducts).map(([slug, data]) => ({ ...data, slug }))
-  const featured = featuredSlugs.map(slug => products.find(product => product.slug === slug)).filter(Boolean)
+  const {data:homepage}=usePageContent('homepage')
+  const {data:products}=usePageContent('products')
+  const featured = homepage.products.featuredSlugs.map(slug => products.find(product => product.slug === slug)).filter(Boolean)
   const trackRef = useRef(null)
   const [progress, setProgress] = useState(0)
   const [canScroll, setCanScroll] = useState(false)
@@ -35,14 +37,14 @@ export default function HomeProducts() {
     track.scrollTo({ left: (track.scrollWidth - track.clientWidth) * index / 3, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
   }
   return <section className="section home-products" aria-labelledby="home-products-title"><div className="shell">
-    <div className="section-heading"><p className="eyebrow">Explore products</p><h2 id="home-products-title">Products for your next step.</h2></div>
+    <div className="section-heading"><p className="eyebrow">{homepage.products.eyebrow}</p><h2 id="home-products-title">{homepage.products.title}</h2></div>
     <div className="product-slider" id="home-product-slider" ref={trackRef} tabIndex={0} aria-label="Browse products" onKeyDown={event => {
       if (event.target !== event.currentTarget || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
       event.preventDefault()
       if (event.key.startsWith('Arrow')) move(event.key === 'ArrowRight' ? 1 : -1)
       else event.currentTarget.scrollTo({ left: event.key === 'Home' ? 0 : event.currentTarget.scrollWidth, behavior: 'instant' })
     }}>{featured.map((product,index) => <Link className={`product-card product-photo-card ${index % 2 ? 'product-photo-card-blue' : 'product-photo-card-white'}`} key={product.slug} to={`/${product.slug}`} aria-labelledby={`product-${product.slug}-title`} aria-describedby={`product-${product.slug}-intro`}>
-      <span className="product-card-photo">{product.image && <img src={product.image} alt="" loading="lazy" decoding="async" />}</span>
+      <span className="product-card-photo">{product.image && <img data-product={product.slug} src={product.image} alt="" loading="lazy" decoding="async" />}</span>
       <div className="product-card-copy"><span className="product-card-category">{product.category}</span><h3 id={`product-${product.slug}-title`}>{product.title}</h3><p id={`product-${product.slug}-intro`}>{product.intro}</p></div>
       <span className="quick-access-fold" aria-hidden="true" />
     </Link>)}</div>

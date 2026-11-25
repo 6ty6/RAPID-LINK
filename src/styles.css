@@ -320,10 +320,10 @@ p { margin:.2em 0 1.15em; }
 @media(max-width:760px) { .home-products > .shell { width:calc(100% - 28px); } .product-slider { gap:16px; } .product-slider > .product-photo-card { flex-basis:88%; } }
 .product-card-photo { display:block; overflow:hidden; height:285px; background:#e3e9ef; flex:none; }
 .product-card-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s ease; }
-.product-card-photo img[src$="rapid-savings-custom-v1.png"],.product-feature-image img[src$="rapid-savings-custom-v1.png"] { object-position:center 20%; }
-.product-card-photo img[src$="rapid-susu-growth-v1.png"],.product-feature-image img[src$="rapid-susu-growth-v1.png"] { display:block; height:100%; object-fit:cover; object-position:center; }
-.product-card-photo img[src$="personal-loan-planning-v1.png"],.product-feature-image img[src$="personal-loan-planning-v1.png"] { object-position:center top; }
-.product-card-photo img[src$="business-loan-ghana-sme-v1.jpg"] { object-position:center; }
+.product-card-photo img[data-product="rapid-savings"],.product-feature-image img[data-product="rapid-savings"] { object-position:center 20%; }
+.product-card-photo img[data-product="rapid-susu"],.product-feature-image img[data-product="rapid-susu"] { display:block; height:100%; object-fit:cover; object-position:center; }
+.product-card-photo img[data-product="personal-loan"],.product-feature-image img[data-product="personal-loan"] { object-position:center top; }
+.product-card-photo img[data-product="business-loan"] { object-position:center; }
 .product-photo-card[href='/rapid-edu-grow'] img { object-position:35% center; }
 .product-card-copy { padding:26px 28px 86px; flex:1; min-height:250px; }
 .product-card-category { display:block; color:#ffab65; font-size:.72rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:10px; }
@@ -385,13 +385,13 @@ p { margin:.2em 0 1.15em; }
 .product-showcase { display:grid; grid-template-columns:minmax(350px,.88fr) minmax(0,1.12fr); gap:clamp(28px,4vw,52px); align-items:stretch; }
 .product-feature-image { min-width:0; min-height:510px; margin:0; overflow:hidden; border-radius:var(--radius); background:var(--soft); box-shadow:var(--shadow); }
 .product-feature-image img { width:100%; height:100%; object-fit:cover; object-position:center; }
-.product-feature-image:has(img[src$="business-loan-ghana-sme-v1.jpg"]) { min-height:0; aspect-ratio:3 / 2; align-self:start; }
-.product-feature-image img[src$="business-loan-ghana-sme-v1.jpg"] { display:block; object-fit:contain; object-position:center; }
-.product-card-photo img[src$="fixed-deposit-term-v1.png"],.product-feature-image img[src$="fixed-deposit-term-v1.png"] { display:block; object-fit:cover; object-position:center; }
-.product-feature-image img[src$="rapid-target-home-v1.png"] { display:block; object-position:center 25%; }
-.product-feature-image img[src$="advantage-market-adviser-v1.png"] { display:block; object-position:center 25%; }
-.product-feature-image img[src$="group-loan-market-v1.png"] { display:block; object-position:center 25%; }
-.product-feature-image img[src$="deduct-salary-nurse-v1.png"] { display:block; object-position:center 20%; }
+.product-feature-image:has(img[data-product="business-loan"]) { min-height:0; aspect-ratio:3 / 2; align-self:start; }
+.product-feature-image img[data-product="business-loan"] { display:block; object-fit:contain; object-position:center; }
+.product-card-photo img[data-product="fixed-deposit"],.product-feature-image img[data-product="fixed-deposit"] { display:block; object-fit:cover; object-position:center; }
+.product-feature-image img[data-product="rapid-target-savings"] { display:block; object-position:center 25%; }
+.product-feature-image img[data-product="advantage-investment"] { display:block; object-position:center 25%; }
+.product-feature-image img[data-product="group-loan"] { display:block; object-position:center 25%; }
+.product-feature-image img[data-product="deduct-at-source-loan"] { display:block; object-position:center 20%; }
 .product-showcase-content { min-width:0; padding-block:8px; display:flex; flex-direction:column; justify-content:center; }
 .product-showcase-content>h2 { margin-bottom:24px; }
 .product-compact-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }

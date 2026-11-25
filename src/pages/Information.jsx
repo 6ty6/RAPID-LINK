@@ -12,8 +12,13 @@ import usePublishedNews from '../hooks/usePublishedNews'
 import DigitalChannelCard from '../components/DigitalChannelCard'
 import { digitalChannelsPage } from '../content/digitalChannels.js'
 import { getSanityDigitalChannelsPage } from '../services/content/sanityContentRepository.js'
+import usePageContent from '../hooks/usePageContent.js'
+import PublicText from '../components/PublicText.jsx'
+import useEditorialPage from '../hooks/useEditorialPage.js'
 
 function AboutHero({ eyebrow = 'About RapidLink', title, intro, image, embeddedTitle = false, position = 'center', className = '' }) {
+  const page=useEditorialPage()
+  if(page)({eyebrow,title,intro,image}=page.hero)
   return <>
     <PageMeta title={title} description={intro} />
     <section className={`about-hero${embeddedTitle ? ' about-hero-embedded' : ''} ${className}`} style={{ '--about-image-position': position }}>
@@ -99,27 +104,24 @@ function PurposeFlipCard({ title, prompt, text, icon: Icon, variant = 'white' })
 }
 
 export function InstitutionalProfile() {
+  const {data:page}=usePageContent('institutional')
   const { data: counters } = useSanityContent('counters', getSanityImpactCounters, [
     { target:2, label:'Branches Nationwide', icon:'branches' }, { target:7000, suffix:'+', label:'Happy Customers', icon:'customers' },
-    { target:15, suffix:'+', label:'Years of Service', icon:'years' }, { target:5, suffix:'+', label:'Financial Products', icon:'products' },
+    { target:18, suffix:'+', label:'Years of Service', icon:'years' }, { target:5, suffix:'+', label:'Financial Products', icon:'products' },
   ])
   const icons = { branches:Building2, customers:Users, years:CalendarDays, products:WalletCards }
   return <>
-    <AboutHero className="institutional-hero" title="Our institutional profile" intro="A customer-centred deposit-taking microfinance company established in June 2010." image="/assets/about-institutional-profile.jpg" position="center 58%" />
-    <section className="section profile-copy-section"><div className="shell prose">
-      <p><strong><em>RapidLink Microfinance Ltd</em></strong>, a registered Non-Bank Financial Institution (Deposit Taking Microfinance Company) established in June 2010, is a trusted and customer-centric force in Ghana’s financial sector. Recognized by the Registrar General’s Department of Ghana, our mission is to transform lives and foster economic empowerment through inclusive and innovative financial services.</p>
-      <p>In October 2013, we received full authorization from the Bank of Ghana to operate as a licensed Microfinance Company — a milestone that affirms our dedication to regulatory compliance, financial integrity, and sustainable growth. Our headquarters, located in the heart of Accra at <strong>Asylum Down; 17 Farrar Avenue</strong>, symbolizes trust, accessibility, and our deep connection with the communities we serve. Over the years, RapidLink has built a strong reputation for providing responsive financial solutions, including savings, personal and group loans, salary advances, susu contributions, and digital banking services.</p>
-      <p>We are committed to bridging the financial gap for individuals, SMEs, and underserved sectors by offering tailored products that promote stability and progress. With a team of experienced professionals and a forward-thinking approach, RapidLink Microfinance continues to evolve — embracing technology, financial literacy, and customer care as the foundation of our promise to make finance more human, more inclusive, and more empowering.</p>
-    </div></section>
+    <AboutHero {...page.hero} className="institutional-hero" />
+    <section className="section profile-copy-section"><div className="shell prose"><PublicText value={page.body} /></div></section>
     <section className="purpose-section" aria-labelledby="purpose-title"><div className="shell">
-      <div className="purpose-heading"><p className="eyebrow">Our purpose</p><h2 id="purpose-title">The future we see. The work we do.</h2><p>Explore the vision that guides RapidLink and the mission that moves us forward.</p></div>
+      <div className="purpose-heading"><p className="eyebrow">{page.purpose.eyebrow}</p><h2 id="purpose-title">{page.purpose.title}</h2><p>{page.purpose.description}</p></div>
       <div className="purpose-flip-grid">
-        <PurposeFlipCard title="Our Vision" prompt="Where we are going" icon={Eye} text="A leading financial institution recognised for innovative solutions, a client-centric approach and commitment to social impact." />
-        <PurposeFlipCard variant="navy" title="Our Mission" prompt="How we will get there" icon={Target} text="To provide accessible, affordable and sustainable financial services to underserved individuals and small businesses, improving quality of life and fostering economic growth." />
+        <PurposeFlipCard title={page.purpose.visionTitle} prompt={page.purpose.visionPrompt} icon={Eye} text={page.purpose.visionText} />
+        <PurposeFlipCard variant="navy" title={page.purpose.missionTitle} prompt={page.purpose.missionPrompt} icon={Target} text={page.purpose.missionText} />
       </div>
     </div></section>
     <section className="impact-section" aria-labelledby="impact-title"><div className="shell impact-panel">
-      <div className="impact-heading"><p className="eyebrow">Our reach</p><h2 id="impact-title">Our Impact in Numbers</h2></div>
+      <div className="impact-heading"><p className="eyebrow">{page.impact.eyebrow}</p><h2 id="impact-title">{page.impact.title}</h2></div>
       <div className="impact-grid">
         {counters.map(counter => <ImpactCounter key={`${counter.id || counter.label}-${counter.target}`} {...counter} icon={icons[counter.icon] || Building2} />)}
       </div>
@@ -143,7 +145,8 @@ export const localPeople = [
 ]
 
 export function PeoplePage() {
-  const people = localPeople
+  const {data:page}=usePageContent('board')
+  const people = page.members
   const [selectedPerson, setSelectedPerson] = useState(null)
   const closeButtonRef = useRef(null)
   const triggerRef = useRef(null)
@@ -173,7 +176,7 @@ export function PeoplePage() {
   }
 
   return <>
-    <AboutHero title="Board of Directors" intro="Meet the experienced leaders guiding RapidLink’s governance, growth and commitment to financial inclusion." image="/assets/about-board-directors-v2.png" />
+    <AboutHero {...page.hero} />
     <section className="section board-profiles"><div className="shell board-profile-list">{people.map(person => <article className="board-profile-card" key={person.name}>
       <div className="board-profile-portrait"><img src={person.image} alt={`${person.name}, ${person.role}`} loading="lazy" /></div>
       <div className="board-profile-copy"><h2>{person.name}</h2><p className="board-profile-role">{person.role}</p><button className="board-profile-link" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}>View biography</button></div>
@@ -227,6 +230,7 @@ function NewsCard({ article }) {
 }
 
 export function Stories() {
+  const page=useEditorialPage()
   const { articles: newsArticles, loading, error } = usePublishedNews()
   const [category, setCategory] = useState('All News')
   const [query, setQuery] = useState('')
@@ -255,7 +259,7 @@ export function Stories() {
       </article>}
 
       <div className="news-browser" aria-labelledby="latest-news-title">
-        <div className="news-browser-heading"><div><p className="eyebrow">Latest updates</p><h2 id="latest-news-title">Explore the newsroom</h2></div><label className="news-search"><span className="visually-hidden">Search news</span><Search size={20} /><input type="search" placeholder="Search news" value={query} onChange={event => { setQuery(event.target.value); setVisibleCount(6) }} /></label></div>
+        <div className="news-browser-heading"><div><p className="eyebrow">{page?.listing.eyebrow}</p><h2 id="latest-news-title">{page?.listing.title}</h2></div><label className="news-search"><span className="visually-hidden">Search news</span><Search size={20} /><input type="search" placeholder={page?.listing.searchLabel} value={query} onChange={event => { setQuery(event.target.value); setVisibleCount(6) }} /></label></div>
         <div className="news-filter-row" aria-label="Filter news by category">{categories.map(item => <button type="button" className={category === item ? 'is-active' : ''} aria-pressed={category === item} onClick={() => selectCategory(item)} key={item}>{item}</button>)}</div>
         <p className="news-result-count" aria-live="polite">{filtered.length} {filtered.length === 1 ? 'story' : 'stories'} found</p>
         {loading ? <div className="career-empty panel" role="status"><h3>Loading approved news…</h3></div> : error && !newsArticles.length ? <div className="career-empty panel" role="alert"><Info size={30} /><h3>News is temporarily unavailable</h3><p>Please try again later or follow RapidLink on its official social channels.</p></div> : cardArticles.length ? <div className="news-grid">{cardArticles.map(article => <NewsCard article={article} key={article.slug} />)}</div> : <div className="career-empty panel"><Search size={30} /><h3>No stories found</h3><p>Try another search term or select a different category.</p></div>}
@@ -293,6 +297,7 @@ export function StoryArticle() {
 }
 
 export function Careers() {
+  const page=useEditorialPage()
   const { data: vacancies, loading, error: loadError } = useSanityContent('vacancies', getSanityPublishedVacancies, careerVacancies, { clearOnError: true })
   const [selectedVacancy, setSelectedVacancy] = useState(null)
   const [query, setQuery] = useState('')
@@ -312,7 +317,7 @@ export function Careers() {
     }
   }, [selectedVacancy])
 
-  const departments = ['All departments', 'Credit', 'Finance', 'Human Resources', 'Marketing/Sales', 'Operations', 'Strategy Support']
+  const departments = ['All departments', ...(page?.departments||[])]
   const normalizeDepartment = value => {
     const name = (value || '').trim().toLowerCase().replace(/\s+/g, ' ')
     if (name === 'hr') return 'human resources'
@@ -328,8 +333,8 @@ export function Careers() {
   return <>
     <AboutHero eyebrow="Careers" title="Work with RapidLink" intro="Be part of an institution focused on financial inclusion in Ghana." image="/assets/about-careers.jpeg" />
     <section className="section careers-section"><div className="shell">
-      <div className="careers-heading"><div><p className="eyebrow">Current opportunities</p><h2>Find your place on our team</h2><p>Explore available positions and discover where your experience can make an impact.</p></div><div className="careers-count"><strong>{visibleVacancies.length}</strong><span>{visibleVacancies.length === 1 ? 'position' : 'positions'}</span></div></div>
-      <div className="career-search-row"><label className="news-search"><span className="visually-hidden">Search vacancies</span><Search size={20} /><input type="search" placeholder="Search by role or location" value={query} onChange={event => setQuery(event.target.value)} /></label></div>
+      <div className="careers-heading"><div><p className="eyebrow">{page?.listing.eyebrow}</p><h2>{page?.listing.title}</h2><p>{page?.listing.description}</p></div><div className="careers-count"><strong>{visibleVacancies.length}</strong><span>{visibleVacancies.length === 1 ? 'position' : 'positions'}</span></div></div>
+      <div className="career-search-row"><label className="news-search"><span className="visually-hidden">Search vacancies</span><Search size={20} /><input type="search" placeholder={page?.listing.searchLabel} value={query} onChange={event => setQuery(event.target.value)} /></label></div>
       <div className="news-filter-row career-departments" role="group" aria-label="Filter vacancies by department">{departments.map(item => <button type="button" key={item} className={department === item ? 'is-active' : ''} aria-pressed={department === item} onClick={() => setDepartment(item)}>{item === 'All departments' ? 'All Departments' : item}</button>)}</div>
       {loading ? <div className="career-empty panel" role="status"><h3>Loading opportunities…</h3></div> : loadError && !vacancies.length ? <div className="career-empty panel" role="alert"><Briefcase size={30} /><h3>Opportunities are temporarily unavailable</h3><p>Please contact <a href="mailto:info@rapidlinkfinance.com">info@rapidlinkfinance.com</a> for approved vacancy information.</p></div> : visibleVacancies.length ? <div className="vacancy-grid">{visibleVacancies.map(vacancy => <article className="vacancy-card" key={vacancy.id}>
         <div className="vacancy-card-top"><div className="vacancy-icon"><Briefcase size={23} /></div><span className={`vacancy-status is-${vacancy.status}`}>{vacancy.status === 'open' ? 'Open' : 'Closed'}</span></div>
@@ -358,6 +363,7 @@ function Branch({ title, address, digital, phones, email }) {
 }
 
 export function Contact() {
+  const page=useEditorialPage()
   const { contact, branches: records } = useSiteInformation()
   const branches = records.map(branch => ({ ...branch, digital:branch.digitalAddress, query:`${branch.mapName}, ${branch.fullAddress}` }))
   const mapUrl = branches.length === 2
@@ -373,9 +379,9 @@ export function Contact() {
       <div className="shell contact-map-panel">
         <div className="contact-map-copy">
           <span className="contact-map-icon" aria-hidden="true"><MapPin size={28} /></span>
-          <p className="eyebrow">Find a branch</p>
-          <h2 id="branch-map-title">Visit either Accra location</h2>
-          <p>View both RapidLink branches on the map and choose directions to the location most convenient for you.</p>
+          <p className="eyebrow">{page?.listing.eyebrow}</p>
+          <h2 id="branch-map-title">{page?.listing.title}</h2>
+          <p>{page?.listing.description}</p>
           <div className="contact-map-locations">
             {branches.map(branch => <article className="contact-map-location" key={branch.title}>
               <h3>{branch.title}</h3>

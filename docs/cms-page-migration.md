@@ -59,4 +59,37 @@ npm.cmd run verify:calculator-page
 
 This importer creates a separate page singleton and uploads the existing banner/card images. It skips existing pages or drafts and never rewrites pricing settings or approvals.
 
-Next proposed page: homepage slides. Products and board profiles remain in code until their own migration stage.
+## Remaining public content: completed 25 November 2026
+
+The following stages are imported into the production Sanity dataset and connected to the website. Studio groups them by page so editors can find the relevant section directly.
+
+| Studio section | Editable content |
+| --- | --- |
+| Homepage | Flyers, product selection/order, service pathway, planning tools and news headings |
+| Products | All ten current products, introductions, benefits, requirements and photographs |
+| About RapidLink | Institutional introduction, mission, vision and impact heading; existing counters remain separate |
+| Board of Directors | Three existing profiles, photographs and biographies |
+| News / Careers / FAQs / Contact | Page banners and headings; careers departments; existing article, vacancy, question and contact records remain connected |
+| Rates & documents | Existing public rates table and rate-guide PDF/preview |
+| Account opening / Loan guidance | Current availability notice and application guidance copy |
+| Abena | Welcome, suggestions, prepared answers, follow-up variations, service links and WhatsApp destination |
+| Navigation / Shared website content | Menus, footer and app-download promotion |
+
+The editorial import creates 23 records and skips any existing published record or draft. The footer/app singleton was also imported and verified. No existing pricing, approval, staff draft or application data was overwritten. The published homepage product order (Susu before Rapid Savings) was retained and copied into the fallback.
+
+Fallback definitions live in `src/content/remainingCms.js`, `editorialFallbacks.js` and `otherPageFallbacks.js`, alongside the earlier dedicated Digital Channels/calculator fallbacks. Native structured fields, image/file pickers, rich text and reorderable lists are used instead of raw JSON. Publish saves public changes; the website normally refreshes within five seconds plus network time, using the API first and CDN on failure.
+
+```powershell
+cd cms/sanity/studio
+npm.cmd run migrate:editorial:dry-run
+npm.cmd run migrate:editorial -- -- --only=homepage
+npm.cmd run verify:editorial
+```
+
+The `--only` stage names are `homepage`, `products`, `institutional`, `board`, `rates`, `rateGuide`, `pages`, `account`, `loanGuidance`, `navigation` and `abena`. Verification compares initial imported content with the fallback; later intentional editor changes can produce an expected difference. Do not rerun an overwrite script to remove that difference.
+
+Calculation formulas, approval enforcement, unavailable/privacy responses, Abena's intent matching, interactive layout, animations and form submission controls stay in code. Sanity contains public information only. No unavailable forms, financial statements, legal wording or business figures were invented.
+
+Validation: 61 unit tests, 12 desktop/mobile Sanity browser tests, website build and Studio build passed. Live-data browser checks and import verification are recorded with this migration work.
+
+For Sanity-hosted PDF previews, Render's Content-Security-Policy must include `https://cdn.sanity.io` in `connect-src`. The repository configuration includes it; any manually configured Render header must also be updated.

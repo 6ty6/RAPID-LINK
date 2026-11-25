@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { Phone, X } from '../icons'
 import './HelpAssistant.css'
 import { getConversationalReply, whatsappChatbotUrl } from '../content/helpReplies'
+import usePageContent from '../hooks/usePageContent.js'
 
 const suggestions = [
   ['Find a branch', 'Where are your branches?'],
@@ -34,6 +35,10 @@ function Character({ mood }) {
 }
 
 export default function HelpAssistant() {
+  const {data:abena}=usePageContent('abena')
+  const suggestions=abena.suggestions.map(item=>[item.label,item.question])
+  const welcome={id:'welcome',role:'assistant',text:abena.welcome,links:[]}
+  const whatsappChatbotUrl=abena.whatsappUrl
   const { pathname, hash } = useLocation()
   const staffPage = ['/content-management', '/career-management', '/accept-invite'].includes(pathname.replace(/\/$/, ''))
   const [hidden, setHidden] = useState(() => { try { return sessionStorage.getItem('rapidlink-help-hidden') === '1' } catch { return false } })
@@ -41,6 +46,7 @@ export default function HelpAssistant() {
   const [mood, setMood] = useState('peek')
   const [question, setQuestion] = useState('')
   const [messages, setMessages] = useState([welcome])
+  useEffect(()=>{setMessages(current=>current.length===1 && current[0].id==='welcome'?[{...current[0],text:abena.welcome}]:current)},[abena.welcome])
   const [pending, setPending] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
   const questionInput = useRef(null)
@@ -105,7 +111,13 @@ export default function HelpAssistant() {
   function send(text) {
     const value = text.trim()
     if (!value || value.length > 300 || pendingLock.current) return
-    const reply = getConversationalReply(value, { lastTopic: lastTopic.current, turn: turn.current++ })
+    let reply = getConversationalReply(value, { lastTopic: lastTopic.current, turn: turn.current++ })
+    if(!['privacy','unavailable'].includes(reply.id)){
+      const topic=abena.topics.find(item=>item.id===reply.id)
+      const followUp=['tell me more','more please','yes please','please continue','and then','what next'].includes(value.toLowerCase().replace(/[!.?]+$/,'').trim())
+      const choices=followUp&&topic?.followUpVariations?.length?topic.followUpVariations:topic?.variations
+      reply=choices?.length?{...reply,text:reply.id==='identity'&&/how are you/i.test(value)?abena.howAreYouReply:choices[(turn.current-1)%choices.length],links:topic.links.map(item=>[item.label,item.href])}:getConversationalReply('unconfirmed information')
+    }
     if (!['help', 'greeting', 'thanks', 'unavailable', 'privacy', 'identity', 'goodbye'].includes(reply.id)) lastTopic.current = reply.id
     if (['unavailable', 'privacy'].includes(reply.id)) lastTopic.current = 'contact'
     const messageId = ++sequence.current

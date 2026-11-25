@@ -6,6 +6,7 @@ import usePublishedNews from '../hooks/usePublishedNews'
 import HomeFinancialTools from '../components/HomeFinancialTools'
 import HomeProducts from '../components/HomeProducts'
 import HomeServicePathway from '../components/HomeServicePathway'
+import usePageContent from '../hooks/usePageContent.js'
 
 export const localSlides = [
   { eyebrow: 'Everyday banking', title: 'Build steadily. Move confidently.', text: 'Practical savings, loans and digital channels for the moments that matter.', image: '/assets/hero-controller.png', link: '/apply-loan', action: 'Explore savings' },
@@ -16,7 +17,8 @@ export const localSlides = [
 
 
 function HeroSlider() {
-  const slides = localSlides
+  const {data:page}=usePageContent('homepage')
+  const slides = page.slides
   const [current, setCurrent] = useState(0)
   const active = slides.length ? current % slides.length : 0
   const [interactionPaused, setInteractionPaused] = useState(false)
@@ -37,7 +39,7 @@ function HeroSlider() {
     <h1 className="visually-hidden">RapidLink savings, loans and financial services</h1>
     <div className="flyer-stage">
       {slides.map((item, index) => <div className={`hero-media ${index === active ? 'is-active' : ''}`} aria-hidden={index !== active} key={item.id || item.title}>
-        <Link className="flyer-link" to={item.link || "/contact"} tabIndex={index === active ? 0 : -1} aria-label={item.imageAlt || (index === 0 ? 'Back to School Support Loan information' : item.title)}><picture><img src={item.image} alt={item.imageAlt || `RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture><span className="flyer-link-hint" aria-hidden="true"><ArrowRight size={28} /></span></Link>
+        <Link className="flyer-link" to={item.link || "/contact"} tabIndex={index === active ? 0 : -1} aria-label={item.linkLabel || (index === 0 ? 'Back to School Support Loan information' : item.title)}><picture><img src={item.image} alt={item.imageAlt || `RapidLink promotional flyer: ${item.title}`} loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'low'} decoding="async" /></picture><span className="flyer-link-hint" aria-hidden="true"><ArrowRight size={28} /></span></Link>
       </div>)}
       <button className="flyer-arrow flyer-previous" onClick={() => move(-1)} aria-label="Previous slide"><ChevronLeft /></button>
       <button className="flyer-arrow flyer-next" onClick={() => move(1)} aria-label="Next slide"><ChevronRight /></button>
@@ -50,26 +52,27 @@ function HeroSlider() {
 }
 
 export default function Home() {
+  const {data:page}=usePageContent('homepage')
   const { articles, loading, error } = usePublishedNews()
   const latestNews = loading || error ? [] : [...articles].sort((left, right) => right.publishedAt.localeCompare(left.publishedAt)).slice(0, 3)
 
   return <>
-    <PageMeta title="Home" description="Explore RapidLink savings, loans, investments and digital banking services in Ghana." />
+    <PageMeta title={page.meta.title} description={page.meta.description} />
     <HeroSlider />
     <HomeProducts />
     <HomeServicePathway />
     <HomeFinancialTools />
     <section className="section home-newsroom" aria-labelledby="home-newsroom-title"><div className="shell">
-      <div className="home-newsroom-heading"><div><p className="eyebrow">Latest news</p><h2 id="home-newsroom-title">Updates from RapidLink</h2></div><Link className="text-link" to="/stories">View all news</Link></div>
+      <div className="home-newsroom-heading"><div><p className="eyebrow">{page.news.eyebrow}</p><h2 id="home-newsroom-title">{page.news.title}</h2></div><Link className="text-link" to="/stories">{page.news.allLabel}</Link></div>
       <div className={`home-newsroom-layout ${latestNews.length === 1 ? 'has-one-story' : ''}`}>
         {latestNews.slice(0, 1).map(article => <article className="home-newsroom-feature" key={article.slug}>
           {article.image && <div className="home-newsroom-image"><img src={article.image} alt={article.imageAlt || ''} loading="lazy" decoding="async" onError={event => { event.currentTarget.parentElement.hidden = true }} /></div>}
           <p className="notice-category">{article.category}</p><h3><Link to={`/stories/${article.slug}`}>{article.title}</Link></h3><p className="home-newsroom-summary">{article.summary}</p>
-          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story</Link>
+          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>{page.news.storyLabel}</Link>
         </article>)}
         {latestNews.length > 1 && <div className="home-newsroom-briefs">{latestNews.slice(1).map(article => <article className="home-newsroom-brief" key={article.slug}>
           <p className="notice-category">{article.category}</p><h3><Link to={`/stories/${article.slug}`}>{article.title}</Link></h3><p className="home-newsroom-summary">{article.summary}</p>
-          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>Read full story</Link>
+          <Link className="text-link" to={`/stories/${article.slug}`} aria-label={`Read ${article.title}`}>{page.news.storyLabel}</Link>
         </article>)}</div>}
       </div>
       {!latestNews.length && <p className="home-newsroom-summary" role="status">{loading ? 'Loading the latest updates…' : error ? 'News is temporarily unavailable. Please check back soon.' : 'There are no published updates at the moment. Please check back soon.'}</p>}

@@ -76,7 +76,7 @@ describe('RapidLink site', () => {
     expect(screen.getByText('Asylum Down; 17 Farrar Avenue')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
     expect(screen.getByText('7,000+')).toBeInTheDocument()
-    expect(screen.getByText('15+')).toBeInTheDocument()
+    expect(screen.getByText('18+')).toBeInTheDocument()
     expect(screen.getByText('5+')).toBeInTheDocument()
   })
 

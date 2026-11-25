@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { siteInformation } from '../../src/content/site.js'
 import { loanCalculatorSettings } from '../../src/content/loanCalculator.js'
 import { digitalChannelsPage } from '../../src/content/digitalChannels.js'
+import {remainingCms} from '../../src/content/remainingCms.js'
 
 async function mockSanity(page, { empty = false, fail = false, apiDown = false } = {}) {
   await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//, async route => {
@@ -20,6 +21,38 @@ async function mockSanity(page, { empty = false, fail = false, apiDown = false }
   })
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
+
+test('editorial page migrations preserve products, board, rates, navigation and prepared answers',async({page})=>{
+ await mockSanity(page)
+ await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+  const query=new URL(route.request().url()).searchParams.get('query')
+  const model=Object.values(remainingCms).find(model=>query.includes(`_type == "${model.schema}"`))
+  if(!model)return route.fallback()
+  await route.fulfill({contentType:'application/json',body:JSON.stringify({result:model.collection?model.content:[model.content]})})
+ })
+ await page.goto('/home');await ready(page)
+ await expect(page.locator('.product-photo-card')).toHaveCount(6)
+ await page.goto('/business-loan');await ready(page)
+ await expect(page.getByRole('heading',{name:'Business Loans',exact:true,level:1})).toBeVisible()
+ await expect(page.locator('.product-feature-image img')).toHaveCSS('object-fit','contain')
+ await page.goto('/board-of-directors');await ready(page)
+ await expect(page.locator('.board-profile-card')).toHaveCount(3)
+ await page.getByRole('button',{name:'View profile for Edward Opare-Donkor'}).click()
+ await expect(page.getByRole('dialog')).toContainText('over two decades')
+ await page.keyboard.press('Escape')
+ await page.goto('/institutional-profile');await ready(page)
+ await expect(page.locator('.profile-copy-section')).toContainText('trusted and customer-centric')
+ await page.getByRole('button',{name:'Show details for Our Mission'}).click()
+ await expect(page.getByRole('button',{name:'Show front of Our Mission'})).toBeVisible()
+ await page.goto('/rates');await ready(page)
+ await expect(page.locator('tbody tr')).toHaveCount(4)
+ await page.goto('/open-account');await ready(page)
+ await expect(page.locator('form')).toHaveCount(0)
+ await expect(page.getByRole('heading',{name:'Online account opening is on its way.'})).toBeVisible()
+  await page.getByRole('button',{name:'Open Abena',exact:true}).click()
+  await page.getByRole('button',{name:'Meet RapidLink',exact:true}).click()
+  await expect(page.getByRole('log')).toContainText('Institutional Profile')
+})
 
 test('calculator page and homepage card use CMS wording without changing calculations',async({page})=>{
   await mockSanity(page)

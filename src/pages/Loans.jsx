@@ -7,6 +7,7 @@ import useLoanCalculatorSettings from '../hooks/useLoanCalculatorSettings.js'
 import useSiteInformation from '../hooks/useSiteInformation.js'
 import useCalculatorPage from '../hooks/useCalculatorPage.js'
 import {formatCalculatorText} from '../content/calculatorPage.js'
+import usePageContent from '../hooks/usePageContent.js'
 
 export const LOAN_CALCULATOR_TERMS = loanCalculatorSettings
 
@@ -45,21 +46,22 @@ export function calculateLoanEstimate(principal, duration, frequency = 'monthly'
 }
 
 export function ApplyLoan() {
+  const {data:page}=usePageContent('loanGuidance')
   const { contact } = useSiteInformation()
   if (config.generalLoanPortal) {
     return <>
-      <PageHero eyebrow="Loans" title="Continue your loan application" intro="You’ll continue to RapidLink’s loan application portal." />
-      <section className="section"><div className="shell narrow panel centered"><a className="button" href={config.generalLoanPortal} target="_blank" rel="noopener noreferrer">Continue to the loan portal</a><p>No personal information is added to the link.</p></div></section>
+      <PageHero {...page.connected} />
+      <section className="section"><div className="shell narrow panel centered"><a className="button" href={config.generalLoanPortal} target="_blank" rel="noopener noreferrer">{page.connected.actionLabel}</a><p>{page.connected.notice}</p></div></section>
     </>
   }
 
   return <>
-    <PageHero eyebrow="Loans" title="Loan application guidance" intro="RapidLink’s general online loan portal is not yet verified." />
+    <PageHero {...page.pending} />
     <section className="section"><div className="shell narrow panel">
-      <div className="callout warning"><CircleAlert /><div><h2>Online application connection pending</h2><p>The existing general application page is marked “Coming Soon.” MoneyQube is verified only for one-month nano loans, so it is not used as a general application portal.</p></div></div>
-      <h2>Speak with the loans team</h2>
+      <div className="callout warning"><CircleAlert /><div><h2>{page.pending.statusTitle}</h2><p>{page.pending.description}</p></div></div>
+      <h2>{page.pending.supportTitle}</h2>
       <p>For Controller or SME loan assistance, call {contact.loanSupportLines.map((line, index) => <span key={line.href}>{index > 0 && ' or '}<a href={line.href}>{line.display}</a></span>)}.</p>
-      <div className="button-row">{contact.loanSupportLines[0] && <a className="button" href={contact.loanSupportLines[0].href}><Phone size={18} /> Call the loans team</a>}<a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">MoneyQube nano loans</a></div>
+      <div className="button-row">{contact.loanSupportLines[0] && <a className="button" href={contact.loanSupportLines[0].href}><Phone size={18} /> {page.pending.callLabel}</a>}<a className="button button-secondary" href={config.moneyQubeUrl} target="_blank" rel="noopener noreferrer">{page.pending.nanoLabel}</a></div>
     </div>
     </section>
   </>

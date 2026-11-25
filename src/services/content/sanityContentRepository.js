@@ -161,7 +161,7 @@ const sharedSettingsQuery = `*[_type == "sharedSettings" && _id == "rapidlink-sh
   companyLinks[]{label, href}
 }`
 
-async function querySanity(query, params = {}) {
+export async function querySanity(query, params = {}) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
   async function read(host) {
     const endpoint = new URL(`https://${projectId}.${host}.sanity.io/v${apiVersion}/data/query/${dataset}`)

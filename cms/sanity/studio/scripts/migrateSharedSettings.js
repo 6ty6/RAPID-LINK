@@ -40,6 +40,11 @@ const imagePath = resolve(repositoryRoot, 'public', sharedContent.appDownload.im
 const filename = imagePath.split(/[\\/]/).pop()
 const { getCliClient } = await import('sanity/cli')
 const client = getCliClient({ apiVersion: '2026-11-20' })
+const existing = await client.getDocuments(['rapidlink-shared-settings', 'drafts.rapidlink-shared-settings'])
+if (existing.some(Boolean)) {
+  console.log('Shared settings already exist; preserved published content and drafts unchanged.')
+  process.exit(0)
+}
 const asset = await client.assets.upload('image', await readFile(imagePath), {
   filename,
   contentType: imageTypes[extname(imagePath).toLowerCase()] || 'application/octet-stream',
@@ -68,9 +73,6 @@ const document = {
   companyLinks: links(sharedContent.footer.companyLinks, 'company'),
 }
 
-await client.transaction()
-  .createOrReplace(document)
-  .delete(`drafts.${document._id}`)
-  .commit()
+await client.createIfNotExists(document)
 
 console.log('Sanity footer and app-promotion migration completed successfully.')

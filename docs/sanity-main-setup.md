@@ -33,7 +33,7 @@ Every public read tries the uncached Sanity API first. Network errors, HTTP fail
 
 Open pages recheck every five seconds while visible, and immediately when returning to the tab or focusing the window. Readers of the same content type share one request and timer. There is no 30-second completed-response cache. Unchanged settings retain their identity, so background checks do not clear calculator results. New published settings clear estimates calculated with the previous figures. Updates normally appear within the next five-second check plus network time; CDN fallback may be older during an API outage. Unpublished drafts remain excluded. Direct API polling uses more Sanity API requests than CDN-first reading.
 
-Products, board biographies, hero banners and layout remain in website code: the current Studio has no models for these. Abena's prepared answer library also remains in code. The custom CMS experiment is not enabled on main. Customer account/loan submissions are not stored in Sanity.
+Products, board biographies, page banners, homepage sections, rates documents, navigation and Abena's prepared answers now have connected Sanity models. Layout, animations, calculation formulas and Abena's intent matching remain in website code. The custom CMS experiment is not enabled on main. Customer account/loan submissions are not stored in Sanity. See `docs/cms-page-migration.md` for the completed page groups and import commands.
 
 The existing migration scripts are retained for deliberate operator use only. Do not run them as part of a routine publish or deployment; some scripts write records.
 

@@ -4,10 +4,13 @@ import { ChevronDown, Menu, Phone, X } from '../icons'
 import { navGroups } from '../content'
 import AnnouncementBar from './AnnouncementBar'
 import useSiteInformation from '../hooks/useSiteInformation.js'
+import usePageContent from '../hooks/usePageContent.js'
 
 const cx = (...values) => values.filter(Boolean).join(' ')
 
 export default function Header() {
+  const {data:navigation}=usePageContent('navigation')
+  const navGroups=navigation.groups.map(group=>({...group,items:group.items.map(item=>[item.label,item.href])}))
   const { contact } = useSiteInformation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [openGroup, setOpenGroup] = useState('')
@@ -81,15 +84,15 @@ export default function Header() {
             {contact.supportLines.map(line => <div key={line.id}><span>{line.label}</span><a href={line.href}>{line.display}</a></div>)}
           </div>
           <div className="header-actions">
-            <Link className="button button-secondary" to="/open-account">Open an Account</Link>
-            <Link className="button" to="/apply-loan">Apply for a Loan</Link>
+            <Link className="button button-secondary" to="/open-account">{navigation.labels.openAccount}</Link>
+            <Link className="button" to="/apply-loan">{navigation.labels.applyLoan}</Link>
           </div>
         </div>
         <button className="menu-toggle" aria-expanded={mobileOpen} aria-controls="main-nav" onClick={() => setMobileOpen(!mobileOpen)}>{mobileOpen ? <X /> : <Menu />}<span>Menu</span></button>
       </div>
       <div className="nav-bar"><div className="shell nav-inner">
           <nav id="main-nav" className={cx('main-nav', mobileOpen && 'is-open')} aria-label="Main navigation">
-            <NavLink to="/home">Home</NavLink>
+            <NavLink to="/home">{navigation.labels.home}</NavLink>
             {navGroups.map(group => <div
               className="nav-group"
               key={group.label}
@@ -109,11 +112,11 @@ export default function Header() {
               </button>
               <div id={groupId(group.label)} className={cx('nav-dropdown', openGroup === group.label && 'is-open')}>{group.items.map(([label, href]) => <NavLink key={href} to={href}>{label}</NavLink>)}</div>
             </div>)}
-            <NavLink to="/digital-channels">Digital Channels</NavLink>
-            <NavLink to="/stories">News</NavLink>
-            <NavLink to="/faqs">FAQs</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-            <div className="nav-actions"><Link className="button button-secondary" to="/open-account">Open an Account</Link><Link className="button" to="/apply-loan">Apply for a Loan</Link></div>
+            <NavLink to="/digital-channels">{navigation.labels.digital}</NavLink>
+            <NavLink to="/stories">{navigation.labels.news}</NavLink>
+            <NavLink to="/faqs">{navigation.labels.faqs}</NavLink>
+            <NavLink to="/contact">{navigation.labels.contact}</NavLink>
+            <div className="nav-actions"><Link className="button button-secondary" to="/open-account">{navigation.labels.openAccount}</Link><Link className="button" to="/apply-loan">{navigation.labels.applyLoan}</Link></div>
           </nav>
       </div></div>
     </header>

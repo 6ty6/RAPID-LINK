@@ -4,6 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "migrate:editorial": "sanity exec scripts/migrateEditorialPages.js --with-user-token",
+    "migrate:editorial:dry-run": "node scripts/migrateEditorialPages.js --dry-run",
+    "verify:editorial": "sanity exec scripts/verifyEditorialPages.js --with-user-token",
     "migrate:calculator-page": "sanity exec scripts/migrateCalculatorPage.js --with-user-token",
     "migrate:calculator-page:dry-run": "node scripts/migrateCalculatorPage.js --dry-run",
     "verify:calculator-page": "sanity exec scripts/verifyCalculatorPage.js --with-user-token",

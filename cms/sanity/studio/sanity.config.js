@@ -4,6 +4,8 @@ import { schemaTypes } from '../schemaTypes/index.js'
 import { structure } from './structure.js'
 import { rapidLinkTheme } from './theme.js'
 import { RapidLinkIcon, RapidLinkNavbar } from './RapidLinkBrand.jsx'
+import {remainingCms} from '../../../src/content/remainingCms.js'
+const singletonTypes=['siteSettings','loanCalculatorSettings','sharedSettings','digitalChannelsPage','loanCalculatorPage',...Object.values(remainingCms).filter(model=>!model.collection).map(model=>model.schema)]
 
 export default defineConfig({
   name: 'rapidlink-cms-evaluation',
@@ -15,10 +17,10 @@ export default defineConfig({
   plugins: [structureTool({ structure })],
   schema: {
     types: schemaTypes,
-    templates: templates => templates.filter(template => !['siteSettings', 'loanCalculatorSettings', 'sharedSettings', 'digitalChannelsPage', 'loanCalculatorPage'].includes(template.schemaType)),
+    templates: templates => templates.filter(template => !singletonTypes.includes(template.schemaType)),
   },
   document: {
-    actions: (actions, context) => ['siteSettings', 'loanCalculatorSettings', 'sharedSettings', 'digitalChannelsPage', 'loanCalculatorPage'].includes(context.schemaType)
+    actions: (actions, context) => singletonTypes.includes(context.schemaType)
       ? actions.filter(action => !['delete', 'duplicate'].includes(action.action))
       : actions,
   },
