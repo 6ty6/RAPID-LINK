@@ -29,7 +29,9 @@ Public defaults are documented in `.env.example`. Existing hosting overrides mus
 - Institutional counters read the published counter records.
 - Calculator settings must be active, approved, effective and structurally valid. Incomplete or provisional records retain the approved bundled settings. Formula changes remain code changes; edits to live settings clear previous results.
 
-The site reuses public requests for 30 seconds and rechecks when returning to a browser tab or reopening a page. CDN propagation may add a short delay after publishing. Refresh to retrieve published changes; unpublished drafts never appear through this connection.
+Every public read tries the uncached Sanity API first. Network errors, HTTP failures, malformed responses or a five-second API timeout trigger a CDN retry, with its own five-second timeout. A successful empty API result is authoritative and never triggers CDN fallback. If both fail, the existing unavailable/fallback behaviour applies.
+
+Open pages recheck every five seconds while visible, and immediately when returning to the tab or focusing the window. Readers of the same content type share one request and timer. There is no 30-second completed-response cache. Unchanged settings retain their identity, so background checks do not clear calculator results. New published settings clear estimates calculated with the previous figures. Updates normally appear within the next five-second check plus network time; CDN fallback may be older during an API outage. Unpublished drafts remain excluded. Direct API polling uses more Sanity API requests than CDN-first reading.
 
 Products, board biographies, hero banners and layout remain in website code: the current Studio has no models for these. Abena's prepared answer library also remains in code. The custom CMS experiment is not enabled on main. Customer account/loan submissions are not stored in Sanity.
 

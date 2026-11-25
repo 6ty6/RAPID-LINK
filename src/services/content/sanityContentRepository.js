@@ -134,26 +134,26 @@ const sharedSettingsQuery = `*[_type == "sharedSettings" && _id == "rapidlink-sh
 
 async function querySanity(query, params = {}) {
   if (!isSanityRepositoryConfigured) throw new Error('Sanity public-content configuration is incomplete.')
-  const endpoint = new URL(`https://${projectId}.apicdn.sanity.io/v${apiVersion}/data/query/${dataset}`)
-  endpoint.searchParams.set('query', query)
-  for (const [key, value] of Object.entries(params)) {
-    endpoint.searchParams.set(`$${key}`, JSON.stringify(value))
+  async function read(host) {
+    const endpoint = new URL(`https://${projectId}.${host}.sanity.io/v${apiVersion}/data/query/${dataset}`)
+    endpoint.searchParams.set('query', query)
+    for (const [key, value] of Object.entries(params)) endpoint.searchParams.set(`$${key}`, JSON.stringify(value))
+    endpoint.searchParams.set('perspective', 'published')
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+    try {
+      const response = await fetch(endpoint, { method:'GET', cache:host === 'api' ? 'no-store' : 'default', credentials:'omit', signal:controller.signal, headers:{Accept:'application/json'} })
+      if (!response.ok) throw new Error('Sanity could not provide public content.')
+      const payload = await response.json()
+      if (!Array.isArray(payload.result)) throw new Error('Sanity returned an unexpected public-content response.')
+      return payload.result
+    } finally { clearTimeout(timeout) }
   }
-  endpoint.searchParams.set('perspective', 'published')
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 10000)
-  let response
   try {
-    response = await fetch(endpoint, { method: 'GET', credentials: 'omit', signal: controller.signal, headers: { Accept: 'application/json' } })
-  } finally { clearTimeout(timeout) }
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(error?.error?.description || error?.message || 'Sanity could not provide public content.')
+    return await read('api')
+  } catch {
+    return read('apicdn')
   }
-  const payload = await response.json()
-  if (!Array.isArray(payload.result)) throw new Error('Sanity returned an unexpected public-content response.')
-  return payload.result
 }
 
 export async function getSanityPublishedNews() {

@@ -8,7 +8,9 @@ describe('Sanity public content', () => {
     respond([{slug:'notice',title:'Published notice'}])
     expect((await getSanityPublishedNews())[0].title).toBe('Published notice')
     const [endpoint,options]=fetch.mock.calls[0]
-    expect(endpoint.hostname).toBe('04unhu7g.apicdn.sanity.io')
+    expect(endpoint.hostname).toBe('04unhu7g.api.sanity.io')
+    expect(options.cache).toBe('no-store')
+    expect(fetch).toHaveBeenCalledTimes(1)
     expect(endpoint.searchParams.get('perspective')).toBe('published')
     expect(endpoint.searchParams.get('query')).toContain('isPublished == true')
     expect(options.credentials).toBe('omit')
@@ -19,6 +21,33 @@ describe('Sanity public content', () => {
     expect(await getSanityPublishedVacancies()).toEqual([])
     respond([{title:'Officer',employmentType:'Full-time',applicationEmail:'jobs@example.test',isPublished:true}])
     expect((await getSanityPublishedVacancies())[0]).toMatchObject({employment_type:'Full-time',application_email:'jobs@example.test',responsibilities:[]})
+  })
+  it.each(['network', 'http', 'malformed'])('uses the CDN when the API has a %s failure', async failure => {
+    const fetchMock = vi.fn()
+    if (failure === 'network') fetchMock.mockRejectedValueOnce(Error('offline'))
+    else fetchMock.mockResolvedValueOnce({ok:failure !== 'http',json:async()=>({result:null})})
+    fetchMock.mockResolvedValueOnce({ok:true,json:async()=>({result:[{title:'CDN news'}]})})
+    vi.stubGlobal('fetch',fetchMock)
+    expect((await getSanityPublishedNews())[0].title).toBe('CDN news')
+    expect(fetchMock.mock.calls.map(([url])=>url.hostname)).toEqual(['04unhu7g.api.sanity.io','04unhu7g.apicdn.sanity.io'])
+    expect(fetchMock.mock.calls[1][0].searchParams.get('perspective')).toBe('published')
+  })
+  it('does not consult stale CDN content after a successful empty API response', async () => {
+    respond([])
+    expect(await getSanityPublishedNews()).toEqual([])
+    expect(fetch).toHaveBeenCalledTimes(1)
+  })
+  it('aborts a stalled API request before trying the CDN', async () => {
+    vi.useFakeTimers()
+    try {
+      const fetchMock=vi.fn().mockImplementationOnce((url,{signal})=>new Promise((resolve,reject)=>signal.addEventListener('abort',()=>reject(Error('timeout')))))
+        .mockResolvedValueOnce({ok:true,json:async()=>({result:[]})})
+      vi.stubGlobal('fetch',fetchMock)
+      const pending=getSanityPublishedNews()
+      await vi.advanceTimersByTimeAsync(5000)
+      expect(await pending).toEqual([])
+      expect(fetchMock.mock.calls[1][0].hostname).toBe('04unhu7g.apicdn.sanity.io')
+    } finally {vi.useRealTimers()}
   })
   it('reports failed and malformed remote reads instead of silently republishing local news', async () => {
     vi.stubGlobal('fetch',vi.fn().mockResolvedValue({ok:false,json:async()=>({})}))

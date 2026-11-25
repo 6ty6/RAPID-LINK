@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test'
 import { siteInformation } from '../../src/content/site.js'
 import { loanCalculatorSettings } from '../../src/content/loanCalculator.js'
 
-async function mockSanity(page, { empty = false, fail = false } = {}) {
-  await page.route('https://*.apicdn.sanity.io/**', async route => {
+async function mockSanity(page, { empty = false, fail = false, apiDown = false } = {}) {
+  await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//, async route => {
     const url = new URL(route.request().url())
     expect(url.searchParams.get('perspective')).toBe('published')
     const query = url.searchParams.get('query')
@@ -15,10 +15,29 @@ async function mockSanity(page, { empty = false, fail = false } = {}) {
     if (query.includes('_type == "siteSettings"')) result = [{...siteInformation.contact,branches:siteInformation.branches,socialProfiles:siteInformation.socialProfiles,email:'sanity-contact@example.test'}]
     if (query.includes('_type == "sharedSettings"')) result = [{appTitle:'Sanity app promotion',footerDescription:'Sanity footer description'}]
     if (query.includes('_type == "loanCalculatorSettings"')) result = [{...loanCalculatorSettings,maximumPrincipal:12000,weeklySchedule:Object.entries(loanCalculatorSettings.weeklyPaymentsByMonth).map(([months,payments])=>({months:Number(months),payments}))}]
-    await route.fulfill({status:fail ? 503 : 200,contentType:'application/json',body:JSON.stringify({result})})
+    await route.fulfill({status:fail || (apiDown && url.hostname.includes('.api.')) ? 503 : 200,contentType:'application/json',body:JSON.stringify({result})})
   })
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
+
+test('uses the CDN during API failure and refreshes an open page after publishing',async({page})=>{
+  await mockSanity(page,{apiDown:true})
+  await page.goto('/home'); await ready(page)
+  await expect(page.locator('.home-newsroom-feature')).toContainText('Sanity published news')
+  let years=18
+  await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//, async(route)=>{
+    const url=new URL(route.request().url())
+    if (!url.searchParams.get('query').includes('_type == "impactCounter"')) return route.fallback()
+    expect(url.hostname).toBe('04unhu7g.api.sanity.io')
+    await route.fulfill({contentType:'application/json',body:JSON.stringify({result:[{id:'years',target:years,label:'Years of Service',suffix:'+',icon:'years'}]})})
+  })
+  await page.goto('/institutional-profile'); await ready(page)
+  const count=page.locator('.impact-stat').filter({hasText:'Years of Service'}).locator('strong')
+  await count.scrollIntoViewIfNeeded()
+  await expect(count).toHaveText('18+')
+  years=19
+  await expect(count).toHaveText('19+',{timeout:12000})
+})
 
 test('published Sanity content reaches the current frontend and staff entry',async({page})=>{
   await mockSanity(page)
@@ -48,7 +67,7 @@ test('unpublished or unavailable content does not restore old public listings',a
   await expect(page.locator('.home-newsroom')).toContainText('There are no published updates')
   await page.goto('/rapidlink-careers'); await ready(page)
   await expect(page.locator('.vacancy-card')).toHaveCount(0)
-  await page.unroute('https://*.apicdn.sanity.io/**')
+  await page.unroute(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//)
   await mockSanity(page,{fail:true})
   await page.goto('/rapidlink-careers'); await ready(page)
   await expect(page.getByRole('heading',{name:'Opportunities are temporarily unavailable'})).toBeVisible()
