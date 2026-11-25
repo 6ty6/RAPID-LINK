@@ -414,6 +414,43 @@ p { margin:.2em 0 1.15em; }
 .prose p { margin-bottom:1.5em; }
 .prose h2 { margin-top:1.6em; }
 .prose h3 { margin-top:1.5em; }
+.board-profiles { background:#f5f7fa; }
+.board-profile-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(36px,4vw,56px); }
+.board-profile-card { --fold-size:38px; --fold-light:#5273ff; --fold-colour:var(--blue); --fold-dark:#0b2c86; position:relative; isolation:isolate; display:flex; flex-direction:column; min-width:0; padding:18px 18px 0; overflow:hidden; border:1px solid #102b460a; border-radius:24px 24px 24px 0; background:white; color:var(--navy); box-shadow:0 8px 28px #102b4606; }
+.board-profile-card .quick-access-fold { background:#f5f7fa; }
+.board-profile-card::after { content:''; position:absolute; pointer-events:none; inset:-30% auto -30% -60%; width:30%; background:linear-gradient(90deg,transparent,#ff74000a,#ffffff65,transparent); transform:skewX(-20deg); }
+.board-profile-card:is(:hover,:focus-within)::after { animation:button-sheen .9s ease-out; }
+.board-profile-portrait { aspect-ratio:1; overflow:hidden; border-radius:14px; background:#f5f7fa; }
+.board-profile-portrait img { width:100%; height:100%; display:block; object-fit:contain; object-position:center bottom; }
+.board-profile-copy { display:flex; flex-direction:column; align-items:flex-start; flex:1; padding:28px 10px 62px; min-width:0; }
+.board-profile-role { margin:0 0 20px; color:var(--blue); font-size:.8rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+.board-profile-copy h2 { min-height:2.6em; margin:0 0 12px; color:inherit; font-size:clamp(1.2rem,1.7vw,1.5rem); line-height:1.3; }
+.board-profile-link { margin-top:auto; padding:8px 0; border:0; color:var(--blue); background:transparent; font:inherit; font-weight:750; text-decoration:underline; text-underline-offset:5px; cursor:pointer; transition:color .2s; }
+.board-profile-link:is(:hover,:focus-visible) { color:var(--orange-deep); }
+.board-profile-link:focus-visible { outline:2px solid currentColor; outline-offset:5px; }
+.board-profile-modal { z-index:1200; animation:board-overlay-in .2s ease both; }
+.board-dialog.board-profile-dialog { --fold-size:58px; --fold-light:#5273ff; --fold-colour:var(--blue); --fold-dark:#0b2c86; width:min(1100px,100%); padding:0; border-radius:24px 24px 24px 0; max-height:calc(100dvh - 48px); overscroll-behavior:contain; animation:board-profile-in .3s ease both; }
+.board-profile-dialog .board-dialog-close { position:sticky; top:14px; margin:14px 14px 0 auto; z-index:5; border:1px solid var(--border); }
+.board-profile-dialog .board-dialog-close:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.board-profile-dialog-layout { display:grid; grid-template-columns:300px minmax(0,1fr); gap:44px; padding:0 44px 82px; }
+.board-profile-identity img { width:100%; aspect-ratio:4 / 5; object-fit:cover; object-position:center top; border-radius:16px; background:var(--soft); }
+.board-profile-identity h2 { font-size:1.6rem; line-height:1.3; margin:22px 0 10px; color:var(--navy); }
+.board-profile-identity p { color:var(--blue); font-weight:750; }
+.board-profile-biography { color:#536b80; line-height:1.85; }
+.board-profile-biography .eyebrow { color:var(--blue); }
+.board-profile-biography p { margin-bottom:1.4em; }
+.board-profile-dialog > .quick-access-fold { position:relative; display:block; margin-top:-58px; left:0; bottom:0; background:white; }
+@keyframes board-overlay-in { from { opacity:0; } to { opacity:1; } }
+@keyframes board-profile-in { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+@media(max-width:760px) {
+ .board-profile-list { grid-template-columns:1fr; max-width:480px; }
+ .board-profile-copy { padding:26px 10px 62px; }
+ .board-profile-copy h2 { min-height:0; }
+ .board-profile-dialog-layout { grid-template-columns:1fr; gap:22px; padding:12px 24px 80px; }
+ .board-profile-identity img { max-width:300px; display:block; margin:auto; }
+ .board-dialog.board-profile-dialog { max-height:calc(100dvh - 20px); }
+}
+@media(prefers-reduced-motion:reduce) { .board-profile-card:is(:hover,:focus-within)::after,.board-profile-modal,.board-dialog.board-profile-dialog { animation:none; } }
 .people-grid { grid-template-columns:repeat(3,1fr); }
 .person-card { padding:0 0 24px; overflow:hidden; }
 .person-image { position:relative; aspect-ratio:1 / 1; margin-bottom:24px; overflow:hidden; background:var(--soft); }

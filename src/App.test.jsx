@@ -104,8 +104,12 @@ describe('RapidLink site', () => {
     expect(screen.queryByText('Senior Management')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'View profile for Edward Opare-Donkor' }))
     expect(screen.getByRole('dialog')).toHaveTextContent('over two decades of financial expertise')
+    expect(screen.getByRole('button', { name: 'Close biography' })).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Close biography' })).toHaveFocus()
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View profile for Edward Opare-Donkor' })).toHaveFocus()
   })
 
   it('uses the required public header image on the careers page', () => {

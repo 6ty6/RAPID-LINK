@@ -147,7 +147,10 @@ export function PeoplePage() {
     if (!selectedPerson) return undefined
 
     const previousOverflow = document.body.style.overflow
-    const closeOnEscape = event => event.key === 'Escape' && setSelectedPerson(null)
+    const closeOnEscape = event => {
+      if (event.key === 'Escape') setSelectedPerson(null)
+      if (event.key === 'Tab') { event.preventDefault(); closeButtonRef.current?.focus() }
+    }
     document.body.style.overflow = 'hidden'
     document.addEventListener('keydown', closeOnEscape)
     closeButtonRef.current?.focus()
@@ -166,15 +169,17 @@ export function PeoplePage() {
 
   return <>
     <AboutHero title="Board of Directors" intro="Meet the experienced leaders guiding RapidLink’s governance, growth and commitment to financial inclusion." image="/assets/about-board-directors-v2.png" />
-    <section className="section"><div className="shell people-grid">{people.map(person => <article className="person-card" key={person.name}>
-      <div className="person-image"><img src={person.image} alt={`${person.name}, ${person.role}`} /><button className="person-info-button" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}><Info size={24} /><span>View profile</span></button></div>
-      <h2>{person.name}</h2><p>{person.role}</p>
+    <section className="section board-profiles"><div className="shell board-profile-list">{people.map(person => <article className="board-profile-card" key={person.name}>
+      <div className="board-profile-portrait"><img src={person.image} alt={`${person.name}, ${person.role}`} loading="lazy" /></div>
+      <div className="board-profile-copy"><h2>{person.name}</h2><p className="board-profile-role">{person.role}</p><button className="board-profile-link" type="button" onClick={event => openBiography(person, event)} aria-label={`View profile for ${person.name}`}>View biography</button></div>
+      <span className="quick-access-fold" aria-hidden="true" />
     </article>)}</div></section>
-    {selectedPerson && <div className="board-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setSelectedPerson(null)}>
-      <section className="board-dialog" role="dialog" aria-modal="true" aria-labelledby="board-dialog-title" aria-describedby="board-dialog-biography">
+    {selectedPerson && <div className="board-modal board-profile-modal" role="presentation" onMouseDown={event => event.target === event.currentTarget && setSelectedPerson(null)}>
+      <section className="board-dialog board-profile-dialog" role="dialog" aria-modal="true" aria-labelledby="board-dialog-title">
         <button ref={closeButtonRef} className="board-dialog-close" type="button" onClick={() => setSelectedPerson(null)} aria-label="Close biography"><X size={22} /></button>
-        <div className="board-dialog-heading"><div className="board-dialog-photo"><img src={selectedPerson.image} alt="" /></div><div><h2 id="board-dialog-title">{selectedPerson.name}</h2><p>{selectedPerson.role}</p></div></div>
-        <p id="board-dialog-biography" className="board-dialog-biography">{selectedPerson.biography}</p>
+        <div className="board-profile-dialog-layout"><div className="board-profile-identity"><img src={selectedPerson.image} alt="" /><h2 id="board-dialog-title">{selectedPerson.name}</h2><p>{selectedPerson.role}</p></div>
+        <div className="board-profile-biography"><p className="eyebrow">Full biography</p>{(selectedPerson.biography || '').split(/(?<=\.)\s+(?=He |Besides,|Before |Dr\. Debrah is|His |She |During |At Cal |Henrici holds)/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div></div>
+        <span className="quick-access-fold" aria-hidden="true" />
       </section>
     </div>}
   </>
