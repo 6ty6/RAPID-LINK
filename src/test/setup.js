@@ -3,5 +3,7 @@ import { cleanup } from '@testing-library/react'
 import { afterEach } from 'vitest'
 afterEach(cleanup)
 // jsdom does not implement the native dialog methods used by the PDF viewer.
-HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', '') }
-HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); this.dispatchEvent(new Event('close')) }
+if(typeof HTMLDialogElement!=='undefined'){
+  HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', '') }
+  HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); this.dispatchEvent(new Event('close')) }
+}

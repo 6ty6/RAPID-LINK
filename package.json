@@ -9,10 +9,13 @@
     "cms:build": "npm --prefix cms/sanity/studio run build",
     "test:sanity": "npm run build && playwright test --config playwright.sanity.config.js",
     "dev": "vite",
+    "start": "node tools/serve-site.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:cms-ui": "vitest run --config vitest.cms.config.js",
+    "check:deployment": "node tools/check-deployment.mjs",
     "test:e2e": "playwright test"
   },
   "dependencies": {

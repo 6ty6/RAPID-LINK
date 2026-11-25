@@ -1,0 +1,19 @@
+# Optional production Web Service. Do not apply this to the existing Static Site.
+services:
+  - type: web
+    name: rapidlink-website-web
+    runtime: node
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /home
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_SITE_URL
+        value: https://rapidlinkgh.com
+      - key: VITE_CONTENT_SOURCE
+        value: sanity
+      - key: VITE_SANITY_PROJECT_ID
+        value: 04unhu7g
+      - key: VITE_SANITY_DATASET
+        value: production
