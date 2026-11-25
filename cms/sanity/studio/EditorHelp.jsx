@@ -10,16 +10,15 @@ export function EditorFieldHelp(props){
  const help=getFieldHelp({document,path:props.path,name:props.name,schemaType:props.schemaType})
  const imageGuide=getImageGuidance(document,props.path||[])
  const dimensions=imageGuide?getImageDimensions(props.value):null
+ const details=[help,imageGuide?`${imageGuide.placement}. ${imageGuide.display} ${imageFileAdvice}`:''].filter(Boolean).join(' ')
  if(!help&&!imageGuide)return props.renderDefault(props)
  return <div className="cms-help-field">
-  {help&&<details className="cms-field-help"><summary title={help} aria-label={`Help for ${props.schemaType.title || props.name}`} aria-describedby={id}>i</summary><p id={id}>{help}</p></details>}
-  {imageGuide&&<aside className="cms-image-guidance" aria-label={`Image size guidance for ${props.schemaType.title || props.name}`}>
-   <strong>Recommended upload: {imageGuide.width} × {imageGuide.height} px ({imageGuide.ratio})</strong>
-   <p>{imageGuide.placement}. {imageGuide.display}</p>
-   <p className="cms-image-current">{dimensions?`Selected image: ${dimensions.width} × ${dimensions.height} px.`:'Select or upload an image to see its actual dimensions here.'}</p>
-   <small>{imageFileAdvice}</small>
+  {details&&<details className="cms-field-help"><summary title={details} aria-label={`Help for ${props.schemaType.title || props.name}`} aria-describedby={id}>i</summary><p id={id}>{details}</p></details>}
+  {imageGuide&&<aside className="cms-image-size-strip" aria-label={`Image size guidance for ${props.schemaType.title || props.name}`} style={{display:'flex',flexWrap:'wrap',alignItems:'center',gap:'6px 20px',padding:'10px 14px',marginBottom:12,borderRadius:8,borderLeft:'3px solid #ff7400',background:'#eef3ff',color:'#102b46',fontFamily:'system-ui, sans-serif',fontSize:13,lineHeight:1.5}}>
+   <span>Recommended: <strong style={{display:'inline',fontWeight:700}}>{imageGuide.width} × {imageGuide.height} px</strong> <span style={{color:'#526782'}}>({imageGuide.ratio})</span></span>
+   <span style={{color:'#526782'}}>Selected: <strong style={{display:'inline',fontWeight:600}}>{dimensions?`${dimensions.width} × ${dimensions.height} px`:'No image'}</strong></span>
   </aside>}
-  {props.renderDefault({...props,description:help})}
+  {props.renderDefault({...props,description:imageGuide?undefined:help})}
  </div>
 }
 

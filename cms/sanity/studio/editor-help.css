@@ -15,8 +15,3 @@
 .cms-growing-text { display: block; box-sizing: border-box; width: 100%; min-height: 42px; max-height: 360px; padding: 10px 12px; border: 1px solid #8798aa80; border-radius: 5px; background: transparent; color: inherit; font: inherit; line-height: 1.5; overflow-y: auto; resize: vertical; transition: border-color .15s ease; }
 .cms-growing-text:focus { outline: 2px solid #6589ff; outline-offset: 1px; border-color: #6589ff; }
 .cms-growing-text[aria-invalid="true"] { border-color: #e76a6a; }
-.cms-image-guidance { margin-bottom:12px; padding:14px 16px; border:1px solid #6589ff70; border-left:3px solid #ff7400; border-radius:7px; background:#6589ff0d; font:14px/1.55 system-ui,sans-serif; }
-.cms-image-guidance strong { display:block; }
-.cms-image-guidance p { margin:7px 0; }
-.cms-image-current { font-weight:650; }
-.cms-image-guidance small { display:block; opacity:.8; line-height:1.5; }
