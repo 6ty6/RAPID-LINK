@@ -13,6 +13,8 @@ Open `http://127.0.0.1:3333` and sign in with your authorised Sanity account. Th
 
 If Sanity requests a CORS origin, add the exact Studio address with **Allow credentials** in the project's API settings. Public frontend origins need to be allowed separately without credentials, including local preview addresses and the actual production website origins. Do not allow wildcard origins with credentials.
 
+The frontend host's Content Security Policy must also allow `https://04unhu7g.apicdn.sanity.io` and `https://04unhu7g.api.sanity.io` in `connect-src`. These are separate from Sanity CORS permissions. `render.yaml` includes the full policy. On a Render service managed through dashboard settings, update the existing `Content-Security-Policy` header there; deploying JavaScript alone does not change a dashboard-managed header. Do not add a second conflicting CSP header.
+
 ## Hosting later
 
 Set `VITE_SANITY_STUDIO_URL` to the approved hosted Studio URL and rebuild the website. Localhost remains the default until then; it points to the computer running the browser. Production visitors cannot use someone else's local Studio.
