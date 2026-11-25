@@ -63,7 +63,7 @@ export function createSiteServer({directory=resolve('dist'),getPublishedRoutes=p
    }
    const route=pathname.replace(/\/$/,'')||'/'
    let status=200
-   if(!pages.has(route)){
+   if(!pages.has(route)&&route!=='/documents'){
     try{status=(await getPublishedRoutes()).has(route)?200:404}
     catch(error){status=error.routes?.has(route)||bundledRoutes.has(route)?200:503}
    }

@@ -1,5 +1,5 @@
 export const reservedProductSlugs = ['home','apply-loan','open-account','institutional-profile','board-of-directors','digital-channels','rates','rate-chart','loan-calculator','faqs','stories','rapidlink-careers','content-management','cms','accept-invite','career-management','contact','assets','downloads']
-export const isProductSlug = slug => typeof slug==='string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && !reservedProductSlugs.includes(slug)
+export const isProductSlug = slug => typeof slug==='string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && !reservedProductSlugs.includes(slug) && slug!=='documents'
 
 export function newProductFallback(row){
  if(!isProductSlug(row.slug) || !['title','category','intro','sectionHeading','image','heroImage','imageAlt'].every(key=>typeof row[key]==='string'&&row[key].trim())

@@ -57,7 +57,8 @@ Do not delete singleton pages to temporarily hide a section: their fallback cont
 | Contact & branches → Page headings | Contact banner and map-section wording. |
 | Contact & branches → Contact details & social profiles | Shared official email, support/loan numbers, branch information and social destinations. The first branch supplies the main-office address in the footer. |
 | Rates & documents → Current rate table | Public investment rate bands, term labels and rates on `/rates`. This is separate from calculator pricing and product-benefit wording. |
-| Rates & documents → Controller loan rates guide | Guide-page copy, dialog labels, downloadable PDF and preview file. Upload both current files when replacing the guide. |
+| Rates & documents → Documents library | Uploads, descriptions, formats, dates/versions and public-list visibility for approved documents. |
+| Rates & documents → Controller loan rates guide | Guide-page copy, dialog labels and the current document selected from the library. A library PDF uses one file for both viewing and downloading. |
 | Account-opening update | The current coming-soon/unavailable notice. Editing it does not enable submission or send an email. |
 | Loan application guidance | Pending/connected application guidance copy. The general application URL is configured separately by the developer. |
 | Abena | Welcome, quick questions, prepared replies, supported topic variations, follow-up replies and approved contact/service links. |
@@ -119,6 +120,20 @@ Abena uses prepared answers, not a generative AI service. Edit an existing topic
 Supported topics are fixed in code. The topic list cannot add/delete/duplicate entries in Studio; new topic recognition requires development work. Privacy protection and the response for unconfirmed information remain in code. The WhatsApp destination also applies to fallback/help links. Website chats are not submitted to Sanity or passed automatically into WhatsApp.
 
 Replies are approved text, not a live search of every CMS field. If branch, product or contact information changes, review Abena's corresponding prepared answer as well. A link to the current page is preferable to duplicating changeable financial figures.
+
+## Documents library and rates versions
+
+Open **Rates & documents → Documents library → Create** to upload a public document. Enter its title, download name, description/category and optional approved date/version. Upload a PDF, Excel (`xls`, `xlsx`), Word (`doc`, `docx`), PowerPoint (`ppt`, `pptx`), CSV, TXT, RTF, ODT or ODS file. The download keeps its correct extension. PDFs have the existing on-page viewer; other formats provide a download and explain that a compatible application is needed to open them.
+
+**Available on website** and Publish makes the record eligible for use. **List on Documents page** additionally lists it at `/documents`, where customers can search/filter and download. A link to this list is on the rates-guide page. Turning off listing does not make a file private; this library is for public information only.
+
+The existing rates PDF has been imported without changing its file. In **Rates & documents → Controller loan rates guide → Current document & viewer**, **Current rates document from Documents library** selects the file used by the rates dialog and Deduction at Source. Replacing the selected record’s upload changes both consumers. Hiding or unpublishing that selected record makes the current viewer unavailable instead of falling back to an older rate file.
+
+For a **new rates version**, create a separate document record, give it its own download name and version/date, then Publish. Select it as the current rates document and Publish the guide. The previous record remains intact; decide separately whether to keep it listed or turn off its listing. Version text does not automatically select the current record. Update the guide page’s heading/introduction if it mentions an old year. The viewer uses the selected document’s title/version, while the guide page retains its separately editable headings.
+
+Uploading a rates document does not change calculator prices or the separate `/rates` investment table. A document selected by the guide is protected by its reference: select a different current document before trying to delete it.
+
+No duplicate preview upload is needed for a library PDF: its single file supplies both viewing and downloading. The legacy standalone PDF/preview controls remain available only when no library document is selected.
 
 ## When a published change does not appear
 

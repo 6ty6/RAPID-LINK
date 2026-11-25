@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "migrate:documents": "sanity exec scripts/migrateDocumentLibrary.js --with-user-token",
     "migrate:editorial": "sanity exec scripts/migrateEditorialPages.js --with-user-token",
     "migrate:editorial:dry-run": "node scripts/migrateEditorialPages.js --dry-run",
     "verify:editorial": "sanity exec scripts/verifyEditorialPages.js --with-user-token",

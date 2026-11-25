@@ -31,7 +31,7 @@ export default function HomeProducts() {
     const timer = window.setInterval(() => {
       const track = trackRef.current
       const state = interaction.current
-      if (!track || drag.current || document.hidden || state.hovered || state.focused || Date.now() < state.resumeAt || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      if (!track || drag.current || document.hidden || state.hovered || state.focused || Date.now() < state.resumeAt || typeof window.matchMedia!=='function' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
       const bounds = track.getBoundingClientRect()
       if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return
       const maximum = track.scrollWidth - track.clientWidth

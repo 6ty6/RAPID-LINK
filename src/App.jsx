@@ -4,6 +4,7 @@ import Header from './components/Header'
 import RouteEffects from './components/RouteEffects'
 import Home from './pages/Home'
 import OpenAccount from './pages/OpenAccount'
+import Documents from './pages/Documents.jsx'
 import { ApplyLoan, LoanCalculator } from './pages/Loans'
 import { ProductPage, RateChart, Rates } from './pages/Products'
 import SanityManagement from './pages/SanityManagement'
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/digital-channels" element={<DigitalChannels />} />
         <Route path="/rates" element={<Rates />} />
         <Route path="/rate-chart" element={<RateChart />} />
+        <Route path="/documents" element={<Documents />} />
         <Route path="/loan-calculator" element={<LoanCalculator />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/stories" element={<Stories />} />

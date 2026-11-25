@@ -32,9 +32,13 @@ function shape(value,name='content') {
 export const remainingContentTypes=Object.entries(remainingCms).map(([key,model])=>{
  const sample=model.collection?model.content[0]:model.content
  const groups=Object.keys(sample).filter(field=>sample[field]&&typeof sample[field]==='object'&&!model.collection).map((field,index)=>({name:field,title:label(field),default:index===0}))
+ if(model.schema==='publicRateGuide'){
+  groups.forEach(group=>{group.default=false})
+  groups.unshift({name:'document',title:'Current document & viewer',default:true})
+ }
  return defineType({name:model.schema,title:model.title,type:'document',description:'Existing approved public website content. Publish to apply changes. The layout and behaviour remain in website code.',groups,
   initialValue:model.schema==='publicProduct'?{isPublished:false,loan:false,benefits:[],requirements:[],displayOrder:11}:undefined,
-  fields:shape(sample,key).map(field=>({ ...field,...(groups.some(group=>group.name===field.name)?{group:field.name}:{}),...(model.schema==='publicPageCopy'&&['listing','departments'].includes(field.name)?{hidden:({document})=>field.name==='departments'?document?.slug!=='rapidlink-careers':document?.slug==='faqs'}:{}) })),
+  fields:[...(model.schema==='publicRateGuide'?[defineField({name:'rateDocument',group:'document',title:'Current rates document from Documents library',type:'reference',to:[{type:'publicDocument'}],options:{filter:'isPublished == true'},description:'Select a published rates version from Documents library. PDFs preview on the page; Excel and other supported formats download.'})]:[]),...shape(sample,key).map(field=>({ ...field,...(model.schema==='publicRateGuide'&&field.name!=='hero'?{group:'document'}:{}),...(groups.some(group=>group.name===field.name)?{group:field.name}:{}),...(model.schema==='publicPageCopy'&&['listing','departments'].includes(field.name)?{hidden:({document})=>field.name==='departments'?document?.slug!=='rapidlink-careers':document?.slug==='faqs'}:{}),...(model.schema==='publicRateGuide'&&['file','preview'].includes(field.name)?{hidden:({document})=>Boolean(document?.rateDocument),validation:rule=>rule.custom((value,context)=>context.document?.rateDocument||value?.asset?._ref?true:'Upload the file or select a document from the library.')}:{}) }))],
   preview:{select:{title:model.collection?'title':'meta.title',media:'image'},prepare:({title,media})=>({title:title||model.title,media})},
  })
 })

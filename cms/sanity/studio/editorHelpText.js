@@ -131,12 +131,13 @@ const maps = {
   'rows.isPublished':visibility('this amount-band row in the /rates table'),
  },
  publicRateGuide:{
+  rateDocument:'Chooses the current rates document opened from /rate-chart and Deduction at Source. Select a published version from Documents library. PDFs preview on the page; spreadsheets and other supported files download.',
   ...hero('the loan rates guide page at /rate-chart'),
   title:'Changes the heading above the document-viewing button on /rate-chart.',
   description:'Changes the paragraph above the document-viewing button on /rate-chart.',
   buttonLabel:'Changes the wording on the button that opens the PDF viewing/downloading dialog on /rate-chart.',
-  dialogTitle:'Changes the heading inside the loan rates PDF dialog, opened from /rate-chart or the Deduction at Source product page.',
-  downloadLabel:'Changes the wording on the PDF dialog’s download button. Clicking it downloads the file selected in Downloadable PDF.',
+    dialogTitle:'Changes the heading inside the standalone rates dialog when no library document is selected. With a library selection, the document’s title and version supply this heading.',
+    downloadLabel:'Changes the wording on the rates dialog’s download button. It downloads the selected library document, or the standalone file when no library document is selected.',
   file:'Replaces the file customers receive when they click Download in the loan rates PDF dialog.',
   preview:'Replaces the document rendered inside the loan rates PDF viewing dialog. Upload the matching preview when replacing the downloadable PDF.',
  },
@@ -292,6 +293,18 @@ maps.loanCalculatorPage={
 }
 
 const pageNames={stories:'the News page at /stories','rapidlink-careers':'the Careers page at /rapidlink-careers',faqs:'the FAQ page at /faqs',contact:'the Contact page at /contact'}
+maps.publicDocument={
+ title:'Changes the document name in the public Documents list and its viewing dialog. If selected as the current rates document, this also names its viewing dialog.',
+ slug:'Sets the filename used by downloads from /documents, for example controller-loan-rates-2026. The website adds the PDF, Excel, Word or other correct extension.',
+ description:'Changes the description below this document’s name on /documents.',
+ category:'Changes this document’s category label and which category filter matches it on /documents.',
+ file:'Uploads this public document: PDF, Excel, Word, PowerPoint, CSV or supported text formats. PDFs preview on the website; other formats download. For a new rates version, create a separate record rather than replacing the previous version’s file.',
+ documentDate:'Shows the document’s date beside its PDF/version information on /documents. Leave blank if the approved document has no date.',
+ version:'Shows this version or reference beside the document and in its viewing dialog. Keep each rates version as a separate record; select the current version in Controller loan rates guide.',
+ isPublished:'On and Publish makes this document available to the website. Off and Publish removes it from the library and disables viewers that reference it.',
+ showInLibrary:'On includes this available, published document on /documents. Off removes only its listing; it can still be selected by the current rates viewer. This is not a private-file setting.',
+ displayOrder:'Changes this document’s position on /documents; lower numbers appear first.',
+}
 function pageCopyHelp(document){
  const page=pageNames[document.slug]||'the page identified by this record’s Page address'
  const careers=document.slug==='rapidlink-careers',contact=document.slug==='contact'
@@ -321,6 +334,7 @@ export function getFieldHelp({document={},path=[],name,schemaType={}}={}){
 }
 
 export const sectionHelp={
+ 'Documents library':'Upload approved PDFs, Excel, Word and other supported documents here. Keep each rates version as a separate record. Select the current version in Controller loan rates guide, and list chosen documents on /documents.',
  Homepage:'Changes the homepage flyers, selected product cards, service pathway and section headings. Use Announcements for the ticker shared across pages.',
  'Page content & flyers':'Changes the homepage: banner flyers and their destinations, selected product cards, service links and section headings.',
  Announcements:'Changes the messages in the shared announcement ticker below the website header. Start/expiry times and visibility control when each appears.',

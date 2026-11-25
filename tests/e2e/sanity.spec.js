@@ -22,6 +22,51 @@ async function mockSanity(page, { empty = false, fail = false, apiDown = false }
 }
 const ready = page => expect(page.locator('#site-loader')).toBeHidden({timeout:15000})
 
+test('document library supports PDF versions, Excel downloads and the current rates selection',async({page})=>{
+ await mockSanity(page)
+ const base={category:'Loan rates',description:'Approved public rates.',isPublished:true,showInLibrary:true}
+ const records=[
+  {...base,id:'rates-v2',title:'Current rates',slug:'rates-2026',version:'2026',file:'/downloads/rate-chart.pdf'},
+  {...base,id:'rates-v1',title:'Previous rates',slug:'rates-2025',version:'2025',file:'/downloads/rate-chart.pdf'},
+  {...base,id:'workbook',title:'Rates workbook',slug:'rates-workbook',version:'Revision 3',file:'https://cdn.sanity.io/files/04unhu7g/production/demo.xlsx'},
+  {...base,id:'unlisted',title:'Unlisted reference',file:'/downloads/rate-chart.pdf',showInLibrary:false},
+  {...base,id:'hidden',title:'Hidden document',file:'/downloads/rate-chart.pdf',isPublished:false},
+ ]
+ let current=records[0]
+ await page.route(/^https:\/\/04unhu7g\.(api|apicdn)\.sanity\.io\//,async route=>{
+  const query=new URL(route.request().url()).searchParams.get('query')
+  if(query.includes('_type == "publicDocument"'))return route.fulfill({contentType:'application/json',body:JSON.stringify({result:records})})
+  if(query.includes('_type == "publicRateGuide"'))return route.fulfill({contentType:'application/json',body:JSON.stringify({result:[{...remainingCms.rateGuide.content,rateDocumentSelected:true,linkedDocument:current}]})})
+  return route.fallback()
+ })
+ await page.goto('/documents');await ready(page)
+ await expect(page.locator('.public-document')).toHaveCount(3)
+ await expect(page.getByText('Unlisted reference')).toHaveCount(0)
+ await expect(page.getByText('Hidden document')).toHaveCount(0)
+ await page.getByRole('searchbox',{name:'Search documents'}).fill('workbook')
+ await expect(page.locator('.public-document')).toHaveCount(1)
+ await expect(page.getByRole('link',{name:'Download Rates workbook'})).toHaveAttribute('href',/dl=rates-workbook.xlsx/)
+ await page.getByRole('button',{name:'View Rates workbook'}).click()
+ await expect(page.getByRole('dialog')).toContainText('XLSX document is available to download')
+ await expect(page.locator('.pdf-preview')).toHaveCount(0)
+ await page.getByRole('button',{name:'Close document',exact:true}).click()
+ await page.goto('/rate-chart');await ready(page)
+ await page.locator('.rate-guide button').click()
+ await expect(page.getByRole('dialog')).toContainText('Current rates — 2026')
+ await expect(page.locator('.pdf-page canvas').first()).toBeVisible({timeout:15000})
+ await page.getByRole('button',{name:'Close rates guide'}).click()
+ current=records[2]
+ await page.waitForTimeout(5500)
+ await page.locator('.rate-guide button').click()
+ await expect(page.getByRole('dialog')).toContainText('Rates workbook — Revision 3')
+ await expect(page.getByRole('dialog')).toContainText('XLSX document is available to download')
+ await expect(page.getByRole('dialog').getByRole('link')).toHaveAttribute('href',/RapidLink-loan-rates.xlsx/)
+ await page.getByRole('button',{name:'Close rates guide'}).click()
+ current=null
+ await expect(page.locator('.rate-guide')).toContainText('current rates document is temporarily unavailable',{timeout:12000})
+ await expect(page.locator('.rate-guide button')).toHaveCount(0)
+})
+
 test('mouse users can grab product cards without opening a page while dragging',async({page},info)=>{
  test.skip(info.project.name!=='desktop','Mouse dragging uses the desktop pointer; mobile keeps native swiping.')
  await mockSanity(page)

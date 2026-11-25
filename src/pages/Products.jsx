@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { products } from '../content'
 import usePageContent from '../hooks/usePageContent.js'
+import {documentDownloadUrl,documentExtension} from '../content/documents.js'
 import { Breadcrumb, CheckList, NotFound, PageHero } from '../components/Shared'
 
 const loanSectionHeadings = {
@@ -64,6 +65,8 @@ function PdfPreview({ url }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    setPdfDocument(null)
+    setError('')
     let active = true
     let loadingTask
 
@@ -165,8 +168,11 @@ export function Rates() {
 
 function RateGuideDialog({ onClose }) {
   const {data:guide}=usePageContent('rateGuide')
-  const downloadUrl=guide.file.startsWith('https://cdn.sanity.io/')?new URL(guide.file):null
-  downloadUrl?.searchParams.set('dl','RapidLink-loan-rates.pdf')
+  return <DocumentDialog onClose={onClose} title={guide.dialogTitle} file={guide.file} preview={guide.preview} downloadLabel={guide.downloadLabel} closeLabel="Close rates guide" filename={`RapidLink-loan-rates.${documentExtension(guide.file)||'pdf'}`}/>
+}
+
+export function DocumentDialog({onClose,title,file,preview=file,downloadLabel='Download document',closeLabel='Close document',filename}) {
+  const titleId=useId()
   const [previousFocus] = useState(() => document.activeElement)
   const dialogRef = useRef(null)
   useEffect(() => {
@@ -176,9 +182,9 @@ function RateGuideDialog({ onClose }) {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus() }
   }, [])
-  return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby="rate-guide-title" onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
-    <header><h2 id="rate-guide-title">{guide.dialogTitle}</h2><div><a className="button button-secondary" href={downloadUrl?.href||guide.file} download>{guide.downloadLabel}</a><button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label="Close rates guide" autoFocus>×</button></div></header>
-    <PdfPreview url={guide.preview} />
+  return <dialog ref={dialogRef} className="document-dialog document-native" aria-labelledby={titleId} onClose={onClose} onClick={event => { if (event.target === event.currentTarget) event.currentTarget.close() }}>
+    <header><h2 id={titleId}>{title}</h2><div>{file&&<a className="button button-secondary" href={documentDownloadUrl(file,filename)} download>{downloadLabel}</a>}<button className="modal-close" type="button" onClick={() => dialogRef.current.close()} aria-label={closeLabel} autoFocus>×</button></div></header>
+    {file?(documentExtension(file)==='pdf'?<PdfPreview url={preview}/>:<p className="pdf-preview-status">This {documentExtension(file).toUpperCase()} document is available to download. Open the downloaded file in a compatible application.</p>):<p className="pdf-preview-status" role="alert">This document is not currently available. Please contact RapidLink for assistance.</p>}
   </dialog>
 }
 
@@ -190,7 +196,8 @@ export function RateChart() {
     <section className="section"><div className="shell narrow panel centered rate-guide">
       <h2>{page.title}</h2>
       <p>{page.description}</p>
-      <button className="button" type="button" onClick={() => setIsOpen(true)}>{page.buttonLabel}</button>
+      {page.documentUnavailable?<p role="status">The current rates document is temporarily unavailable. Please contact RapidLink.</p>:<button className="button" type="button" onClick={() => setIsOpen(true)}>{page.buttonLabel}</button>}
+      <p className="document-library-link"><Link className="text-link" to="/documents">Browse public documents</Link></p>
     </div></section>
     {isOpen && <RateGuideDialog onClose={() => setIsOpen(false)} />}
   </>

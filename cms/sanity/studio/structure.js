@@ -37,6 +37,7 @@ export const structure = S => S.list().title('Edit the website').items([
     singleton(S,'Page headings','publicPageCopy','rapidlink-pages-contact'),singleton(S,'Contact details & social profiles','siteSettings','rapidlink-site-settings'),
   ]),
   group(S,'Rates & documents',[
+    records(S,'Documents library','publicDocument'),
     singleton(S,'Current rate table','publicRatesPage','rapidlink-rates-page'),singleton(S,'Controller loan rates guide','publicRateGuide','rapidlink-rate-guide'),
   ]),
   singleton(S,'Account-opening update','publicAccountPage','rapidlink-account-page'),

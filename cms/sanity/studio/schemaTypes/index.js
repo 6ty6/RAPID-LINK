@@ -9,6 +9,7 @@ import { sharedSettings } from './sharedSettings'
 import { digitalChannelsPage } from './digitalChannelsPage'
 import { loanCalculatorPage } from './loanCalculatorPage'
 import {remainingContentTypes} from './remainingContent'
+import {publicDocument} from './publicDocument'
 export const schemaTypes = [
   newsArticle,
   careerVacancy,
@@ -20,5 +21,6 @@ export const schemaTypes = [
   sharedSettings,
   digitalChannelsPage,
   loanCalculatorPage,
+  publicDocument,
   ...remainingContentTypes,
 ]
