@@ -1,13 +1,16 @@
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import AccountApplicationForm from './AccountApplicationForm'
 import { Building2, Landmark, Mail, Phone } from '../icons'
 import { PageMeta } from '../components/Shared'
 import usePageContent from '../hooks/usePageContent.js'
 import useSiteInformation from '../hooks/useSiteInformation.js'
 
 export default function OpenAccount() {
+  const [searchParams] = useSearchParams()
   const {data:page}=usePageContent('account')
   const copy=page.content
   const {contact}=useSiteInformation()
+  if (searchParams.get('preview') === 'true') return <><PageMeta title="Account application test" description="Test form. Submissions are disabled." noIndex /><AccountApplicationForm /></>
   return <>
     <PageMeta {...page.meta} />
     <section className="account-coming" aria-labelledby="account-coming-title">

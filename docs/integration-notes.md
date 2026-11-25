@@ -8,28 +8,20 @@ This may contain only a verified public destination; it is not a secret. Until s
 
 ## Account-opening submission
 
-The public `/open-account` route currently shows a coming-soon page with contact and branch links. It collects no applicant information. The form is retained separately in `src/pages/AccountApplicationForm.jsx` and is not imported by the public route. Enabling environment variables alone does not restore the form: a reviewed route change and deployment are required after the backend and approvals are ready.
+The default `/open-account` route still displays the coming-soon page. The explicit `/open-account?preview=true` link opens a five-step test form: account, personal details, residence/work, documents and review. Use fictional details and sample images only. There is no submission handler, API request, email delivery, persistent browser storage or CMS storage. Values and files remain in component memory and clear on refresh/unmount. The query flag is a preview selector, not access control.
 
-The retained React form intentionally does not submit. Its values, documents and signature remain in page memory. Submission service development is separate from this public availability page.
+The form now follows the supplied confidential account-opening API developer guide v1.0 (25 November 2026), replacing the legacy HTML/multipart assumptions. The confidential PDF is not copied into the repository. Field definitions are in `src/content/accountApplication.js`.
 
-Live integration requires written confirmation of:
+- Account types: savings/current; optional branches: Asylum Down/Madina.
+- Required personal and Ghana Card fields use the API field names and enumerations. Optional next-of-kin details remain optional.
+- Photo and signature photo/scan are required JPG/PNG images; card front/back are optional. Typed signatures are not accepted by this contract.
+- Each image is capped conservatively at 2,000,000 bytes, decoded for readability, and previewed with a temporary object URL. URLs are revoked on replacement/unmount.
+- The complete future JSON size is estimated using base64 expansion and an allowance for keys/reference/metadata, capped at 9,000,000 bytes. Confirm the provider's precise MB interpretation before live use; repeat authoritative validation on the server.
+- The review screen cannot submit, generate an officer reference or claim an account was created. No invented terms/consent checkbox is presented.
 
-- endpoint origin and path;
-- whether a same-origin adapter is required;
-- CSRF-token acquisition and refresh behaviour;
-- cookie/session and CORS requirements;
-- exact multipart field names and accepted file types;
-- 1.5 MB limit interpretation (per file or total);
-- whether the signature is accepted as PNG data URL, blob or another format;
-- validation-error schema, accepted response and failure response;
-- duplicate/idempotency behaviour;
-- authorised synthetic-data test environment.
+Before enabling live submissions obtain the HTTPS base URL, a server-only API key, an authorised synthetic-data test environment, approved privacy/terms wording, the verified verification-link origin, and confirmation of encoded/decoded image limits.
 
-Do not reuse a token from audited HTML. Do not put secrets in React code or `VITE_` variables. A same-origin server adapter will likely be necessary if the existing service depends on session cookies and CSRF state.
-
-### Audited field names
-
-`product_type`, `title`, `gender`, `first_name`, `last_name`, `initial_deposit`, `tin`, `dob`, `pob`, `marital_status`, `telephone`, `spouse_name`, `pep`, `id_form`, `id_number`, `id_issue_authority`, `id_expiry_date`, `id_issue_date`, `id_issue_place`, `nationality`, `social_security_no`, `region`, `suburb`, `residential_digital_address`, `postal_address`, `nearest_landmarks`, `occupation`, `source_of_fund`, `employer_contact_person`, `employer_contact_no`, `work_nearest_landmark`, `net_income`, `nok_first_name`, `nok_surname`, `nok_relationship`, `nok_phone_number`, `accept_terms`, `id_front`, `id_back`, `passport_picture`, and signature data.
+The future same-origin server adapter must call `/api/v1/account-openings` using JSON and Bearer authentication. Generate one `client_reference` per application and reuse it across validation fixes/retries. Handle documented errors, Retry-After and duplicate responses. Show the returned reference and the 24-hour verification link when available; explain officer follow-up when it is empty or images are rejected. Do not log request bodies; discard identity images following a 201 response. Status checks must be on demand or at most every few minutes. No endpoint returns an account number. Keep keys outside React, `VITE_` variables, Sanity and Git.
 
 ## Calculator
 
@@ -48,4 +40,3 @@ The calculation is implemented as a pure function and covered by unit and browse
 - Preview robots directives are intentionally `noindex`. Replace them only for an authorised production deployment.
 - Route-specific client-side titles, descriptions and canonical links are implemented. If search/social crawlers require rendered route content, add a React/Vite-compatible prerender step before production release.
 - No deployment or live infrastructure change was performed.
-
