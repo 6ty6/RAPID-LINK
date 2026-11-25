@@ -154,3 +154,19 @@ The website reads the published API first and retries the CDN on failure. The CD
 Layout, card animations, cursor/loader behaviour, calculation formulas, route handling, application-backend connections, permissions and secrets are code/configuration. The CMS does not collect account applications, identification documents, signatures, customer balances or complaints. Store only approved public content here.
 
 See [CMS deployment verification](cms-deployment-verification.md) for the current automated results, hosting requirements and outstanding release steps.
+
+## Account opening: form wording
+
+Open **Account opening ? Application form** in Sanity. The **Coming-soon page** entry still controls the default /open-account notice. The application form entry controls only /open-account?preview=true.
+
+- Introduction: heading and introductory paragraph above the form.
+- Step labels: progress indicator and five step headings; the order stays fixed.
+- Accounts: Savings/Current card names, descriptions and selection prompts.
+- Branches: optional-branch heading, default-branch explanation and Head Office caption. Accepted branch names remain Asylum Down and Madina.
+- Field labels: visible labels beside personal/work fields and in the review. API keys and validation remain fixed.
+- Documents: document-section introduction and photo/signature/card image labels.
+- Review: review instructions, Edit wording, missing-value text and document checklist on the account cards.
+- Controls: Continue, Back, Clear form and other navigation/field guidance.
+- Clear popup: confirmation heading, message and both action labels.
+
+Publish to update the test preview. Existing local wording is the fallback when the CMS cannot load. Test-mode notices, submission disabling, API options, required fields, dates and upload limits cannot be changed here. Do not enter applicant details or upload identity documents to Sanity. No application records are stored in this CMS.

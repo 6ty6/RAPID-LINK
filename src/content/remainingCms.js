@@ -1,8 +1,10 @@
 import {products} from '../content.js'
 import {editorialFallbacks} from './editorialFallbacks.js'
 import {otherPageFallbacks} from './otherPageFallbacks.js'
+import {accountFormModel} from './accountFormModel.js'
 
 export const remainingCms = {
+ accountForm:accountFormModel,
  ...editorialFallbacks,
  ...otherPageFallbacks,
  homepage:{schema:'publicHomepage',title:'Homepage',id:'rapidlink-homepage',content:{

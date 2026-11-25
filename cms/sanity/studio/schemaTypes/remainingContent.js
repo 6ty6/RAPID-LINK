@@ -4,7 +4,7 @@ import {isMedia,isFile} from '../../../../src/content/cmsModelUtils.js'
 import {isProductSlug} from '../../../../src/content/productRules.js'
 import FeaturedProductsInput from '../FeaturedProductsInput.jsx'
 const names={meta:'Page title & search description',hero:'Page banner',slides:'Flyer slider',products:'Featured products',services:'Services section',tools:'Rates & calculator section',news:'News section',body:'Company introduction',purpose:'Vision & Mission',impact:'Impact heading',members:'Director profiles',rows:'Rate table',file:'Downloadable PDF',preview:'Preview file',groups:'Menu groups',topics:'Prepared answers',variations:'Answer variations',slug:'Page address',listing:'Section introduction',content:'Page content',pending:'Connection pending',connected:'Portal connected'}
-const label=key=>names[key]||key.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,char=>char.toUpperCase())
+const label=key=>names[key]||key.replaceAll('_',' ').replace(/([a-z])([A-Z])/g,'$1 $2').replace(/^./,char=>char.toUpperCase())
 function shape(value,name='content') {
  return Object.entries(value).map(([key,item])=>{
   const field={name:key,title:label(key)}
