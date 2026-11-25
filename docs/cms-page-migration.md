@@ -15,6 +15,8 @@ Only connected sections appear. More page sections will be added as they are mig
 
 ## Page 1: Digital Channels
 
+**Completed 25 November 2026.** Imported and published with Caleb's authorised GitHub-backed Sanity account. Verification matched all five cards and all six uploaded images to the bundled fallback. The live Render page was checked in Chrome: it loads the Sanity banner and service artwork, preserves ordering and flip behaviour, and displays the existing USSD instructions without runtime errors.
+
 Studio: **Products & services → Digital channels — page & cards**.
 
 1. **Page & banner**: page title, search description, existing banner and accessible image description.
