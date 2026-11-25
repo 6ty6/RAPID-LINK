@@ -61,7 +61,7 @@ Do not delete singleton pages to temporarily hide a section: their fallback cont
 | Rates & documents → Current rate table | Public investment rate bands, term labels and rates on `/rates`. This is separate from calculator pricing and product-benefit wording. |
 | Rates & documents → Documents library | Uploads, descriptions, formats, dates/versions and public-list visibility for approved documents. |
 | Rates & documents → Controller loan rates guide | Guide-page copy, dialog labels and the current document selected from the library. A library PDF uses one file for both viewing and downloading. |
-| Account-opening update | The current coming-soon/unavailable notice. Editing it does not enable submission or send an email. |
+| Account opening / Application form | Changes the account form wording. It cannot enable submissions or send an email. |
 | Loan application guidance | Pending/connected application guidance copy. The general application URL is configured separately by the developer. |
 | Abena | Welcome, quick questions, prepared replies, supported topic variations, follow-up replies and approved contact/service links. |
 | Shared website content | Footer descriptions/headings/links, company copyright wording and the app-download promotion. App-store destinations remain configuration. |
@@ -157,7 +157,7 @@ See [CMS deployment verification](cms-deployment-verification.md) for the curren
 
 ## Account opening: form wording
 
-Open **Account opening ? Application form** in Sanity. The **Coming-soon page** entry still controls the default /open-account notice. The application form entry controls only /open-account?preview=true.
+Open **Account opening ? Application form** in Sanity. The application form is the default /open-account page. The retired coming-soon entry has been removed.
 
 - Introduction: heading and introductory paragraph above the form.
 - Step labels: progress indicator and five step headings; the order stays fixed.

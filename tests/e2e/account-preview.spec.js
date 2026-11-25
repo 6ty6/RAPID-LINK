@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test('test application validates, retains edits and never submits', async ({ page }) => {
  let sent=0
  page.on('request',request=>{if(request.method()==='POST')sent++})
- await page.goto('/open-account?preview=true')
+ await page.goto('/open-account')
  await expect(page.getByText('Test form — submissions are disabled')).toBeVisible()
  await page.getByRole('button',{name:'Continue',exact:true}).click()
  await expect(page.getByRole('heading',{name:'1. Account',exact:true})).toBeVisible()

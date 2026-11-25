@@ -177,23 +177,6 @@ const maps = {
   'topics.isPublished':visibility('these prepared replies for this supported topic; when hidden, Abena uses her unconfirmed-information response'),
   howAreYouReply:'Changes the answer Abena sends when customers ask “How are you?”.',
  },
- publicAccountPage:{
-  ...meta('the account-opening page at /open-account'),
-  content:'Changes the current account-opening availability notice on /open-account. It does not enable form submissions.',
-  'content.eyebrow':'Changes the small label above the account-opening availability notice.',
-  'content.status':'Changes the status badge on /open-account, currently describing the service as coming soon.',
-  'content.titleFirst':'Changes the first line of the main heading on /open-account.',
-  'content.titleSecond':'Changes the second line of the main heading on /open-account.',
-  'content.subtitle':'Changes the secondary heading explaining account-opening availability on /open-account.',
-  'content.description':'Changes the main paragraph explaining account-opening availability on /open-account.',
-  'content.followUp':'Changes the follow-up guidance paragraph beneath the account-opening availability explanation.',
-  'content.contactLabel':'Changes the wording on the /open-account button that opens /contact.',
-  'content.branchLabel':'Changes the wording on the /open-account button that opens the branch-map section of /contact.',
-  'content.artTitleFirst':'Changes the first line of the decorative message beside the account-opening notice.',
-  'content.artTitleSecond':'Changes the second line of the decorative message beside the account-opening notice.',
-  'content.supportPrompt':'Changes the sentence above the phone/email links below the account-opening notice.',
-  'content.note':'Changes the final note beneath the account-opening support links.',
- },
  publicLoanGuidance:{
   pending:'Changes the /apply-loan guidance shown while no general-loan application URL is configured.',
   'pending.eyebrow':'Changes the small banner label on /apply-loan when the general-loan connection is pending.',
@@ -330,7 +313,7 @@ export function getFieldHelp({document={},path=[],name,schemaType={}}={}){
   const [group,field]=key.split('.')
   const places={introduction:'the heading and introduction above the test application',stepLabels:'the five-step progress indicator and step headings',accounts:'the Savings and Current selection cards in step 1',branches:'the optional branch choices in step 1',fieldLabels:'the personal/address form fields and review summary',documents:'the document upload section in step 4 and document names in the review',review:'the review screen or document checklist on the account cards',controls:'the form navigation buttons and field guidance',clearPopup:'the Clear form confirmation popup'}
   if(group==='fieldLabels'&&field)return `Changes the visible label for ${accountFormModel.content.fieldLabels[field]||field}. The API field name, accepted values and validation stay unchanged.`
-  if(places[group])return `Changes ${field?`the ${field.replace(/([a-z])([A-Z])/g,'$1 $2').toLowerCase()} text in `:''}${places[group]} at /open-account?preview=true. Publish to update the preview. This cannot enable submissions or change API requirements.`
+  if(places[group])return `Changes ${field?`the ${field.replace(/([a-z])([A-Z])/g,'$1 $2').toLowerCase()} text in `:''}${places[group]} at /open-account. Publish to update the preview. This cannot enable submissions or change API requirements.`
  }
  if(key?.split('.').at(-1)==='id')return 'Internal identifier linking this item to the website. This read-only value does not change its public name or destination.'
  const fields=document._type==='publicPageCopy'?pageCopyHelp(document):maps[document._type]
@@ -341,9 +324,8 @@ export function getFieldHelp({document={},path=[],name,schemaType={}}={}){
 }
 
 export const sectionHelp={
- 'Account opening':'Edit the existing coming-soon page or the separate test application form. Applicant details and documents are never stored in Sanity.',
- 'Coming-soon page':'Changes the notice and support links on the public /open-account page. This does not change the test application.',
- 'Application form':'Changes wording on /open-account?preview=true: account cards, branch guidance, field labels, step headings and buttons. It cannot enable submission or change API validation. Never enter applicant information here.',
+ 'Account opening':'Edit the test application form at /open-account. Applicant details and documents are never stored in Sanity.',
+ 'Application form':'Changes wording on /open-account: account cards, branch guidance, field labels, step headings and buttons. It cannot enable submission or change API validation. Never enter applicant information here.',
  'Documents library':'Upload approved PDFs, Excel, Word and other supported documents here. Keep each rates version as a separate record. Select the current version in Controller loan rates guide, and list chosen documents on /documents.',
  Homepage:'Changes the homepage flyers, selected product cards, service pathway and section headings. Use Announcements for the ticker shared across pages.',
  'Page content & flyers':'Changes the homepage: banner flyers and their destinations, selected product cards, service links and section headings.',
@@ -370,7 +352,6 @@ export const sectionHelp={
  'Rates & documents':'Changes the /rates investment table and the loan rates PDF viewed/downloaded from /rate-chart or the Controller product.',
  'Current rate table':'Changes the amount bands, term headings and rate cells on /rates. It does not change loan-calculator figures.',
  'Controller loan rates guide':'Changes /rate-chart text and the PDF opened or downloaded from the loan rates dialog, also used on Deduction at Source.',
- 'Account-opening update':'Changes the notice and support-button wording on /open-account. The contact buttons open /contact or its branch-map section.',
  'Loan application guidance':'Changes /apply-loan guidance and button wording. IT configures the general-loan portal address separately.',
  Abena:'Changes Abena’s welcome, quick-question buttons, prepared answers and the links customers can open from her chat.',
  'Shared website content':'Changes the footer on every page and the mobile-app download promotion on the homepage and Digital Channels page.',

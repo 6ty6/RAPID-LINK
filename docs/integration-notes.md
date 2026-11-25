@@ -8,7 +8,7 @@ This may contain only a verified public destination; it is not a secret. Until s
 
 ## Account-opening submission
 
-The default `/open-account` route still displays the coming-soon page. The explicit `/open-account?preview=true` link opens a five-step test form: account, personal details, residence/work, documents and review. Use fictional details and sample images only. There is no submission handler, API request, email delivery, persistent browser storage or CMS storage. Values and files remain in component memory and clear on refresh/unmount. The query flag is a preview selector, not access control.
+The default `/open-account` route opens the five-step test form: account, personal details, residence/work, documents and review. Use fictional details and sample images only. There is no submission handler, API request, email delivery, persistent browser storage or CMS storage. Values and files remain in component memory and clear on refresh/unmount.
 
 The form now follows the supplied confidential account-opening API developer guide v1.0 (25 November 2026), replacing the legacy HTML/multipart assumptions. The confidential PDF is not copied into the repository. Field definitions are in `src/content/accountApplication.js`.
 

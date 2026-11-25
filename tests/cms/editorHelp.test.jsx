@@ -14,7 +14,7 @@ describe('CMS help explains public locations and effects',()=>{
  })
  it('identifies button destinations and separates public fields from internal metadata',()=>{
   expect(help('publicRateGuide',['downloadLabel'])).toContain('downloads the selected library document')
-  expect(help('publicAccountPage',['content','contactLabel'])).toContain('opens /contact')
+  expect(help('publicAccountForm',['controls','continue'])).toContain('/open-account')
   expect(help('loanCalculatorPage',['calculateLabel'])).toContain('still calculates on this page')
   expect(help('publicPageCopy',['title'],{slug:'contact'})).toContain('Studio')
   expect(help('publicPageCopy',['listing','title'],{slug:'contact'})).toContain('branch-map')
@@ -37,7 +37,7 @@ describe('CMS help explains public locations and effects',()=>{
   expect(missing).toEqual([])
  })
  it('explains each menu destination without a generic editing fallback',()=>{
-  const titles=['Homepage','Page content & flyers','Announcements','Products','Digital Channels','Loan Calculator','Page appearance & homepage card','Rates, fees & approval','About RapidLink','Page content, Vision & Mission','Impact numbers','Board of Directors','News','Articles','Careers','Page headings & departments','Vacancies','FAQs','Page banner','Questions & answers','Contact & branches','Contact details & social profiles','Rates & documents','Current rate table','Controller loan rates guide','Account-opening update','Loan application guidance','Abena','Shared website content','Navigation menus']
+  const titles=['Homepage','Page content & flyers','Announcements','Products','Digital Channels','Loan Calculator','Page appearance & homepage card','Rates, fees & approval','About RapidLink','Page content, Vision & Mission','Impact numbers','Board of Directors','News','Articles','Careers','Page headings & departments','Vacancies','FAQs','Page banner','Questions & answers','Contact & branches','Contact details & social profiles','Rates & documents','Current rate table','Controller loan rates guide','Account opening','Application form','Loan application guidance','Abena','Shared website content','Navigation menus']
   for(const title of titles)expect(getSectionHelp(title),title).toBeTruthy()
   expect(getSectionHelp('Page headings','rapidlink-pages-contact')).toContain('Contact page')
   expect(getSectionHelp('Page headings','rapidlink-pages-stories')).toContain('News page')

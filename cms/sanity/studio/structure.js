@@ -41,7 +41,6 @@ export const structure = S => S.list().title('Edit the website').items([
     singleton(S,'Current rate table','publicRatesPage','rapidlink-rates-page'),singleton(S,'Controller loan rates guide','publicRateGuide','rapidlink-rate-guide'),
   ]),
   group(S,'Account opening',[
-    singleton(S,'Coming-soon page','publicAccountPage','rapidlink-account-page'),
     singleton(S,'Application form','publicAccountForm','rapidlink-account-form'),
   ]),
   singleton(S,'Loan application guidance','publicLoanGuidance','rapidlink-loan-guidance'),
